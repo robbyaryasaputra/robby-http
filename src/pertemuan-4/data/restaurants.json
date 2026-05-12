@@ -1,0 +1,522 @@
+[
+  {
+    "id": 1,
+    "name": "Sakura Ramen House",
+    "category": "Japanese",
+    "rating": 4.8,
+    "priceRange": "$$$",
+    "image": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop",
+    "description": "Authentic Japanese ramen with rich tonkotsu broth and hand-pulled noodles.",
+    "isOpen": true,
+    "established": 2018,
+    "location": {
+      "address": "Jl. Sudirman No. 45",
+      "city": "Jakarta",
+      "district": "Senayan"
+    },
+    "contact": {
+      "phone": "+62-21-5551234",
+      "email": "info@sakuraramen.id",
+      "website": "https://sakuraramen.id"
+    },
+    "operationalHours": {
+      "weekday": "10:00 - 22:00",
+      "weekend": "09:00 - 23:00",
+      "holiday": "10:00 - 21:00"
+    }
+  },
+  {
+    "id": 2,
+    "name": "Padang Jaya",
+    "category": "Indonesian",
+    "rating": 4.5,
+    "priceRange": "$$",
+    "image": "https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&h=400&fit=crop",
+    "description": "Traditional Padang cuisine with bold spices and rendang that melts in your mouth.",
+    "isOpen": true,
+    "established": 2005,
+    "location": {
+      "address": "Jl. Gatot Subroto No. 12",
+      "city": "Jakarta",
+      "district": "Kuningan"
+    },
+    "contact": {
+      "phone": "+62-21-5559876",
+      "email": "padangjaya@mail.com",
+      "website": "https://padangjaya.com"
+    },
+    "operationalHours": {
+      "weekday": "07:00 - 21:00",
+      "weekend": "07:00 - 22:00",
+      "holiday": "08:00 - 20:00"
+    }
+  },
+  {
+    "id": 3,
+    "name": "La Piazza Italiana",
+    "category": "Italian",
+    "rating": 4.7,
+    "priceRange": "$$$$",
+    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop",
+    "description": "Fine Italian dining with imported ingredients and wood-fired pizza oven.",
+    "isOpen": true,
+    "established": 2015,
+    "location": {
+      "address": "Jl. Kemang Raya No. 88",
+      "city": "Jakarta",
+      "district": "Kemang"
+    },
+    "contact": {
+      "phone": "+62-21-7194567",
+      "email": "reserve@lapiazza.id",
+      "website": "https://lapiazza.id"
+    },
+    "operationalHours": {
+      "weekday": "11:00 - 23:00",
+      "weekend": "10:00 - 00:00",
+      "holiday": "11:00 - 22:00"
+    }
+  },
+  {
+    "id": 4,
+    "name": "Seoul Kitchen",
+    "category": "Korean",
+    "rating": 4.6,
+    "priceRange": "$$$",
+    "image": "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=600&h=400&fit=crop",
+    "description": "Korean BBQ and street food favorites with tabletop grills and kimchi bar.",
+    "isOpen": true,
+    "established": 2019,
+    "location": {
+      "address": "Jl. Senopati No. 30",
+      "city": "Jakarta",
+      "district": "SCBD"
+    },
+    "contact": {
+      "phone": "+62-21-7201234",
+      "email": "hello@seoulkitchen.id",
+      "website": "https://seoulkitchen.id"
+    },
+    "operationalHours": {
+      "weekday": "11:00 - 22:00",
+      "weekend": "10:00 - 23:00",
+      "holiday": "11:00 - 21:00"
+    }
+  },
+  {
+    "id": 5,
+    "name": "Warung Sunda Asli",
+    "category": "Indonesian",
+    "rating": 4.3,
+    "priceRange": "$",
+    "image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop",
+    "description": "Authentic Sundanese dishes served in a cozy bamboo setting with garden view.",
+    "isOpen": true,
+    "established": 2000,
+    "location": {
+      "address": "Jl. Dago No. 55",
+      "city": "Bandung",
+      "district": "Dago"
+    },
+    "contact": {
+      "phone": "+62-22-2501234",
+      "email": "info@warundsunda.com",
+      "website": "https://warungsundaasli.com"
+    },
+    "operationalHours": {
+      "weekday": "08:00 - 21:00",
+      "weekend": "08:00 - 22:00",
+      "holiday": "09:00 - 20:00"
+    }
+  },
+  {
+    "id": 6,
+    "name": "Dragon Palace",
+    "category": "Chinese",
+    "rating": 4.4,
+    "priceRange": "$$$",
+    "image": "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600&h=400&fit=crop",
+    "description": "Premium dim sum and Cantonese seafood with a grand imperial decor.",
+    "isOpen": false,
+    "established": 2010,
+    "location": {
+      "address": "Jl. Mangga Besar No. 18",
+      "city": "Jakarta",
+      "district": "Mangga Besar"
+    },
+    "contact": {
+      "phone": "+62-21-6291234",
+      "email": "dragonpalace@mail.com",
+      "website": "https://dragonpalace.id"
+    },
+    "operationalHours": {
+      "weekday": "10:00 - 22:00",
+      "weekend": "09:00 - 23:00",
+      "holiday": "Closed"
+    }
+  },
+  {
+    "id": 7,
+    "name": "Taco Fiesta",
+    "category": "Mexican",
+    "rating": 4.2,
+    "priceRange": "$$",
+    "image": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&h=400&fit=crop",
+    "description": "Vibrant Mexican street food with handmade tortillas and fresh guacamole.",
+    "isOpen": true,
+    "established": 2020,
+    "location": {
+      "address": "Jl. Cikini Raya No. 70",
+      "city": "Jakarta",
+      "district": "Menteng"
+    },
+    "contact": {
+      "phone": "+62-21-3141234",
+      "email": "hola@tacofiesta.id",
+      "website": "https://tacofiesta.id"
+    },
+    "operationalHours": {
+      "weekday": "11:00 - 22:00",
+      "weekend": "10:00 - 23:00",
+      "holiday": "11:00 - 21:00"
+    }
+  },
+  {
+    "id": 8,
+    "name": "Le Petit Bistro",
+    "category": "French",
+    "rating": 4.9,
+    "priceRange": "$$$$",
+    "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop",
+    "description": "Elegant French bistro offering classic dishes with a modern twist.",
+    "isOpen": true,
+    "established": 2016,
+    "location": {
+      "address": "Jl. Gunawarman No. 22",
+      "city": "Jakarta",
+      "district": "Blok M"
+    },
+    "contact": {
+      "phone": "+62-21-7251234",
+      "email": "bonjour@lepetit.id",
+      "website": "https://lepetitbistro.id"
+    },
+    "operationalHours": {
+      "weekday": "12:00 - 23:00",
+      "weekend": "11:00 - 00:00",
+      "holiday": "12:00 - 22:00"
+    }
+  },
+  {
+    "id": 9,
+    "name": "Spice Garden",
+    "category": "Indian",
+    "rating": 4.5,
+    "priceRange": "$$",
+    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop",
+    "description": "Aromatic Indian curries and tandoori specialties in a warm atmosphere.",
+    "isOpen": true,
+    "established": 2012,
+    "location": {
+      "address": "Jl. Wahid Hasyim No. 33",
+      "city": "Jakarta",
+      "district": "Tanah Abang"
+    },
+    "contact": {
+      "phone": "+62-21-3921234",
+      "email": "namaste@spicegarden.id",
+      "website": "https://spicegarden.id"
+    },
+    "operationalHours": {
+      "weekday": "11:00 - 22:00",
+      "weekend": "10:00 - 23:00",
+      "holiday": "11:00 - 21:00"
+    }
+  },
+  {
+    "id": 10,
+    "name": "Bangkok Street",
+    "category": "Thai",
+    "rating": 4.3,
+    "priceRange": "$$",
+    "image": "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=400&fit=crop",
+    "description": "Authentic Thai street food featuring pad thai, som tum, and tom yum.",
+    "isOpen": true,
+    "established": 2017,
+    "location": {
+      "address": "Jl. Sabang No. 15",
+      "city": "Jakarta",
+      "district": "Sabang"
+    },
+    "contact": {
+      "phone": "+62-21-3151234",
+      "email": "sawadee@bangkokstreet.id",
+      "website": "https://bangkokstreet.id"
+    },
+    "operationalHours": {
+      "weekday": "10:00 - 22:00",
+      "weekend": "10:00 - 23:00",
+      "holiday": "10:00 - 21:00"
+    }
+  },
+  {
+    "id": 11,
+    "name": "Bebek Goreng Pak Ndut",
+    "category": "Indonesian",
+    "rating": 4.6,
+    "priceRange": "$",
+    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
+    "description": "Crispy fried duck with sambal matah, served with warm rice and lalapan.",
+    "isOpen": true,
+    "established": 2008,
+    "location": {
+      "address": "Jl. Malioboro No. 20",
+      "city": "Yogyakarta",
+      "district": "Malioboro"
+    },
+    "contact": {
+      "phone": "+62-274-551234",
+      "email": "info@bebekpakndut.com",
+      "website": "https://bebekpakndut.com"
+    },
+    "operationalHours": {
+      "weekday": "08:00 - 21:00",
+      "weekend": "08:00 - 22:00",
+      "holiday": "09:00 - 20:00"
+    }
+  },
+  {
+    "id": 12,
+    "name": "Mediterranean Breeze",
+    "category": "Mediterranean",
+    "rating": 4.7,
+    "priceRange": "$$$",
+    "image": "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=600&h=400&fit=crop",
+    "description": "Fresh Mediterranean cuisine with hummus, falafel, and grilled halloumi.",
+    "isOpen": true,
+    "established": 2021,
+    "location": {
+      "address": "Jl. Pantai Indah No. 5",
+      "city": "Jakarta",
+      "district": "PIK"
+    },
+    "contact": {
+      "phone": "+62-21-5881234",
+      "email": "hello@medbreeze.id",
+      "website": "https://medbreeze.id"
+    },
+    "operationalHours": {
+      "weekday": "11:00 - 22:00",
+      "weekend": "10:00 - 23:00",
+      "holiday": "11:00 - 22:00"
+    }
+  },
+  {
+    "id": 13,
+    "name": "Sushi Zen",
+    "category": "Japanese",
+    "rating": 4.8,
+    "priceRange": "$$$$",
+    "image": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&h=400&fit=crop",
+    "description": "Omakase sushi experience with the freshest fish flown in from Tsukiji market.",
+    "isOpen": false,
+    "established": 2014,
+    "location": {
+      "address": "Jl. Thamrin No. 99",
+      "city": "Jakarta",
+      "district": "Thamrin"
+    },
+    "contact": {
+      "phone": "+62-21-3991234",
+      "email": "reserve@sushizen.id",
+      "website": "https://sushizen.id"
+    },
+    "operationalHours": {
+      "weekday": "12:00 - 22:00",
+      "weekend": "11:00 - 23:00",
+      "holiday": "Closed"
+    }
+  },
+  {
+    "id": 14,
+    "name": "Burger & Lobster",
+    "category": "American",
+    "rating": 4.4,
+    "priceRange": "$$$",
+    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&h=400&fit=crop",
+    "description": "Premium burgers and fresh lobster rolls in a casual industrial setting.",
+    "isOpen": true,
+    "established": 2019,
+    "location": {
+      "address": "Jl. Pluit Selatan No. 7",
+      "city": "Jakarta",
+      "district": "Pluit"
+    },
+    "contact": {
+      "phone": "+62-21-6651234",
+      "email": "eat@burgerlobster.id",
+      "website": "https://burgerlobster.id"
+    },
+    "operationalHours": {
+      "weekday": "11:00 - 22:00",
+      "weekend": "10:00 - 23:00",
+      "holiday": "11:00 - 21:00"
+    }
+  },
+  {
+    "id": 15,
+    "name": "Kedai Kopi Nusantara",
+    "category": "Cafe",
+    "rating": 4.5,
+    "priceRange": "$",
+    "image": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&h=400&fit=crop",
+    "description": "Artisan Indonesian coffee brewed with local beans from Toraja to Gayo.",
+    "isOpen": true,
+    "established": 2016,
+    "location": {
+      "address": "Jl. Braga No. 40",
+      "city": "Bandung",
+      "district": "Braga"
+    },
+    "contact": {
+      "phone": "+62-22-4231234",
+      "email": "kopi@nusantara.id",
+      "website": "https://kedaikopinusantara.id"
+    },
+    "operationalHours": {
+      "weekday": "07:00 - 22:00",
+      "weekend": "07:00 - 23:00",
+      "holiday": "08:00 - 21:00"
+    }
+  },
+  {
+    "id": 16,
+    "name": "Pho Saigon",
+    "category": "Vietnamese",
+    "rating": 4.3,
+    "priceRange": "$$",
+    "image": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=600&h=400&fit=crop",
+    "description": "Traditional Vietnamese pho and banh mi with aromatic herbs and spices.",
+    "isOpen": true,
+    "established": 2018,
+    "location": {
+      "address": "Jl. Kelapa Gading No. 25",
+      "city": "Jakarta",
+      "district": "Kelapa Gading"
+    },
+    "contact": {
+      "phone": "+62-21-4531234",
+      "email": "xin@phosaigon.id",
+      "website": "https://phosaigon.id"
+    },
+    "operationalHours": {
+      "weekday": "09:00 - 21:00",
+      "weekend": "09:00 - 22:00",
+      "holiday": "10:00 - 20:00"
+    }
+  },
+  {
+    "id": 17,
+    "name": "Steak House 99",
+    "category": "American",
+    "rating": 4.6,
+    "priceRange": "$$$$",
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop",
+    "description": "Premium USDA-grade steaks dry-aged for 28 days with signature sauces.",
+    "isOpen": true,
+    "established": 2013,
+    "location": {
+      "address": "Jl. Asia Afrika No. 10",
+      "city": "Bandung",
+      "district": "Asia Afrika"
+    },
+    "contact": {
+      "phone": "+62-22-4441234",
+      "email": "reserve@steakhouse99.id",
+      "website": "https://steakhouse99.id"
+    },
+    "operationalHours": {
+      "weekday": "11:00 - 23:00",
+      "weekend": "10:00 - 00:00",
+      "holiday": "11:00 - 22:00"
+    }
+  },
+  {
+    "id": 18,
+    "name": "Nasi Goreng Kebon Sirih",
+    "category": "Indonesian",
+    "rating": 4.2,
+    "priceRange": "$",
+    "image": "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&h=400&fit=crop",
+    "description": "Legendary fried rice with smoky wok flavor, topped with crispy shallots.",
+    "isOpen": true,
+    "established": 1995,
+    "location": {
+      "address": "Jl. Kebon Sirih No. 5",
+      "city": "Jakarta",
+      "district": "Kebon Sirih"
+    },
+    "contact": {
+      "phone": "+62-21-3141567",
+      "email": "nasgor@kebonsirih.com",
+      "website": "https://nasgorkebonsirih.com"
+    },
+    "operationalHours": {
+      "weekday": "17:00 - 02:00",
+      "weekend": "17:00 - 03:00",
+      "holiday": "17:00 - 01:00"
+    }
+  },
+  {
+    "id": 19,
+    "name": "Santorini Greek Kitchen",
+    "category": "Mediterranean",
+    "rating": 4.5,
+    "priceRange": "$$$",
+    "image": "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=600&h=400&fit=crop",
+    "description": "Greek-inspired dishes with moussaka, souvlaki, and fresh tzatziki.",
+    "isOpen": true,
+    "established": 2022,
+    "location": {
+      "address": "Jl. Sunset Road No. 77",
+      "city": "Bali",
+      "district": "Seminyak"
+    },
+    "contact": {
+      "phone": "+62-361-8881234",
+      "email": "opa@santorini.id",
+      "website": "https://santorinigreek.id"
+    },
+    "operationalHours": {
+      "weekday": "11:00 - 23:00",
+      "weekend": "10:00 - 00:00",
+      "holiday": "11:00 - 22:00"
+    }
+  },
+  {
+    "id": 20,
+    "name": "Dim Sum Garden",
+    "category": "Chinese",
+    "rating": 4.4,
+    "priceRange": "$$",
+    "image": "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&h=400&fit=crop",
+    "description": "Handcrafted dim sum baskets with traditional recipes passed down for generations.",
+    "isOpen": false,
+    "established": 2007,
+    "location": {
+      "address": "Jl. Pecinan No. 14",
+      "city": "Surabaya",
+      "district": "Kembang Jepun"
+    },
+    "contact": {
+      "phone": "+62-31-5321234",
+      "email": "dimsum@garden.id",
+      "website": "https://dimsumgarden.id"
+    },
+    "operationalHours": {
+      "weekday": "06:00 - 14:00",
+      "weekend": "06:00 - 15:00",
+      "holiday": "Closed"
+    }
+  }
+]
