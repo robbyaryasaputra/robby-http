@@ -1,0 +1,120 @@
+[
+  {
+    "id": "ORD-001",
+    "customer": "Budi Santoso",
+    "items": [
+      { "name": "Americano", "qty": 2, "price": 3.75 },
+      { "name": "Croissant", "qty": 1, "price": 2.50 }
+    ],
+    "total": 10.00,
+    "status": "Completed",
+    "date": "2024-03-15",
+    "paymentMethod": "Cash"
+  },
+  {
+    "id": "ORD-002",
+    "customer": "Siti Rahayu",
+    "items": [
+      { "name": "Vanilla Latte", "qty": 1, "price": 4.75 },
+      { "name": "Mocha Delight", "qty": 1, "price": 5.00 }
+    ],
+    "total": 9.75,
+    "status": "Processing",
+    "date": "2024-03-15",
+    "paymentMethod": "Card"
+  },
+  {
+    "id": "ORD-003",
+    "customer": "Ahmad Hidayat",
+    "items": [
+      { "name": "Caramel Macchiato", "qty": 3, "price": 5.25 }
+    ],
+    "total": 15.75,
+    "status": "Completed",
+    "date": "2024-03-14",
+    "paymentMethod": "E-Wallet"
+  },
+  {
+    "id": "ORD-004",
+    "customer": "Dewi Lestari",
+    "items": [
+      { "name": "Double Espresso", "qty": 1, "price": 4.00 },
+      { "name": "Iced Cappuccino", "qty": 2, "price": 4.50 }
+    ],
+    "total": 13.00,
+    "status": "Pending",
+    "date": "2024-03-15",
+    "paymentMethod": "Cash"
+  },
+  {
+    "id": "ORD-005",
+    "customer": "Rizky Pratama",
+    "items": [
+      { "name": "Flat White", "qty": 1, "price": 4.25 },
+      { "name": "Americano", "qty": 1, "price": 3.75 }
+    ],
+    "total": 8.00,
+    "status": "Completed",
+    "date": "2024-03-14",
+    "paymentMethod": "Card"
+  },
+  {
+    "id": "ORD-006",
+    "customer": "Nadia Putri",
+    "items": [
+      { "name": "Mocha Delight", "qty": 2, "price": 5.00 },
+      { "name": "Vanilla Latte", "qty": 1, "price": 4.75 }
+    ],
+    "total": 14.75,
+    "status": "Processing",
+    "date": "2024-03-15",
+    "paymentMethod": "E-Wallet"
+  },
+  {
+    "id": "ORD-007",
+    "customer": "Fajar Nugroho",
+    "items": [
+      { "name": "Iced Cappuccino", "qty": 1, "price": 4.50 }
+    ],
+    "total": 4.50,
+    "status": "Cancelled",
+    "date": "2024-03-13",
+    "paymentMethod": "Cash"
+  },
+  {
+    "id": "ORD-008",
+    "customer": "Maya Sari",
+    "items": [
+      { "name": "Caramel Macchiato", "qty": 1, "price": 5.25 },
+      { "name": "Double Espresso", "qty": 1, "price": 4.00 },
+      { "name": "Affogato", "qty": 1, "price": 5.50 }
+    ],
+    "total": 14.75,
+    "status": "Completed",
+    "date": "2024-03-15",
+    "paymentMethod": "Card"
+  },
+  {
+    "id": "ORD-009",
+    "customer": "Budi Santoso",
+    "items": [
+      { "name": "Irish Coffee", "qty": 2, "price": 5.75 }
+    ],
+    "total": 11.50,
+    "status": "Completed",
+    "date": "2024-03-13",
+    "paymentMethod": "E-Wallet"
+  },
+  {
+    "id": "ORD-010",
+    "customer": "Siti Rahayu",
+    "items": [
+      { "name": "Flat White", "qty": 1, "price": 4.25 },
+      { "name": "Croissant", "qty": 2, "price": 2.50 }
+    ],
+    "total": 9.25,
+    "status": "Pending",
+    "date": "2024-03-15",
+    "paymentMethod": "Cash"
+  }
+]

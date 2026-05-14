@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "name": "Budi Santoso",
+    "email": "budi.santoso@email.com",
+    "phone": "+62 812-3456-7890",
+    "totalOrders": 24,
+    "totalSpent": 312.50,
+    "status": "Active",
+    "joinDate": "2024-01-15",
+    "avatar": "BS"
+  },
+  {
+    "id": 2,
+    "name": "Siti Rahayu",
+    "email": "siti.rahayu@email.com",
+    "phone": "+62 823-4567-8901",
+    "totalOrders": 18,
+    "totalSpent": 245.00,
+    "status": "Active",
+    "joinDate": "2024-02-20",
+    "avatar": "SR"
+  },
+  {
+    "id": 3,
+    "name": "Ahmad Hidayat",
+    "email": "ahmad.h@email.com",
+    "phone": "+62 834-5678-9012",
+    "totalOrders": 31,
+    "totalSpent": 420.75,
+    "status": "Active",
+    "joinDate": "2024-01-08",
+    "avatar": "AH"
+  },
+  {
+    "id": 4,
+    "name": "Dewi Lestari",
+    "email": "dewi.l@email.com",
+    "phone": "+62 845-6789-0123",
+    "totalOrders": 7,
+    "totalSpent": 89.25,
+    "status": "Inactive",
+    "joinDate": "2024-03-10",
+    "avatar": "DL"
+  },
+  {
+    "id": 5,
+    "name": "Rizky Pratama",
+    "email": "rizky.p@email.com",
+    "phone": "+62 856-7890-1234",
+    "totalOrders": 15,
+    "totalSpent": 198.50,
+    "status": "Active",
+    "joinDate": "2024-02-01",
+    "avatar": "RP"
+  },
+  {
+    "id": 6,
+    "name": "Nadia Putri",
+    "email": "nadia.p@email.com",
+    "phone": "+62 867-8901-2345",
+    "totalOrders": 42,
+    "totalSpent": 567.00,
+    "status": "Active",
+    "joinDate": "2023-11-20",
+    "avatar": "NP"
+  },
+  {
+    "id": 7,
+    "name": "Fajar Nugroho",
+    "email": "fajar.n@email.com",
+    "phone": "+62 878-9012-3456",
+    "totalOrders": 3,
+    "totalSpent": 42.75,
+    "status": "Inactive",
+    "joinDate": "2024-04-05",
+    "avatar": "FN"
+  },
+  {
+    "id": 8,
+    "name": "Maya Sari",
+    "email": "maya.sari@email.com",
+    "phone": "+62 889-0123-4567",
+    "totalOrders": 28,
+    "totalSpent": 378.25,
+    "status": "Active",
+    "joinDate": "2023-12-15",
+    "avatar": "MS"
+  }
+]

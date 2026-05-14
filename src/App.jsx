@@ -1,40 +1,42 @@
 import { lazy, Suspense, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import Loading from "./components/Loading";
 
 const MainLayout = lazy(() => import("./layouts/MainLayout"));
 const AuthLayout = lazy(() => import("./layouts/AuthLayout"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Details = lazy(() => import("./pages/Details"));
-const Service = lazy(() => import("./pages/Service"));
+const Menu = lazy(() => import("./pages/Menu"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const Settings = lazy(() => import("./pages/Settings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Customers = lazy(() => import("./pages/Customers"));
 const Orders = lazy(() => import("./pages/Orders"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
-const Login = lazy(() => import("./pages/Login"));
-const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Login = lazy(() => import("./auth/Login"));
+const ForgotPassword = lazy(() => import("./auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("./auth/ResetPassword"));
 
 export default function App() {
   const [search, setSearch] = useState("");
 
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center text-slate-600">
-          Loading...
-        </div>
-      }
-    >
+    <Suspense fallback={<Loading />}>
       <Routes>
+        {/* Halaman pertama yang dibuka adalah dashboard */}
+        <Route path="/" element={<Navigate replace to="/dashboard" />} />
+
         <Route
-          path="/"
+          path="/dashboard"
           element={<MainLayout search={search} setSearch={setSearch} />}
         >
           <Route index element={<Dashboard search={search} />} />
-          <Route path="details" element={<Details search={search} />} />
-          <Route path="services" element={<Service search={search} />} />
+          <Route path="details" element={<Details />} />
+          <Route path="menu" element={<Menu />} />
           <Route path="customers" element={<Customers />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="favorites" element={<Favorites />} />
+          <Route path="settings" element={<Settings />} />
           <Route
             path="error-400"
             element={
@@ -73,6 +75,7 @@ export default function App() {
           <Route path="login" element={<Login />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
 
         <Route path="/login" element={<Navigate replace to="/auth/login" />} />
