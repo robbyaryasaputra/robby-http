@@ -27,24 +27,24 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-50 min-h-screen bg-[#1E1210] flex flex-col fixed left-0 top-0 z-50">
+    <aside className="w-72 min-h-screen bg-[#855C3B] flex flex-col fixed left-0 top-0 z-50 shadow-[10px_0_60px_rgba(34,20,14,0.12)]">
       {/* Logo */}
       <Link
         to="/dashboard"
         id="sidebar-logo"
-        className="flex items-center gap-3 px-5 py-6 group"
+        className="flex items-center gap-3 px-6 py-7"
       >
-        <div className="w-9 h-9 rounded-lg bg-linear-to-br from-amber-600 to-amber-800 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-amber-900/30 transition-all duration-300">
+        <div className="w-11 h-11 rounded-3xl bg-[#5F3A27] flex items-center justify-center shadow-lg shadow-black/10">
           <LuCoffee className="w-5 h-5 text-white" />
         </div>
-        <span className="text-[#E8D5C4] font-semibold text-base tracking-wide">
+        <span className="text-[#FAF4EE] font-semibold text-lg tracking-wide">
           Coffee Shop
         </span>
       </Link>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 mt-2">
-        <ul className="space-y-1">
+      <nav className="flex-1 px-6 mt-4">
+        <ul className="space-y-2">
           {navItems.map((item) => {
             const isActive =
               item.path === "/dashboard"
@@ -57,13 +57,13 @@ export default function Sidebar() {
                 <Link
                   to={item.path}
                   id={`nav-${item.label.toLowerCase()}`}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  className={`flex items-center gap-4 px-5 py-3 rounded-3xl text-sm font-semibold transition-all duration-300 ${
                     isActive
-                      ? "bg-[#C4956A] text-white shadow-md shadow-[#C4956A]/25"
-                      : "text-[#B8A598] hover:bg-[#2C1E18] hover:text-[#E8D5C4]"
+                      ? "bg-[#D1876A] text-white shadow-lg shadow-[#0000001a]"
+                      : "text-[#E9D7C7] hover:bg-[#7b4f31] hover:text-white"
                   }`}
                 >
-                  <Icon className="w-4.5 h-4.5" />
+                  <Icon className="w-5 h-5" />
                   <span>{item.label}</span>
                 </Link>
               </li>
@@ -73,19 +73,19 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom Section */}
-      <div className="px-3 pb-6 space-y-2">
+      <div className="px-6 pb-6 space-y-3">
         <button
           id="sidebar-refresh"
-          className="w-full h-9 rounded-lg bg-[#2C1E18] flex items-center justify-center text-[#B8A598] hover:text-[#E8D5C4] hover:bg-[#3D2A20] transition-all duration-300"
+          className="w-full h-11 rounded-3xl bg-[#7A503C] flex items-center justify-center text-[#F2E7DC] hover:bg-[#6d4734] transition-all duration-300"
         >
-          <LuRefreshCw className="w-4 h-4" />
+          <LuRefreshCw className="w-5 h-5" />
         </button>
         <button
           id="sidebar-logout"
           onClick={handleLogout}
-          className="w-full h-9 rounded-lg bg-red-900/20 flex items-center justify-center text-red-400 hover:text-red-300 hover:bg-red-900/40 transition-all duration-300 font-medium text-sm"
+          className="w-full h-11 rounded-3xl bg-[#4B2C20] flex items-center justify-center text-[#F8EDE5] hover:bg-[#3f2419] transition-all duration-300 font-semibold text-sm"
         >
-          <LuLogOut className="w-4 h-4 mr-2" />
+          <LuLogOut className="w-5 h-5 mr-2" />
           Logout
         </button>
       </div>

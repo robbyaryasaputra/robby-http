@@ -72,28 +72,28 @@ export default function Login() {
     <div className="animate-[fadeIn_0.6s_ease-out]">
       {/* Logo */}
       <div className="flex flex-col items-center mb-8">
-        <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-amber-500 to-amber-700 flex items-center justify-center mb-4 shadow-lg shadow-amber-900/30">
+        <div className="w-16 h-16 rounded-3xl bg-amber-500 flex items-center justify-center mb-4 shadow-lg shadow-amber-500/20">
           <LuCoffee className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
-        <p className="text-amber-200/60 text-sm mt-1">
-          Sign in to Coffee Shop Admin
+        <h1 className="text-3xl font-semibold text-slate-900">Welcome back</h1>
+        <p className="text-sm text-slate-500 mt-2">
+          Sign in to access your dashboard
         </p>
       </div>
 
       {/* Form Card */}
-      <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
+      <div className="bg-white rounded-[2rem] p-8 border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
         {errorInfo}
         {loadingInfo}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email / Username */}
           <div>
-            <label className="block text-xs font-medium text-amber-200/80 mb-2">
-              Username or Email
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Email
             </label>
             <div className="relative">
-              <LuMail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-300/50" />
+              <LuMail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 id="login-username"
                 name="username"
@@ -101,19 +101,19 @@ export default function Login() {
                 required
                 value={dataForm.username}
                 onChange={handleChange}
-                placeholder="admin atau admin@coffeeshop.com"
-                className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 transition-all"
+                placeholder="you@example.com"
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 transition-all"
               />
             </div>
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-medium text-amber-200/80 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Password
             </label>
             <div className="relative">
-              <LuLock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-300/50" />
+              <LuLock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 id="login-password"
                 name="password"
@@ -121,13 +121,13 @@ export default function Login() {
                 required
                 value={dataForm.password}
                 onChange={handleChange}
-                placeholder="••••••••"
-                className="w-full pl-11 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 transition-all"
+                placeholder="Enter your password"
+                className="w-full pl-11 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
               >
                 {showPassword ? (
                   <LuEyeOff className="w-4 h-4" />
@@ -140,16 +140,16 @@ export default function Login() {
 
           {/* Remember & Forgot */}
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
               <input
                 type="checkbox"
-                className="w-4 h-4 rounded border-white/20 bg-white/5 accent-amber-500"
+                className="w-4 h-4 rounded border-slate-300 bg-slate-50 accent-amber-500"
               />
-              <span className="text-xs text-white/50">Remember me</span>
+              Remember me
             </label>
             <Link
               to="/auth/forgot-password"
-              className="text-xs text-amber-400 hover:text-amber-300 transition-colors"
+              className="text-sm text-amber-600 hover:text-amber-500 transition-colors"
             >
               Forgot password?
             </Link>
@@ -160,27 +160,17 @@ export default function Login() {
             id="login-submit"
             type="submit"
             disabled={loading}
-            className={`w-full py-3 bg-linear-to-r from-amber-500 to-amber-700 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-amber-600/30 transition-all duration-300 cursor-pointer active:scale-[0.98] ${loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+            className={`w-full py-3 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-700 transition-all duration-300 cursor-pointer active:scale-[0.98] ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-white/10"></div>
-          <span className="text-xs text-white/30">or</span>
-          <div className="flex-1 h-px bg-white/10"></div>
+        <div className="mt-8 rounded-3xl border border-slate-200 bg-amber-50 p-4 text-sm text-slate-700">
+          <p className="font-semibold text-slate-900">Demo credentials:</p>
+          <p className="mt-2 text-sm text-slate-600">Staff: staff@blackbird.com / staff123</p>
+          <p className="text-sm text-slate-600">Manager: manager@blackbird.com / manager123</p>
         </div>
-
-        {/* Register Link */}
-        <p className="text-center text-sm text-white/40">
-          Don't have an account?{" "}
-          <span className="text-amber-400 hover:text-amber-300 cursor-pointer transition-colors font-medium">
-            Sign Up
-          </span>
-        </p>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { LuStar, LuHeart, LuShoppingCart, LuChevronDown } from "react-icons/lu";
+import { LuStar, LuHeart, LuShoppingCart } from "react-icons/lu";
 
 const coffeeMenu = [
   {
@@ -132,26 +132,12 @@ export default function Menu() {
   const { search } = useOutletContext();
   const [activeCategory, setActiveCategory] = useState("All");
   const [favorites, setFavorites] = useState([]);
-  const [sortBy, setSortBy] = useState("popular");
 
   const filteredMenu = coffeeMenu.filter((item) => {
     const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
     const matchCategory =
       activeCategory === "All" || item.category === activeCategory;
     return matchSearch && matchCategory;
-  });
-
-  const sortedMenu = [...filteredMenu].sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return a.price - b.price;
-      case "price-high":
-        return b.price - a.price;
-      case "rating":
-        return b.rating - a.rating;
-      default:
-        return b.reviews - a.reviews;
-    }
   });
 
   const toggleFavorite = (id) => {
@@ -162,40 +148,45 @@ export default function Menu() {
 
   return (
     <div className="space-y-6 animate-[fadeIn_0.5s_ease-out]">
-      {/* Page Title & Stats */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-[#2C1A0E]">Menu</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {sortedMenu.length} coffee items available
-          </p>
-        </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
-          <LuChevronDown className="w-4 h-4 text-gray-400" />
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="bg-transparent border-0 text-sm font-semibold text-gray-700 focus:outline-none cursor-pointer"
-          >
-            <option value="popular">Most Popular</option>
-            <option value="price-low">Lowest Price</option>
-            <option value="price-high">Highest Price</option>
-            <option value="rating">Top Rated</option>
-          </select>
+      {/* Hero Card */}
+      <div className="rounded-[2rem] bg-gradient-to-br from-[#8B5F3C] to-[#6A3F27] p-8 text-white shadow-[0_30px_80px_rgba(34,20,14,0.18)]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1.4fr] gap-8 items-center">
+          <div>
+            <p className="text-sm uppercase tracking-[0.24em] text-[#f5e9dd] opacity-90 mb-3">
+              Good Morning
+            </p>
+            <h1 className="text-4xl sm:text-5xl font-semibold leading-tight">
+              Grab Your Coffee Today
+            </h1>
+            <p className="mt-4 max-w-xl text-sm text-[#f2dfca] leading-7">
+              Discover the best coffee flavors for your mood, with handcrafted blends and fast delivery.
+            </p>
+            <button className="mt-8 inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-sm font-semibold text-[#5F3A27] shadow-lg shadow-[#472F1E]/20 hover:bg-slate-50 transition-all duration-300">
+              Order Now
+            </button>
+          </div>
+          <div className="rounded-[2rem] overflow-hidden bg-[#020202]/5 shadow-inner shadow-black/10">
+            <img
+              src="https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800&h=600&fit=crop"
+              alt="Coffee cup"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       </div>
 
       {/* Category Filter */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex items-center gap-3 overflow-x-auto pb-2">
         {categories.map((cat) => (
           <button
             key={cat}
             id={`filter-${cat.toLowerCase()}`}
             onClick={() => setActiveCategory(cat)}
-            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap shrink-0 ${activeCategory === cat
-                ? "bg-[#2C1A0E] text-white shadow-md shadow-[#2C1A0E]/20"
-                : "bg-white text-gray-600 hover:bg-amber-50 border border-gray-200 hover:border-amber-300"
-              }`}
+            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap shrink-0 ${
+              activeCategory === cat
+                ? "bg-[#4E3423] text-white shadow-[0_15px_40px_rgba(78,52,35,0.12)]"
+                : "bg-white text-[#6B4A36] border border-[#E4D7C9] hover:border-[#C1A385] hover:bg-[#FBF6F0]"
+            }`}
           >
             {cat}
           </button>
@@ -203,116 +194,80 @@ export default function Menu() {
       </div>
 
       {/* Coffee Grid */}
-      {sortedMenu.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedMenu.map((coffee, index) => (
+      {filteredMenu.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredMenu.map((coffee, index) => (
             <div
               key={coffee.id}
-              className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-amber-200"
+              className="group relative overflow-hidden rounded-[2rem] border border-[#EEE3D8] bg-white shadow-[0_20px_40px_rgba(34,20,14,0.06)] transition-all duration-500 hover:-translate-y-1"
               style={{ animationDelay: `${index * 0.05}s` }}
             >
-              {/* Image Container */}
-              <div className="relative h-52 overflow-hidden bg-gray-100">
+              <div className="relative h-64 overflow-hidden rounded-t-[2rem] bg-slate-100">
                 <img
                   src={coffee.image}
                   alt={coffee.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   onError={(e) => {
                     e.target.src = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop";
                   }}
                 />
-
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent"></div>
-
-                {/* Badge */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                 {coffee.badge && (
-                  <div className="absolute top-3 left-3">
+                  <div className="absolute top-4 left-4">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${getBadgeColor(coffee.badge)}`}
+                      className={`inline-block rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${getBadgeColor(coffee.badge)}`}
                     >
                       {coffee.badge}
                     </span>
                   </div>
                 )}
-
-                {/* Favorite Button */}
                 <button
                   onClick={() => toggleFavorite(coffee.id)}
-                  className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-sm ${favorites.includes(coffee.id)
-                      ? "bg-red-500 text-white shadow-lg shadow-red-500/50 scale-110"
-                      : "bg-white/90 text-gray-600 hover:bg-white hover:text-red-500 hover:shadow-lg hover:scale-110"
-                    }`}
+                  className={`absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300 ${
+                    favorites.includes(coffee.id)
+                      ? "bg-[#D16A4D] text-white shadow-lg shadow-[#D16A4D]/25"
+                      : "bg-white/90 text-[#6B4A36] hover:bg-white shadow-sm"
+                  }`}
                 >
-                  <LuHeart
-                    className={`w-5 h-5 transition-all ${favorites.includes(coffee.id) ? "fill-current" : ""}`}
-                  />
+                  <LuHeart className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Content */}
-              <div className="p-5 flex flex-col">
-                {/* Title & Description */}
-                <div className="mb-3">
-                  <h3 className="text-lg font-bold text-[#2C1A0E] group-hover:text-amber-800 transition-colors mb-1">
-                    {coffee.name}
-                  </h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    {coffee.description}
-                  </p>
+              <div className="p-6">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h3 className="text-xl font-semibold text-[#3F2A1E]">{coffee.name}</h3>
+                  <p className="text-lg font-bold text-[#5C3D2A]">${coffee.price.toFixed(2)}</p>
                 </div>
-
-                {/* Rating & Reviews */}
-                <div className="flex items-center gap-2 my-3 pb-3 border-b border-gray-100">
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <LuStar
-                        key={i}
-                        className={`w-3.5 h-3.5 transition-colors ${i < Math.floor(coffee.rating)
-                            ? "text-amber-400 fill-amber-400"
-                            : i < coffee.rating
-                              ? "text-amber-400"
-                              : "text-gray-300"
+                <p className="text-sm leading-6 text-[#7A604F] mb-5">{coffee.description}</p>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <LuStar
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < Math.floor(coffee.rating) ? "text-[#D28D52]" : "text-[#E9DBD0]"
                           }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-xs font-semibold text-gray-700">
-                    {coffee.rating}
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    ({coffee.reviews})
-                  </span>
-                </div>
-
-                {/* Footer - Price & Action */}
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-gray-500 font-medium">
-                      Price
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm font-semibold text-[#6C4A34]">
+                      {coffee.rating}
                     </span>
-                    <p className="text-2xl font-bold text-[#2C1A0E]">
-                      ${coffee.price.toFixed(2)}
-                    </p>
                   </div>
-                  <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-linear-to-r from-amber-600 to-amber-700 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-amber-600/40 transition-all duration-300 active:scale-95 group/btn">
-                    <LuShoppingCart className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                    <span className="text-sm hidden sm:inline">Add</span>
-                  </button>
+                  <span className="text-sm text-[#A98968]">{coffee.reviews} reviews</span>
                 </div>
+                <button className="mt-6 w-full rounded-full bg-[#8B5F3C] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#7b5237]/20 hover:bg-[#7f5032] transition-all duration-300">
+                  Add to cart
+                </button>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 bg-linear-to-b from-amber-50 to-gray-50 rounded-3xl border-2 border-dashed border-amber-200">
-          <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center mb-4">
-            <LuShoppingCart className="w-10 h-10 text-amber-700" />
-          </div>
-          <p className="text-gray-700 text-lg font-semibold">No coffee found</p>
-          <p className="text-gray-500 text-sm mt-2 text-center max-w-sm">
-            Try adjusting your search or category filter
-          </p>
+        <div className="rounded-[2rem] border border-dashed border-[#D8C7B2] bg-[#FFF8F1] p-10 text-center text-[#6B5443]">
+          <p className="text-lg font-semibold">No coffee found</p>
+          <p className="mt-2 text-sm text-[#8E7A6A]">Try adjusting your search or category filter.</p>
         </div>
       )}
     </div>

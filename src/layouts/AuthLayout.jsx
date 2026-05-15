@@ -3,31 +3,39 @@ import { LuCoffee } from "react-icons/lu";
 
 export default function AuthLayout() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1E1210] via-[#2C1A0E] to-[#3D2518] relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-20 left-20 w-72 h-72 bg-amber-700/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-20 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl"></div>
-      <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-amber-500/5 rounded-full blur-2xl"></div>
+    <div className="min-h-screen bg-[#f5eadb] relative overflow-hidden">
+      <div className="absolute inset-y-0 left-0 w-1/2 bg-[#fff8f2]"></div>
+      <div className="absolute inset-y-0 right-0 w-1/2 bg-[#33251f]"></div>
+      <div className="absolute top-16 left-16 w-72 h-72 bg-[#d99032]/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-16 right-16 w-96 h-96 bg-[#f0c46a]/15 rounded-full blur-3xl"></div>
 
-      {/* Coffee beans pattern overlay */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-10 left-[10%] text-amber-200">
-          <LuCoffee className="w-8 h-8 rotate-12" />
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-10 px-4 py-12 lg:grid-cols-[minmax(420px,480px)_minmax(520px,1fr)]">
+        <div className="rounded-[2rem] bg-[#fdf7ed] p-8 shadow-[0_40px_120px_rgba(15,23,42,0.12)] border border-slate-200/60">
+          <Outlet />
         </div>
-        <div className="absolute top-[30%] right-[15%] text-amber-200">
-          <LuCoffee className="w-6 h-6 -rotate-12" />
-        </div>
-        <div className="absolute bottom-[20%] left-[20%] text-amber-200">
-          <LuCoffee className="w-10 h-10 rotate-45" />
-        </div>
-        <div className="absolute top-[60%] right-[30%] text-amber-200">
-          <LuCoffee className="w-7 h-7 -rotate-30" />
-        </div>
-      </div>
 
-      {/* Auth Content */}
-      <div className="relative z-10 w-full max-w-md px-4">
-        <Outlet />
+        <div className="flex flex-col justify-center rounded-[2rem] bg-[#362516] p-12 text-white shadow-[0_40px_120px_rgba(15,23,42,0.22)] overflow-hidden">
+          <div className="inline-flex items-center justify-center h-16 w-16 rounded-3xl bg-amber-500/20 text-amber-100 shadow-lg shadow-amber-500/10 mb-8">
+            <LuCoffee className="h-7 w-7" />
+          </div>
+          <h2 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            Coffee Shop
+          </h2>
+          <p className="mt-5 max-w-xl text-sm leading-7 text-white/70">
+            Track sales, manage inventory, and delight your customers with an elegant admin dashboard built for fast service and reliable control.
+          </p>
+
+          <div className="mt-10 grid gap-4 text-sm text-white/70">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <p className="font-semibold text-white">Sales insights</p>
+              <p className="mt-2 text-white/70">Pantau kinerja penjualan dan update menu secara real-time.</p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <p className="font-semibold text-white">Stock management</p>
+              <p className="mt-2 text-white/70">Kelola bahan baku, pesanan, dan permintaan pelanggan dengan mudah.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
