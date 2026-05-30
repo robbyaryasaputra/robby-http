@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { LuStar, LuHeart, LuShoppingCart } from "react-icons/lu";
+import { Badge, Button } from "../components/1-basic";
+import { HeroSection, ProductSection } from "../components/6-section";
+import { TabBar, Breadcrumb } from "../components/7-navigation";
+import { RatingStars } from "../components/12-status";
+import { Price, Paragraph, Caption } from "../components/14-typography";
+import { FavoriteButton, FAB } from "../components/13-action";
+import { Tooltip } from "../components/3-data-display";
+import { Gallery } from "../components/11-media";
+import { ModalOverlay } from "../components/10-overlay";
+import { SlideUp } from "../components/15-animation";
+import { LuShoppingCart } from "react-icons/lu";
 
 const coffeeMenu = [
   {
@@ -111,27 +121,18 @@ const coffeeMenu = [
 
 const categories = ["All", "Hot", "Iced", "Special"];
 
-const getBadgeColor = (badge) => {
-  switch (badge) {
-    case "Popular":
-      return "bg-blue-100 text-blue-700";
-    case "Best Seller":
-      return "bg-rose-100 text-rose-700";
-    case "Featured":
-      return "bg-purple-100 text-purple-700";
-    case "New":
-      return "bg-emerald-100 text-emerald-700";
-    case "Premium":
-      return "bg-amber-100 text-amber-700";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
-};
+const galleryImages = [
+  { src: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop", alt: "Coffee shop", title: "Our Coffee Shop" },
+  { src: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&h=400&fit=crop", alt: "Barista", title: "Expert Barista" },
+  { src: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&h=400&fit=crop", alt: "Coffee beans", title: "Premium Beans" },
+  { src: "https://images.unsplash.com/photo-1498804103079-a6351b050096?w=400&h=400&fit=crop", alt: "Latte art", title: "Latte Art" },
+];
 
 export default function Menu() {
   const { search } = useOutletContext();
   const [activeCategory, setActiveCategory] = useState("All");
   const [favorites, setFavorites] = useState([]);
+  const [showGallery, setShowGallery] = useState(false);
 
   const filteredMenu = coffeeMenu.filter((item) => {
     const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
@@ -148,59 +149,48 @@ export default function Menu() {
 
   return (
     <div className="space-y-6 animate-[fadeIn_0.5s_ease-out]">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: "Dashboard", to: "/dashboard" },
+          { label: "Menu" },
+        ]}
+      />
+
       {/* Hero Card */}
-      <div className="rounded-[2rem] bg-gradient-to-br from-[#8B5F3C] to-[#6A3F27] p-8 text-white shadow-[0_30px_80px_rgba(34,20,14,0.18)]">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1.4fr] gap-8 items-center">
+      <HeroSection />
+
+      {/* Coffee Shop Gallery */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-sm uppercase tracking-[0.24em] text-[#f5e9dd] opacity-90 mb-3">
-              Good Morning
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-semibold leading-tight">
-              Grab Your Coffee Today
-            </h1>
-            <p className="mt-4 max-w-xl text-sm text-[#f2dfca] leading-7">
-              Discover the best coffee flavors for your mood, with handcrafted blends and fast delivery.
-            </p>
-            <button className="mt-8 inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-sm font-semibold text-[#5F3A27] shadow-lg shadow-[#472F1E]/20 hover:bg-slate-50 transition-all duration-300">
-              Order Now
-            </button>
+            <h3 className="text-lg font-bold text-[#2C1A0E]">Our Gallery</h3>
+            <Caption>A glimpse into our coffee world</Caption>
           </div>
-          <div className="rounded-[2rem] overflow-hidden bg-[#020202]/5 shadow-inner shadow-black/10">
-            <img
-              src="https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800&h=600&fit=crop"
-              alt="Coffee cup"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <Button variant="outline" size="sm" onClick={() => setShowGallery(true)}>
+            View All
+          </Button>
         </div>
+        <Gallery images={galleryImages} cols={4} />
       </div>
 
       {/* Category Filter */}
-      <div className="flex items-center gap-3 overflow-x-auto pb-2">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            id={`filter-${cat.toLowerCase()}`}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap shrink-0 ${
-              activeCategory === cat
-                ? "bg-[#4E3423] text-white shadow-[0_15px_40px_rgba(78,52,35,0.12)]"
-                : "bg-white text-[#6B4A36] border border-[#E4D7C9] hover:border-[#C1A385] hover:bg-[#FBF6F0]"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      <TabBar
+        tabs={categories}
+        activeTab={activeCategory}
+        onTabChange={setActiveCategory}
+      />
 
       {/* Coffee Grid */}
-      {filteredMenu.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredMenu.map((coffee, index) => (
+      <ProductSection isEmpty={filteredMenu.length === 0}>
+        {filteredMenu.map((coffee, index) => (
+          <SlideUp
+            key={coffee.id}
+            duration={0.4}
+            delay={index * 0.05}
+          >
             <div
-              key={coffee.id}
               className="group relative overflow-hidden rounded-[2rem] border border-[#EEE3D8] bg-white shadow-[0_20px_40px_rgba(34,20,14,0.06)] transition-all duration-500 hover:-translate-y-1"
-              style={{ animationDelay: `${index * 0.05}s` }}
             >
               <div className="relative h-64 overflow-hidden rounded-t-[2rem] bg-slate-100">
                 <img
@@ -214,62 +204,63 @@ export default function Menu() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                 {coffee.badge && (
                   <div className="absolute top-4 left-4">
-                    <span
-                      className={`inline-block rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${getBadgeColor(coffee.badge)}`}
-                    >
-                      {coffee.badge}
-                    </span>
+                    <Badge variant={coffee.badge}>{coffee.badge}</Badge>
                   </div>
                 )}
-                <button
-                  onClick={() => toggleFavorite(coffee.id)}
-                  className={`absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300 ${
-                    favorites.includes(coffee.id)
-                      ? "bg-[#D16A4D] text-white shadow-lg shadow-[#D16A4D]/25"
-                      : "bg-white/90 text-[#6B4A36] hover:bg-white shadow-sm"
-                  }`}
-                >
-                  <LuHeart className="w-5 h-5" />
-                </button>
+                <div className="absolute top-4 right-4">
+                  <FavoriteButton
+                    isFavorite={favorites.includes(coffee.id)}
+                    onClick={() => toggleFavorite(coffee.id)}
+                  />
+                </div>
               </div>
 
               <div className="p-6">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <h3 className="text-xl font-semibold text-[#3F2A1E]">{coffee.name}</h3>
-                  <p className="text-lg font-bold text-[#5C3D2A]">${coffee.price.toFixed(2)}</p>
+                  <Tooltip content={coffee.description}>
+                    <h3 className="text-xl font-bold text-[#3F2A1E] cursor-help">{coffee.name}</h3>
+                  </Tooltip>
+                  <Price value={coffee.price} size="lg" />
                 </div>
-                <p className="text-sm leading-6 text-[#7A604F] mb-5">{coffee.description}</p>
+                <Paragraph className="mb-5">{coffee.description}</Paragraph>
                 <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <LuStar
-                          key={i}
-                          className={`h-4 w-4 ${
-                            i < Math.floor(coffee.rating) ? "text-[#D28D52]" : "text-[#E9DBD0]"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm font-semibold text-[#6C4A34]">
-                      {coffee.rating}
-                    </span>
-                  </div>
-                  <span className="text-sm text-[#A98968]">{coffee.reviews} reviews</span>
+                  <RatingStars rating={coffee.rating} size={14} />
+                  <Caption>
+                    {coffee.reviews} reviews
+                  </Caption>
                 </div>
-                <button className="mt-6 w-full rounded-full bg-[#8B5F3C] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#7b5237]/20 hover:bg-[#7f5032] transition-all duration-300">
+                <Button
+                  variant="primary"
+                  fullWidth
+                  rounded="full"
+                  className="mt-6"
+                  icon={LuShoppingCart}
+                >
                   Add to cart
-                </button>
+                </Button>
               </div>
             </div>
-          ))}
+          </SlideUp>
+        ))}
+      </ProductSection>
+
+      {/* Floating Action Button */}
+      <FAB
+        icon={LuShoppingCart}
+        label="Cart"
+        onClick={() => alert("Cart opened!")}
+      />
+
+      {/* Gallery Modal */}
+      <ModalOverlay isOpen={showGallery} onClose={() => setShowGallery(false)}>
+        <div className="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-[#2C1A0E]">Coffee Shop Gallery</h3>
+            <button onClick={() => setShowGallery(false)} className="text-gray-400 hover:text-gray-600 transition-colors">✕</button>
+          </div>
+          <Gallery images={galleryImages} cols={2} gap="gap-6" />
         </div>
-      ) : (
-        <div className="rounded-[2rem] border border-dashed border-[#D8C7B2] bg-[#FFF8F1] p-10 text-center text-[#6B5443]">
-          <p className="text-lg font-semibold">No coffee found</p>
-          <p className="mt-2 text-sm text-[#8E7A6A]">Try adjusting your search or category filter.</p>
-        </div>
-      )}
+      </ModalOverlay>
     </div>
   );
 }

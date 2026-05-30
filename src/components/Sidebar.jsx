@@ -9,6 +9,10 @@ import {
   LuRefreshCw,
   LuLogOut,
 } from "react-icons/lu";
+import { NavItem, NavGroup } from "./7-navigation";
+import { IconButton } from "./13-action";
+import { Divider } from "./2-layout";
+import { CoffeeBeanIcon } from "./11-media";
 
 const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: LuLayoutDashboard },
@@ -32,58 +36,54 @@ export default function Sidebar() {
       <Link
         to="/dashboard"
         id="sidebar-logo"
-        className="flex items-center gap-3 px-6 py-7"
+        className="flex items-center gap-3 px-6 py-7 group"
       >
-        <div className="w-11 h-11 rounded-3xl bg-[#5F3A27] flex items-center justify-center shadow-lg shadow-black/10">
-          <LuCoffee className="w-5 h-5 text-white" />
+        <div className="w-11 h-11 rounded-3xl bg-[#5F3A27] flex items-center justify-center shadow-lg shadow-black/10 group-hover:scale-105 transition-transform duration-300">
+          <CoffeeBeanIcon size="sm" color="#FAF4EE" />
         </div>
         <span className="text-[#FAF4EE] font-semibold text-lg tracking-wide">
           Coffee Shop
         </span>
       </Link>
 
+      <Divider color="border-white/10" spacing="my-2" className="mx-6" />
+
       {/* Navigation */}
       <nav className="flex-1 px-6 mt-4">
-        <ul className="space-y-2">
+        <NavGroup label="Main Menu">
           {navItems.map((item) => {
             const isActive =
               item.path === "/dashboard"
                 ? location.pathname === "/dashboard"
                 : location.pathname.startsWith(item.path);
-            const Icon = item.icon;
 
             return (
               <li key={item.path}>
-                <Link
+                <NavItem
                   to={item.path}
-                  id={`nav-${item.label.toLowerCase()}`}
-                  className={`flex items-center gap-4 px-5 py-3 rounded-3xl text-sm font-semibold transition-all duration-300 ${
-                    isActive
-                      ? "bg-[#D1876A] text-white shadow-lg shadow-[#0000001a]"
-                      : "text-[#E9D7C7] hover:bg-[#7b4f31] hover:text-white"
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span>{item.label}</span>
-                </Link>
+                  icon={item.icon}
+                  label={item.label}
+                  isActive={isActive}
+                />
               </li>
             );
           })}
-        </ul>
+        </NavGroup>
       </nav>
 
       {/* Bottom Section */}
       <div className="px-6 pb-6 space-y-3">
-        <button
+        <IconButton
+          icon={LuRefreshCw}
           id="sidebar-refresh"
-          className="w-full h-11 rounded-3xl bg-[#7A503C] flex items-center justify-center text-[#F2E7DC] hover:bg-[#6d4734] transition-all duration-300"
-        >
-          <LuRefreshCw className="w-5 h-5" />
-        </button>
+          variant="primary"
+          className="w-full h-11 rounded-3xl !bg-[#7A503C] !text-[#F2E7DC] hover:!bg-[#6d4734]"
+          title="Refresh"
+        />
         <button
           id="sidebar-logout"
           onClick={handleLogout}
-          className="w-full h-11 rounded-3xl bg-[#4B2C20] flex items-center justify-center text-[#F8EDE5] hover:bg-[#3f2419] transition-all duration-300 font-semibold text-sm"
+          className="w-full h-11 rounded-3xl bg-[#4B2C20] flex items-center justify-center text-[#F8EDE5] hover:bg-[#3f2419] transition-all duration-300 font-semibold text-sm active:scale-[0.97]"
         >
           <LuLogOut className="w-5 h-5 mr-2" />
           Logout

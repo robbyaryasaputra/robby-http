@@ -1,11 +1,16 @@
 import { useState } from "react";
-import {
-  LuStar,
-  LuHeart,
-  LuTrash2,
-  LuShoppingCart,
-  LuDownload,
-} from "react-icons/lu";
+import { Link } from "react-router-dom";
+import { LuHeart, LuTrash2, LuShoppingCart, LuDownload } from "react-icons/lu";
+import { Button, Badge } from "../components/1-basic";
+import { PageHeader } from "../components/6-section";
+import { EmptyState } from "../components/5-feedback";
+import { RatingStars } from "../components/12-status";
+import { Price, Paragraph, Caption, Heading } from "../components/14-typography";
+import { FavoriteButton, IconButton, ActionGroup } from "../components/13-action";
+import { Breadcrumb } from "../components/7-navigation";
+import { Grid } from "../components/2-layout";
+import { Tooltip } from "../components/3-data-display";
+import { SlideUp } from "../components/15-animation";
 
 const favoriteCoffees = [
   {
@@ -63,145 +68,133 @@ export default function Favorites() {
 
   return (
     <div className="space-y-6 animate-[fadeIn_0.5s_ease-out]">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: "Dashboard", to: "/dashboard" },
+          { label: "Favorites" },
+        ]}
+      />
+
       {/* Header with Stats */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-[#2C1A0E]">Favorites</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {favorites.length} favorite coffee{" "}
-            {favorites.length === 1 ? "item" : "items"} saved
-          </p>
-        </div>
-        {favorites.length > 0 && (
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-amber-600 to-amber-700 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-amber-600/40 transition-all duration-300 active:scale-95 w-full sm:w-auto justify-center">
-            <LuDownload className="w-4 h-4" />
-            Export List
-          </button>
-        )}
-      </div>
+      <PageHeader
+        title="Favorites"
+        subtitle={`${favorites.length} favorite coffee ${favorites.length === 1 ? "item" : "items"} saved`}
+        action={
+          favorites.length > 0 && (
+            <Button
+              variant="primary"
+              icon={LuDownload}
+              className="w-full sm:w-auto"
+            >
+              Export List
+            </Button>
+          )
+        }
+      />
 
       {favorites.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <Grid cols={3} gap="lg">
           {favorites.map((coffee, index) => (
-            <div
-              key={coffee.id}
-              className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-amber-200"
-              style={{ animationDelay: `${index * 0.05}s` }}
-            >
-              {/* Image Container */}
-              <div className="relative h-56 overflow-hidden bg-gray-100">
-                <img
-                  src={coffee.image}
-                  alt={coffee.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  onError={(e) => {
-                    e.target.src = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop";
-                  }}
-                />
+            <SlideUp key={coffee.id} duration={0.4} delay={index * 0.05}>
+              <div
+                className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-amber-200"
+              >
+                {/* Image Container */}
+                <div className="relative h-56 overflow-hidden bg-gray-100">
+                  <img
+                    src={coffee.image}
+                    alt={coffee.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    onError={(e) => {
+                      e.target.src = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop";
+                    }}
+                  />
 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent"></div>
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
 
-                {/* Category Badge */}
-                <div className="absolute top-3 right-3">
-                  <span className="inline-block px-3 py-1 bg-amber-500/90 text-white text-xs font-bold rounded-full">
-                    {coffee.category}
-                  </span>
+                  {/* Category Badge */}
+                  <div className="absolute top-3 right-3">
+                    <Badge variant={coffee.category === "Iced" ? "New" : "Popular"}>
+                      {coffee.category}
+                    </Badge>
+                  </div>
+
+                  {/* Heart Icon */}
+                  <div className="absolute top-3 left-3">
+                    <FavoriteButton isFavorite={true} disabled />
+                  </div>
                 </div>
 
-                {/* Heart Icon */}
-                <div className="absolute top-3 left-3">
-                  <div className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg">
-                    <LuHeart className="w-5 h-5 fill-current" />
+                {/* Content */}
+                <div className="p-6 flex flex-col">
+                  {/* Title */}
+                  <Heading level={3} className="!text-lg group-hover:!text-[#8B5F3C] transition-colors mb-2">
+                    {coffee.name}
+                  </Heading>
+
+                  {/* Rating & Meta */}
+                  <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-50 flex-wrap">
+                    <RatingStars rating={coffee.rating} size={14} />
+                    <span className="text-xs text-gray-300">•</span>
+                    <Tooltip content={`Added to favorites ${coffee.addedAt}`}>
+                      <Caption className="cursor-help">
+                        Saved {coffee.addedAt}
+                      </Caption>
+                    </Tooltip>
+                  </div>
+
+                  {/* Description */}
+                  <Paragraph className="mb-4 flex-1">
+                    {coffee.description || "Premium quality coffee item"}
+                  </Paragraph>
+
+                  {/* Footer - Price & Actions */}
+                  <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-50">
+                    <div className="flex flex-col">
+                      <Caption>Price</Caption>
+                      <Price value={coffee.price} size="lg" />
+                    </div>
+                    <ActionGroup>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        icon={LuShoppingCart}
+                        rounded="lg"
+                      >
+                        Buy
+                      </Button>
+                      <Tooltip content="Remove from favorites">
+                        <IconButton
+                          variant="danger"
+                          size="sm"
+                          icon={LuTrash2}
+                          onClick={() => removeFavorite(coffee.id)}
+                          title="Remove from favorites"
+                          className="bg-red-50 hover:bg-red-100 hover:text-red-600 rounded-lg p-2.5"
+                        />
+                      </Tooltip>
+                    </ActionGroup>
                   </div>
                 </div>
               </div>
-
-              {/* Content */}
-              <div className="p-5 flex flex-col">
-                {/* Title */}
-                <h2 className="text-lg font-bold text-[#2C1A0E] group-hover:text-amber-800 transition-colors mb-2">
-                  {coffee.name}
-                </h2>
-
-                {/* Rating & Meta */}
-                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100 flex-wrap">
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <LuStar
-                        key={i}
-                        className={`w-3.5 h-3.5 ${
-                          i < Math.floor(coffee.rating)
-                            ? "text-amber-400 fill-amber-400"
-                            : i < coffee.rating
-                              ? "text-amber-400"
-                              : "text-gray-300"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-xs font-semibold text-gray-700">
-                    {coffee.rating}
-                  </span>
-                  <span className="text-xs text-gray-400">•</span>
-                  <span className="text-xs text-gray-500">
-                    Saved {coffee.addedAt}
-                  </span>
-                </div>
-
-                {/* Description */}
-                <p className="text-sm text-gray-600 mb-4 flex-1">
-                  {coffee.description || "Premium quality coffee item"}
-                </p>
-
-                {/* Footer - Price & Actions */}
-                <div className="flex items-center justify-between gap-3 pt-2 border-t border-gray-100">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-gray-500 font-medium">
-                      Price
-                    </span>
-                    <p className="text-2xl font-bold text-[#2C1A0E]">
-                      ${coffee.price.toFixed(2)}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="flex items-center justify-center gap-1 px-3 py-2.5 bg-linear-to-r from-amber-600 to-amber-700 text-white rounded-lg font-medium hover:shadow-lg hover:shadow-amber-600/30 transition-all duration-300 active:scale-95">
-                      <LuShoppingCart className="w-4 h-4" />
-                      <span className="text-xs hidden sm:inline">Buy</span>
-                    </button>
-                    <button
-                      onClick={() => removeFavorite(coffee.id)}
-                      className="flex items-center justify-center p-2.5 bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 rounded-lg transition-all duration-300 hover:shadow-md"
-                      title="Remove from favorites"
-                    >
-                      <LuTrash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </SlideUp>
           ))}
-        </div>
+        </Grid>
       ) : (
-        <div className="flex flex-col items-center justify-center py-24 bg-linear-to-b from-amber-50 via-gray-50 to-gray-50 rounded-3xl border-2 border-dashed border-amber-200">
-          <div className="w-24 h-24 rounded-full bg-amber-100 flex items-center justify-center mb-6 shadow-lg shadow-amber-200/50">
-            <LuHeart className="w-12 h-12 text-amber-700" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            No Favorites Yet
-          </h2>
-          <p className="text-gray-600 text-center max-w-md mb-6">
-            Add coffee items to your favorites by clicking the heart icon on the
-            Menu page. Your favorite items will appear here.
-          </p>
-          <a
-            href="/menu"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-amber-600 to-amber-700 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-amber-600/40 transition-all duration-300 active:scale-95"
-          >
-            <LuShoppingCart className="w-4 h-4" />
-            Browse Menu
-          </a>
-        </div>
+        <EmptyState
+          icon={LuHeart}
+          title="No Favorites Yet"
+          description="Add coffee items to your favorites by clicking the heart icon on the Menu page. Your favorite items will appear here."
+          action={
+            <Link to="/dashboard/menu">
+              <Button variant="primary" icon={LuShoppingCart}>
+                Browse Menu
+              </Button>
+            </Link>
+          }
+        />
       )}
     </div>
   );

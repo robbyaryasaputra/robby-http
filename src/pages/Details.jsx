@@ -1,5 +1,14 @@
 import { useOutletContext } from "react-router-dom";
-import { LuStar, LuClock, LuFlame } from "react-icons/lu";
+import { LuClock, LuFlame } from "react-icons/lu";
+import { PageHeader } from "../components/6-section";
+import { RatingStars } from "../components/12-status";
+import { Price, Paragraph, Caption, Heading } from "../components/14-typography";
+import { Badge } from "../components/1-basic";
+import { Breadcrumb } from "../components/7-navigation";
+import { Tooltip } from "../components/3-data-display";
+import { ImageCard, Thumbnail } from "../components/11-media";
+import { Grid } from "../components/2-layout";
+import { SlideUp } from "../components/15-animation";
 
 const coffeeDetails = [
   { id: 1, name: "Americano", origin: "Brazil", roast: "Medium", price: 3.75, rating: 4.6, prepTime: "3 min", calories: 15, description: "A rich, full-bodied coffee made by diluting espresso with hot water.", image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefda?w=400&h=300&fit=crop" },
@@ -17,40 +26,73 @@ export default function Details() {
 
   return (
     <div className="space-y-6 animate-[fadeIn_0.5s_ease-out]">
-      <div>
-        <h1 className="text-2xl font-bold text-[#2C1A0E]">Coffee Details</h1>
-        <p className="text-sm text-gray-500 mt-1">Explore detailed information about our coffees</p>
-      </div>
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: "Dashboard", to: "/dashboard" },
+          { label: "Menu", to: "/dashboard/menu" },
+          { label: "Coffee Details" },
+        ]}
+      />
 
-      <div className="space-y-5">
-        {filtered.map((coffee) => (
-          <div key={coffee.id} className="bg-white rounded-2xl shadow-sm border border-gray-50 overflow-hidden flex flex-col sm:flex-row hover:shadow-md transition-all duration-300">
-            <div className="sm:w-64 h-48 sm:h-auto overflow-hidden">
-              <img src={coffee.image} alt={coffee.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-            </div>
-            <div className="flex-1 p-6">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="text-xl font-bold text-[#2C1A0E]">{coffee.name}</h3>
-                <span className="text-xl font-bold text-amber-700">${coffee.price.toFixed(2)}</span>
-              </div>
-              <p className="text-sm text-gray-500 mb-4">{coffee.description}</p>
-              <div className="flex flex-wrap gap-4">
-                <span className="flex items-center gap-1.5 text-sm text-gray-600">
-                  <LuStar className="w-4 h-4 text-amber-500 fill-amber-500" /> {coffee.rating}
-                </span>
-                <span className="flex items-center gap-1.5 text-sm text-gray-600">
-                  <LuClock className="w-4 h-4 text-blue-500" /> {coffee.prepTime}
-                </span>
-                <span className="flex items-center gap-1.5 text-sm text-gray-600">
-                  <LuFlame className="w-4 h-4 text-red-400" /> {coffee.calories} cal
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">{coffee.origin}</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">{coffee.roast} Roast</span>
-              </div>
-            </div>
-          </div>
+      <PageHeader
+        title="Coffee Details"
+        subtitle="Explore detailed information about our coffees"
+      />
+
+      {/* Gallery Thumbnails */}
+      <div className="flex items-center gap-3 overflow-x-auto pb-2">
+        {coffeeDetails.map((coffee) => (
+          <Tooltip key={coffee.id} content={coffee.name}>
+            <Thumbnail
+              src={coffee.image}
+              alt={coffee.name}
+              size="lg"
+              rounded="2xl"
+              className="border-2 border-transparent hover:border-amber-400 transition-all duration-300 cursor-pointer"
+            />
+          </Tooltip>
         ))}
       </div>
+
+      {/* Detail Cards */}
+      <Grid cols={2} gap="md">
+        {filtered.map((coffee, index) => (
+          <SlideUp key={coffee.id} duration={0.4} delay={index * 0.08}>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-50 overflow-hidden flex flex-col sm:flex-row hover:shadow-md transition-all duration-300">
+              <div className="sm:w-64 h-48 sm:h-auto overflow-hidden">
+                <img src={coffee.image} alt={coffee.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+              </div>
+              <div className="flex-1 p-6">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <Heading level={3} className="!text-xl">{coffee.name}</Heading>
+                    <Caption className="mt-0.5">{coffee.origin} · {coffee.roast} Roast</Caption>
+                  </div>
+                  <Price value={coffee.price} size="lg" />
+                </div>
+                <Paragraph className="mb-4">{coffee.description}</Paragraph>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <RatingStars rating={coffee.rating} />
+                  <Tooltip content="Preparation time">
+                    <span className="flex items-center gap-1.5 text-sm text-gray-500 font-semibold cursor-help">
+                      <LuClock className="w-4 h-4 text-blue-500" /> {coffee.prepTime}
+                    </span>
+                  </Tooltip>
+                  <Tooltip content="Calories per serving">
+                    <span className="flex items-center gap-1.5 text-sm text-gray-500 font-semibold cursor-help">
+                      <LuFlame className="w-4 h-4 text-red-400" /> {coffee.calories} cal
+                    </span>
+                  </Tooltip>
+                  <Badge variant={coffee.roast === "Dark" ? "Premium" : "New"}>
+                    {coffee.roast} Roast
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </SlideUp>
+        ))}
+      </Grid>
     </div>
   );
 }
