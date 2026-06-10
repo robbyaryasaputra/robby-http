@@ -8,6 +8,7 @@ import {
   LuCoffee,
   LuRefreshCw,
   LuLogOut,
+  LuLifeBuoy,
 } from "react-icons/lu";
 import { NavItem, NavGroup } from "./7-navigation";
 import { IconButton } from "./13-action";
@@ -20,6 +21,7 @@ const navItems = [
   { path: "/dashboard/orders", label: "Orders", icon: LuClipboardList },
   { path: "/dashboard/favorites", label: "Favorites", icon: LuHeart },
   { path: "/dashboard/settings", label: "Settings", icon: LuSettings },
+  { path: "/dashboard/help-center", label: "Help Center", icon: LuLifeBuoy },
 ];
 
 export default function Sidebar() {
