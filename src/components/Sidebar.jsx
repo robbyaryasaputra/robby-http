@@ -9,6 +9,7 @@ import {
   LuRefreshCw,
   LuLogOut,
   LuLifeBuoy,
+  LuZap,
 } from "react-icons/lu";
 import { NavItem, NavGroup } from "./7-navigation";
 import { IconButton } from "./13-action";
@@ -21,6 +22,7 @@ const navItems = [
   { path: "/dashboard/orders", label: "Orders", icon: LuClipboardList },
   { path: "/dashboard/favorites", label: "Favorites", icon: LuHeart },
   { path: "/dashboard/settings", label: "Settings", icon: LuSettings },
+  { path: "/dashboard/react-hooks", label: "React Hooks", icon: LuZap },
   { path: "/dashboard/help-center", label: "Help Center", icon: LuLifeBuoy },
 ];
 

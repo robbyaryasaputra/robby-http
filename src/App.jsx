@@ -14,6 +14,7 @@ const Customers = lazy(() => import("./pages/Customers"));
 const Orders = lazy(() => import("./pages/Orders"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
+const ReactHooks = lazy(() => import("./pages/ReactHooks"));
 const Login = lazy(() => import("./auth/Login"));
 const ForgotPassword = lazy(() => import("./auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("./auth/ResetPassword"));
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="favorites" element={<Favorites />} />
           <Route path="settings" element={<Settings />} />
           <Route path="help-center" element={<HelpCenter />} />
+          <Route path="react-hooks" element={<ReactHooks />} />
           <Route
             path="error-400"
             element={
