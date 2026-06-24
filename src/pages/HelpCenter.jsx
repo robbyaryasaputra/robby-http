@@ -96,7 +96,7 @@ const guides = [
     steps: [
       "Login dengan akun admin Anda",
       "Buka Dashboard untuk melihat overview",
-      "Kelola Menu, Orders, dan Customers",
+      "Kelola Menu, Orders, dan Users",
       "Atur preferensi di Settings",
     ],
   },
@@ -113,10 +113,10 @@ const guides = [
   },
   {
     icon: LuUsers,
-    title: "Manajemen Pelanggan",
-    desc: "Tips untuk mengelola data pelanggan dan membangun loyalitas.",
+    title: "Manajemen User",
+    desc: "Tips untuk mengelola data user dan membangun loyalitas.",
     steps: [
-      "Lihat daftar pelanggan di halaman Customers",
+      "Lihat daftar user di halaman Users",
       "Cek riwayat pembelian pelanggan",
       "Pantau pelanggan aktif dan tidak aktif",
       "Gunakan data untuk promo targeted",

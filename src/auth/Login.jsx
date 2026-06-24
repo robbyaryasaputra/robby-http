@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LuCoffee } from "react-icons/lu";
-import axios from "axios";
+import { supabase } from "../lib/supabase";
 import { LoginForm, AuthCard } from "../components/8-auth";
 
 export default function Login() {
@@ -27,28 +27,28 @@ export default function Login() {
     setError(null);
 
     try {
-      let response;
+      // Login: cek email dan password di tabel 'users'
+      const { data, error: queryError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", dataForm.username)
+        .eq("password", dataForm.password)
+        .single();
 
-      // Logika: Jika mengandung '@', gunakan API reqres.in (Live API)
-      // Jika tidak mengandung '@', kita anggap sebagai Username (Mock Login)
-      if (dataForm.username.includes("@")) {
-        response = await axios.post("https://reqres.in/api/login", {
-          email: dataForm.username,
-          password: dataForm.password,
-        });
-      } else {
-        // Mock Login: Beri delay sedikit agar terlihat seperti memproses
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        response = { data: { token: "mock-token-for-development" } };
+      if (queryError || !data) {
+        throw new Error("Email atau password salah.");
       }
 
-      if (response.data.token) {
-        console.log("Login Success:", response.data);
-        // Berpindah ke halaman Dashboard setelah login sukses
-        navigate("/dashboard");
-      }
+      // Simpan info user di localStorage agar bisa diakses di halaman lain
+      localStorage.setItem("user", JSON.stringify(data));
+
+      console.log("Login Success:", data);
+      // Berpindah ke halaman Dashboard setelah login sukses
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.error || "Login gagal. Silakan periksa kembali email dan password Anda.");
+      const message =
+        err.message || "Login gagal. Silakan periksa kembali email dan password Anda.";
+      setError(message);
     } finally {
       setLoading(false);
     }

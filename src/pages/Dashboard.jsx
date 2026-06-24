@@ -29,7 +29,7 @@ const stats = [
     sparkline: [20, 28, 32, 30, 45, 50, 48],
   },
   {
-    label: "Customers",
+    label: "Users",
     value: "856",
     change: "+5.1%",
     trend: "up",

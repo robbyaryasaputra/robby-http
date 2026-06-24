@@ -10,12 +10,13 @@ const Menu = lazy(() => import("./pages/Menu"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const Settings = lazy(() => import("./pages/Settings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const Customers = lazy(() => import("./pages/Customers"));
+const Users = lazy(() => import("./pages/Users"));
 const Orders = lazy(() => import("./pages/Orders"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const ReactHooks = lazy(() => import("./pages/ReactHooks"));
 const Login = lazy(() => import("./auth/Login"));
+const Register = lazy(() => import("./auth/Register"));
 const ForgotPassword = lazy(() => import("./auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("./auth/ResetPassword"));
 
@@ -35,7 +36,7 @@ export default function App() {
           <Route index element={<Dashboard search={search} />} />
           <Route path="details" element={<Details />} />
           <Route path="menu" element={<Menu />} />
-          <Route path="customers" element={<Customers />} />
+          <Route path="users" element={<Users />} />
           <Route path="orders" element={<Orders />} />
           <Route path="favorites" element={<Favorites />} />
           <Route path="settings" element={<Settings />} />
@@ -77,12 +78,14 @@ export default function App() {
         <Route path="/auth" element={<AuthLayout />}>
           <Route index element={<Navigate replace to="login" />} />
           <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 
         <Route path="/login" element={<Navigate replace to="/auth/login" />} />
+        <Route path="/register" element={<Navigate replace to="/auth/register" />} />
         <Route
           path="/forgot-password"
           element={<Navigate replace to="/auth/forgot-password" />}

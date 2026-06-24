@@ -10,6 +10,7 @@ import {
   LuLogOut,
   LuLifeBuoy,
   LuZap,
+  LuUsers,
 } from "react-icons/lu";
 import { NavItem, NavGroup } from "./7-navigation";
 import { IconButton } from "./13-action";
@@ -20,6 +21,7 @@ const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: LuLayoutDashboard },
   { path: "/dashboard/menu", label: "Menu", icon: LuMenu },
   { path: "/dashboard/orders", label: "Orders", icon: LuClipboardList },
+  { path: "/dashboard/users", label: "Users", icon: LuUsers },
   { path: "/dashboard/favorites", label: "Favorites", icon: LuHeart },
   { path: "/dashboard/settings", label: "Settings", icon: LuSettings },
   { path: "/dashboard/react-hooks", label: "React Hooks", icon: LuZap },
@@ -31,6 +33,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    localStorage.removeItem("user");
     navigate("/auth/login");
   };
 
