@@ -54,8 +54,6 @@ export default function GuestShop() {
   // Menu items from DB
   const [menuItems, setMenuItems] = useState([]);
   const [categoriesList, setCategoriesList] = useState(["All"]);
-  const [isMenuLoading, setIsMenuLoading] = useState(true);
-  const [menuError, setMenuError] = useState(null);
 
   // Subtotal & Total Calculations
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -428,28 +426,16 @@ export default function GuestShop() {
 
   useEffect(() => {
     (async () => {
-      setIsMenuLoading(true);
-      setMenuError(null);
-
       try {
         const { data: itemsData, error: itemsErr } = await getMenuItems({
           limit: 200,
         });
-        if (itemsErr) throw itemsErr;
-
-        setMenuItems(itemsData || []);
-
-        const { data: catsData, error: catsErr } = await getCategories();
-        if (catsErr) throw catsErr;
-
-        if (catsData && catsData.length) {
+        if (!itemsErr) setMenuItems(itemsData || []);
+        const { data: catsData } = await getCategories();
+        if (catsData && catsData.length)
           setCategoriesList(["All", ...catsData.map((c) => c.name)]);
-        }
       } catch (e) {
         console.error(e);
-        setMenuError("Tidak dapat memuat menu dari database saat ini.");
-      } finally {
-        setIsMenuLoading(false);
       }
     })();
   }, []);
@@ -637,22 +623,12 @@ export default function GuestShop() {
           </div>
 
           {/* Menu Grid */}
-          {isMenuLoading ? (
-            <div className="rounded-3xl border border-[#EBE3D5] bg-white p-10 text-center text-sm text-gray-500">
-              Memuat menu dari database...
-            </div>
-          ) : menuError ? (
-            <div className="rounded-3xl border border-red-200 bg-red-50 p-10 text-center text-sm text-red-600">
-              {menuError}
-            </div>
-          ) : (
-            <MenuGrid
-              filteredMenu={filteredMenu}
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-              onAddToCart={addToCart}
-            />
-          )}
+          <MenuGrid
+            filteredMenu={filteredMenu}
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+            onAddToCart={addToCart}
+          />
 
           {/* Online Delivery Platform Integration */}
           <div className="bg-gradient-to-r from-[#855C3B]/10 to-[#5F3A27]/5 rounded-3xl p-8 border border-[#855C3B]/20 flex flex-col lg:flex-row justify-between items-center gap-6 mt-16 text-left animate-[fadeIn_0.5s_ease-out]">

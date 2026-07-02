@@ -50,10 +50,7 @@ export async function getMenuItems({ limit } = {}) {
     let query = supabase
       .from("menu_items")
       .select("*, categories(name)")
-<<<<<<< HEAD
       .eq("is_available", true)
-=======
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
       .order("display_order", { ascending: true });
 
     if (limit) {
@@ -63,20 +60,13 @@ export async function getMenuItems({ limit } = {}) {
     const { data, error } = await query;
     if (error) throw error;
 
-<<<<<<< HEAD
     const mapped = (data || []).map((item) => ({
-=======
-    const mapped = data?.map((item) => ({
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
       ...item,
       category: item.categories?.name || "Uncategorized",
       image: item.image_url || item.image,
       reviews: item.review_count || 0,
-<<<<<<< HEAD
       price: Number(item.price || 0),
       rating: Number(item.rating || 0),
-=======
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
     }));
 
     return { data: mapped, error: null };
@@ -203,11 +193,7 @@ export async function createPointTransaction({
   try {
     // Fetch the member's current profile
     const { data: member, error: fetchError } = await supabase
-<<<<<<< HEAD
-      .from("users")
-=======
       .from("members")
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
       .select("*")
       .eq("id", membership_id)
       .maybeSingle();
@@ -226,17 +212,10 @@ export async function createPointTransaction({
       totalPoints = totalPoints + delta;
     }
 
-<<<<<<< HEAD
-    // Update the users table
-    if (member) {
-      const { error: updateError } = await supabase
-        .from("users")
-=======
     // Update the members table
     if (member) {
       const { error: updateError } = await supabase
         .from("members")
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
         .update({
           current_points: currentPoints,
           total_points: totalPoints,
@@ -245,8 +224,6 @@ export async function createPointTransaction({
         .eq("id", membership_id);
 
       if (updateError) throw updateError;
-<<<<<<< HEAD
-=======
     } else {
       // Auto-create a bronze profile if not present
       const { error: insertError } = await supabase.from("members").insert({
@@ -258,7 +235,6 @@ export async function createPointTransaction({
       });
 
       if (insertError) throw insertError;
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
     }
 
     // Insert log into activity_logs
@@ -296,11 +272,7 @@ export async function createPointTransaction({
 export async function getMemberMembershipByCustomer(customerId) {
   try {
     const { data, error } = await supabase
-<<<<<<< HEAD
-      .from("users")
-=======
       .from("members")
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
       .select("*")
       .eq("id", customerId)
       .maybeSingle();
