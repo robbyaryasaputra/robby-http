@@ -77,7 +77,7 @@ export default function Orders() {
             table_number,
             notes,
             created_at,
-            users (
+            profiles (
               name
             ),
             payments (
@@ -97,7 +97,7 @@ export default function Orders() {
 
         if (!error && data) {
           const mapped = data.map((o) => {
-            const customerName = o.users?.name || o.customer_name || "Guest";
+            const customerName = o.profiles?.name || o.customer_name || "Guest";
             const rawPayment = o.payments?.[0] || null;
             const rawMethod = rawPayment?.payment_method || "cash";
 
@@ -130,27 +130,12 @@ export default function Orders() {
           });
 
           setOrders(mapped);
-          setLoading(false);
-          return;
         }
       } catch (err) {
         console.error("Gagal memuat order dari Supabase:", err);
+      } finally {
+        setLoading(false);
       }
-
-      // fallback to localStorage or bundled data
-      const stored = localStorage.getItem("orders");
-      if (stored) {
-        try {
-          setOrders(JSON.parse(stored));
-        } catch (e) {
-          console.error(e);
-          setOrders(ordersData);
-        }
-      } else {
-        localStorage.setItem("orders", JSON.stringify(ordersData));
-        setOrders(ordersData);
-      }
-      setLoading(false);
     })();
   }, []);
 
@@ -180,7 +165,6 @@ export default function Orders() {
       return o;
     });
     setOrders(updated);
-    localStorage.setItem("orders", JSON.stringify(updated));
     if (selectedOrder && selectedOrder.id === orderId) {
       setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
     }

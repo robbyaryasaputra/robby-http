@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { ForgotPasswordForm, AuthCard } from "../../components/auth";
 
@@ -8,7 +7,6 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setEmail(e.target.value);
@@ -21,21 +19,19 @@ export default function ForgotPassword() {
     setSuccessMessage("");
 
     try {
-      const { data, error: fetchError } = await supabase
-        .from("users")
-        .select("email")
-        .eq("email", email)
-        .maybeSingle();
+      // Send password reset email via Supabase Auth
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        email,
+        {
+          redirectTo: `${window.location.origin}/auth/reset-password`,
+        }
+      );
 
-      if (fetchError) throw fetchError;
-      if (!data) {
-        throw new Error("Email tidak terdaftar.");
-      }
+      if (resetError) throw resetError;
 
-      setSuccessMessage("Email terverifikasi. Mengalihkan ke halaman reset password...");
-      setTimeout(() => {
-        navigate(`/auth/reset-password?email=${encodeURIComponent(email)}`);
-      }, 2000);
+      setSuccessMessage(
+        "Link reset password telah dikirim ke email Anda. Silakan periksa inbox dan folder spam."
+      );
     } catch (err) {
       setError(err.message || "Gagal memproses permintaan.");
     } finally {

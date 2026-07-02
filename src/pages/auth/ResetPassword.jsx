@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { ResetPasswordForm, AuthCard } from "../../components/auth";
 
@@ -11,9 +11,7 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const email = searchParams.get("email");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,12 +27,6 @@ export default function ResetPassword() {
     setError("");
     setSuccessMessage("");
 
-    if (!email) {
-      setError("Email tidak ditemukan. Silakan mulai kembali dari halaman Lupa Password.");
-      setLoading(false);
-      return;
-    }
-
     if (dataForm.password !== dataForm.confirmPassword) {
       setError("Kata sandi tidak cocok.");
       setLoading(false);
@@ -48,14 +40,16 @@ export default function ResetPassword() {
     }
 
     try {
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({ password: dataForm.password })
-        .eq("email", email);
+      // Update password via Supabase Auth
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: dataForm.password,
+      });
 
       if (updateError) throw updateError;
 
-      setSuccessMessage("Kata sandi berhasil direset. Mengalihkan ke halaman login...");
+      setSuccessMessage(
+        "Kata sandi berhasil direset. Mengalihkan ke halaman login..."
+      );
       setTimeout(() => {
         navigate("/auth/login");
       }, 2000);

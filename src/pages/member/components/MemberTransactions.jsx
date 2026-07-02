@@ -30,7 +30,7 @@ export default function MemberTransactions({ transactions }) {
               </thead>
               <tbody className="divide-y divide-slate-50 font-medium">
                 {transactions.map((tx) => {
-                  const isPositive = tx.type === "earn";
+                  const isPositive = tx.type === "earn" || tx.type === "bonus";
                   return (
                     <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-4 py-3.5 text-slate-400 whitespace-nowrap">

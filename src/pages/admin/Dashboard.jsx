@@ -67,7 +67,7 @@ export default function Dashboard() {
     try {
       // 1. Fetch Users Count
       const { count: usersCount } = await supabase
-        .from("users")
+        .from("profiles")
         .select("*", { count: "exact", head: true });
 
       // 2. Fetch Menu Items Count

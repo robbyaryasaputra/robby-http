@@ -15,7 +15,9 @@ import {
   getCategories,
   createOrder,
   getMemberRewards,
+  getOrderHistory,
 } from "../../lib/db";
+import { useAuth } from "../../contexts/AuthContext";
 import { SlideUp, FadeIn } from "../../components/animation";
 
 // Import modular sub-components
@@ -26,7 +28,7 @@ import MemberRewards from "./components/MemberRewards";
 import MemberTransactions from "./components/MemberTransactions";
 import MemberCartDrawer from "./components/MemberCartDrawer";
 import MemberCheckoutSuccess from "./components/MemberCheckoutSuccess";
-import NotificationDrawer from "./components/NotificationDrawer";
+
 
 // Seed Tiers
 const MEMBERSHIP_TIERS = [
@@ -135,13 +137,11 @@ const tierNameToId = {
 
 export default function MemberShop() {
   const navigate = useNavigate();
+  const { profile, refreshProfile } = useAuth();
 
   // App States
-  const [users, setUsers] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState("");
   const [activeUser, setActiveUser] = useState(null);
   const [activeMemberProfile, setActiveMemberProfile] = useState(null);
-  const [dbMode, setDbMode] = useState("supabase");
   const [loading, setLoading] = useState(true);
   const [memberRewards, setMemberRewards] = useState([]);
   const [activeTab, setActiveTab] = useState("shop"); // "shop" or "rewards" or "transactions"
@@ -173,19 +173,27 @@ export default function MemberShop() {
   const [successToast, setSuccessToast] = useState("");
   const [errorToast, setErrorToast] = useState("");
 
-  // Notifications
-  const [notifications, setNotifications] = useState([]);
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-
   useEffect(() => {
-    loadUsers();
-  }, []);
-
-  useEffect(() => {
-    if (selectedUserId) {
-      loadMemberProfile(selectedUserId);
+    if (profile) {
+      loadMemberProfile(profile.id);
+    } else {
+      // DUMMY PROFILE FOR GUEST PREVIEW
+      const dummyTier = MEMBERSHIP_TIERS[0];
+      setActiveUser({
+        name: "Guest User",
+        email: "guest@example.com",
+      });
+      setActiveMemberProfile({
+        name: "Guest User",
+        member_code: "MBR-00000",
+        tier: dummyTier,
+        tier_id: dummyTier.id,
+        current_points: 0,
+        total_points: 0,
+      });
+      setLoading(false);
     }
-  }, [selectedUserId]);
+  }, [profile]);
 
   useEffect(() => {
     if (successToast) {
@@ -201,186 +209,36 @@ export default function MemberShop() {
     }
   }, [errorToast]);
 
-  // Safe helper to parse logged user from localStorage
-  const getSafeLoggedUserId = () => {
-    try {
-      const loggedUser = localStorage.getItem("user");
-      if (!loggedUser) return null;
-      // Check if it's stored as serialized JSON object
-      if (loggedUser.startsWith("{")) {
-        const parsed = JSON.parse(loggedUser);
-        return parsed?.id || null;
-      }
-      // If it is stored as a raw string ID
-      return loggedUser;
-    } catch (e) {
-      console.warn("Failed to parse logged user from localStorage:", e);
-      return null;
-    }
-  };
-
-  // Load registered users to populate selector
-  const loadUsers = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .order("name", { ascending: true });
-
-      if (error) throw error;
-
-      setUsers(data || []);
-      setDbMode("supabase");
-
-      if (data && data.length > 0) {
-        const loggedId = getSafeLoggedUserId();
-        const found = loggedId ? data.find((u) => u.id === loggedId) : null;
-
-        if (found) {
-          setSelectedUserId(found.id);
-        } else {
-          setSelectedUserId(data[0].id);
-        }
-      } else {
-        setDbMode("local");
-        loadLocalUsers();
-      }
-    } catch (err) {
-      console.warn(
-        "Supabase load users failed. Switching to Local Database Mode.",
-      );
-      setDbMode("local");
-      loadLocalUsers();
-    }
-  };
-
-  const loadLocalUsers = () => {
-    const localUsers = localStorage.getItem("local_users") || "[]";
-    let list = JSON.parse(localUsers);
-
-    if (list.length === 0) {
-      list = [
-        {
-          id: "u-1",
-          name: "Budi Santoso",
-          email: "budi.santoso@gmail.com",
-          created_at: "2026-05-10",
-        },
-        {
-          id: "u-2",
-          name: "Siti Rahayu",
-          email: "siti.rahayu@yahoo.com",
-          created_at: "2026-06-01",
-        },
-        {
-          id: "u-3",
-          name: "Ahmad Hidayat",
-          email: "ahmad.hidayat@outlook.com",
-          created_at: "2026-06-15",
-        },
-        {
-          id: "u-4",
-          name: "Dewi Lestari",
-          email: "dewi.lestari@gmail.com",
-          created_at: "2026-06-20",
-        },
-      ];
-      localStorage.setItem("local_users", JSON.stringify(list));
-    }
-    setUsers(list);
-
-    const loggedId = getSafeLoggedUserId();
-    const found = loggedId ? list.find((u) => u.id === loggedId) : null;
-    setSelectedUserId(found ? found.id : list[0].id);
-  };
-
-  // Load specific membership profile
+  // Load specific membership profile from users table (membership fields are embedded)
   const loadMemberProfile = async (userId) => {
     setLoading(true);
     try {
-      const userObj = users.find((u) => u.id === userId);
-      setActiveUser(userObj);
+      // Get user data from v_member_details view (which has membership fields)
+      const { data: userData, error: userError } = await supabase
+        .from("v_member_details")
+        .select("id:member_id, name:full_name, member_code, tier:tier_name, total_points, current_points, phone, avatar_url, status:user_status")
+        .eq("member_id", userId)
+        .single();
 
-      setCheckoutForm((prev) => ({ ...prev, name: userObj?.name || "" }));
+      if (userError) throw userError;
 
-      let membership = null;
+      setActiveUser(userData);
+      setCheckoutForm((prev) => ({ ...prev, name: userData?.name || "" }));
 
-      if (dbMode === "supabase") {
-        const { data, error } = await supabase
-          .from("members")
-          .select("*")
-          .eq("id", userId)
-          .single();
-
-        if (error && error.code !== "PGRST116") throw error;
-
-        if (data) {
-          membership = data;
-        } else {
-          const { data: newMem, error: insError } = await supabase
-            .from("members")
-            .insert({
-              id: userId,
-              tier: "Bronze",
-              member_code: `MBR-${String(Math.floor(Math.random() * 90000) + 10000)}`,
-              total_points: 0,
-              current_points: 0,
-              status: "active",
-            })
-            .select()
-            .single();
-
-          if (insError) throw insError;
-          membership = newMem;
-        }
-      } else {
-        const localData = localStorage.getItem("local_memberships");
-        let memberships = localData ? JSON.parse(localData) : [];
-        let found = memberships.find((m) => m.customer_id === userId);
-
-        if (!found) {
-          found = {
-            id: `local-mem-${userId}`,
-            customer_id: userId,
-            tier_id: 1,
-            member_code: `MBR-${String(Math.floor(Math.random() * 90000) + 10000)}`,
-            total_points: 0,
-            current_points: 0,
-            join_date: new Date().toISOString().split("T")[0],
-            status: "active",
-          };
-          memberships.push(found);
-          localStorage.setItem(
-            "local_memberships",
-            JSON.stringify(memberships),
-          );
-        }
-        membership = found;
-      }
-
-      const mappedMembership = membership
-        ? {
-            ...membership,
-            tier_id:
-              dbMode === "supabase"
-                ? tierNameToId[membership.tier] || 1
-                : membership.tier_id || 1,
-          }
-        : null;
-
-      const tierObj =
-        MEMBERSHIP_TIERS.find(
-          (t) => t.id === (mappedMembership ? mappedMembership.tier_id : 1),
-        ) || MEMBERSHIP_TIERS[0];
+      const tierId = tierNameToId[userData.tier] || 1;
+      const tierObj = MEMBERSHIP_TIERS.find((t) => t.id === tierId) || MEMBERSHIP_TIERS[0];
 
       setActiveMemberProfile({
-        ...mappedMembership,
+        ...userData,
+        tier_id: tierId,
         tier: tierObj,
       });
 
-      loadTransactions(membership.id, userId);
-      loadNotifications(userId);
+      // Load rewards
+      const { data: rewardsData } = await getMemberRewards();
+      setMemberRewards(rewardsData || []);
+
+      loadTransactions(userId);
     } catch (err) {
       console.error("Load member profile error:", err);
       setErrorToast("Gagal memuat profil member.");
@@ -389,78 +247,29 @@ export default function MemberShop() {
     }
   };
 
-  const loadTransactions = async (membershipId, userId) => {
+  const loadTransactions = async (userId) => {
     try {
-      if (dbMode === "supabase" && userId) {
-        const { data, error } = await supabase
-          .from("activity_logs")
-          .select("*")
-          .eq("user_id", userId)
-          .ilike("action", "POINTS_%")
-          .order("created_at", { ascending: false });
-
-        if (!error && data) {
-          const mappedTxs = data.map((log) => ({
-            id: log.id,
-            membership_id: log.user_id,
-            type: log.action.replace("POINTS_", "").toLowerCase(),
-            points: log.new_data?.delta || 0,
-            description: log.new_data?.description || log.action,
-            balance_after: log.new_data?.points || 0,
-            created_at: log.created_at,
-          }));
-          setTransactions(mappedTxs);
-          return;
-        }
-      }
-
-      const localTx = localStorage.getItem("local_point_transactions");
-      const list = localTx ? JSON.parse(localTx) : [];
-      const filtered = list.filter(
-        (tx) => tx.membership_id === membershipId || tx.customer_id === userId,
-      );
-      setTransactions(
-        filtered.sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at),
-        ),
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const loadNotifications = async (userId) => {
-    if (!userId || dbMode !== "supabase") {
-      setNotifications([]);
-      return;
-    }
-    try {
-      const { data } = await supabase
-        .from("notifications")
+      const { data, error } = await supabase
+        .from("activity_logs")
         .select("*")
         .eq("user_id", userId)
+        .ilike("action", "POINTS_%")
         .order("created_at", { ascending: false });
-      setNotifications(data || []);
-    } catch (err) {
-      console.error("Gagal memuat notifikasi member:", err);
-    }
-  };
 
-  const markMemberNotifsAsRead = async () => {
-    try {
-      const unreadIds = notifications
-        .filter((n) => !n.is_read)
-        .map((n) => n.id);
-      if (unreadIds.length === 0) return;
-      const { error } = await supabase
-        .from("notifications")
-        .update({ is_read: true })
-        .in("id", unreadIds);
-      if (!error) {
-        setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+      if (!error && data) {
+        const mappedTxs = data.map((log) => ({
+          id: log.id,
+          membership_id: log.user_id,
+          type: log.action.replace("POINTS_", "").toLowerCase(),
+          points: log.new_data?.delta || 0,
+          description: log.new_data?.description || log.action,
+          balance_after: log.new_data?.points || 0,
+          created_at: log.created_at,
+        }));
+        setTransactions(mappedTxs);
       }
     } catch (err) {
-      console.error("Gagal menandai notifikasi dibaca:", err);
+      console.error(err);
     }
   };
 
@@ -536,8 +345,8 @@ export default function MemberShop() {
     return Math.max(
       0,
       calculateCartSubtotal() -
-        calculateCartDiscount() -
-        calculatePromoDiscount(),
+      calculateCartDiscount() -
+      calculatePromoDiscount(),
     );
   };
 
@@ -564,118 +373,55 @@ export default function MemberShop() {
       .map((i) => `${i.name} x${i.quantity}`)
       .join(", ");
 
-    const existingOrdersStr = localStorage.getItem("orders");
-    const ordersList = existingOrdersStr ? JSON.parse(existingOrdersStr) : [];
-
     try {
-      if (dbMode === "supabase") {
-        const orderPayload = {
-          order_number: orderId,
-          customer_id: activeUser?.id || null,
-          customer_name: activeUser?.name || "Member",
-          status: "processing",
-          delivery_type: "dine_in",
-          table_number: null,
-          subtotal: subtotal,
-          discount_amount: discount,
-          tax_amount: 0,
-          total_amount: total,
-          notes: null,
-        };
-
-        const itemsPayload = cart.map((i) => ({
-          menu_item_id: i.id,
-          item_name: i.name,
-          quantity: i.quantity,
-          unit_price: i.price,
-          subtotal: i.price * i.quantity,
-        }));
-
-        const res = await createOrder(orderPayload, itemsPayload, {
-          payment_method: "member_balance",
-          amount: total,
-          status: "paid",
-        });
-        if (res.error) throw res.error;
-
-        const tx = await createPointTransaction({
-          membership_id: activeMemberProfile.id,
-          order_id: res.data.id,
-          type: "earn",
-          points: pointsEarned,
-          description: `Belanja Member (Order ID: ${res.data.order_number || res.data.id})`,
-        });
-        if (tx.error) console.error(tx.error);
-
-        if (appliedPromo) {
-          await supabase
-            .from("promotions")
-            .update({ current_uses: (appliedPromo.current_uses || 0) + 1 })
-            .eq("id", appliedPromo.id);
-        }
-        setPromoCode("");
-        setAppliedPromo(null);
-        setCheckoutSuccess({
-          id: res.data.order_number || res.data.id,
-          total,
-          points: pointsEarned,
-          paymentMethod: checkoutForm.paymentMethod,
-          promoCode: appliedPromo?.code || null,
-        });
-        setCart([]);
-        setIsCartOpen(false);
-        loadMemberProfile(selectedUserId);
-        return;
-      }
-
-      const newOrder = {
-        id: orderId,
-        customer: activeUser?.name || "Member",
-        item: orderItemsSummary,
-        total: total,
-        paymentMethod: checkoutForm.paymentMethod,
-        promoCode: appliedPromo?.code || null,
-        status: "Completed",
-        date: new Date().toISOString().split("T")[0],
+      const orderPayload = {
+        order_number: orderId,
+        customer_id: activeUser?.id || null,
+        customer_name: activeUser?.name || "Member",
+        status: "processing",
+        delivery_type: "dine_in",
+        table_number: null,
+        subtotal: subtotal,
+        discount_amount: discount,
+        tax_amount: 0,
+        total_amount: total,
+        notes: null,
       };
-      ordersList.unshift(newOrder);
-      localStorage.setItem("orders", JSON.stringify(ordersList));
 
-      const newCurrentPoints =
-        activeMemberProfile.current_points + pointsEarned;
-      const newTotalPoints = activeMemberProfile.total_points + pointsEarned;
-      const localData = localStorage.getItem("local_memberships");
-      if (localData) {
-        const memberships = JSON.parse(localData);
-        const idx = memberships.findIndex(
-          (m) => m.customer_id === activeUser.id,
-        );
-        if (idx !== -1) {
-          memberships[idx].current_points = newCurrentPoints;
-          memberships[idx].total_points = newTotalPoints;
-          localStorage.setItem(
-            "local_memberships",
-            JSON.stringify(memberships),
-          );
-        }
-      }
+      const itemsPayload = cart.map((i) => ({
+        menu_item_id: i.id,
+        item_name: i.name,
+        quantity: i.quantity,
+        unit_price: i.price,
+        subtotal: i.price * i.quantity,
+      }));
 
-      const localTx = localStorage.getItem("local_point_transactions");
-      const txs = localTx ? JSON.parse(localTx) : [];
-      txs.push({
-        id: `tx-${Date.now()}`,
+      const res = await createOrder(orderPayload, itemsPayload, {
+        payment_method: "member_balance",
+        amount: total,
+        status: "paid",
+      });
+      if (res.error) throw res.error;
+
+      const tx = await createPointTransaction({
         membership_id: activeMemberProfile.id,
-        customer_id: activeUser.id,
+        order_id: res.data.id,
         type: "earn",
         points: pointsEarned,
-        description: `Belanja Kopishop (Order ID: ${orderId})`,
-        balance_after: newCurrentPoints,
-        created_at: new Date().toISOString(),
+        description: `Belanja Member (Order ID: ${res.data.order_number || res.data.id})`,
       });
-      localStorage.setItem("local_point_transactions", JSON.stringify(txs));
+      if (tx.error) console.error(tx.error);
 
+      if (appliedPromo) {
+        await supabase
+          .from("promotions")
+          .update({ current_uses: (appliedPromo.current_uses || 0) + 1 })
+          .eq("id", appliedPromo.id);
+      }
+      setPromoCode("");
+      setAppliedPromo(null);
       setCheckoutSuccess({
-        id: orderId,
+        id: res.data.order_number || res.data.id,
         total,
         points: pointsEarned,
         paymentMethod: checkoutForm.paymentMethod,
@@ -683,7 +429,7 @@ export default function MemberShop() {
       });
       setCart([]);
       setIsCartOpen(false);
-      loadMemberProfile(selectedUserId);
+      loadMemberProfile(activeUser.id);
     } catch (err) {
       console.error("Order submission failure:", err);
       setErrorToast("Gagal melakukan pemesanan.");
@@ -712,51 +458,20 @@ export default function MemberShop() {
         activeMemberProfile.current_points - reward.points_required;
       const voucherCode = `VCH-${String(Math.floor(Math.random() * 900000) + 100000)}`;
 
-      if (dbMode === "supabase") {
-        const tx = await createPointTransaction({
-          membership_id: activeMemberProfile.id,
-          order_id: null,
-          reward_id: null,
-          type: "redeem",
-          points: reward.points_required,
-          description: `Tukar poin: ${reward.name} (Voucher: ${voucherCode})`,
-        });
-        if (tx.error) throw tx.error;
-      } else {
-        const localData = localStorage.getItem("local_memberships");
-        if (localData) {
-          const memberships = JSON.parse(localData);
-          const idx = memberships.findIndex(
-            (m) => m.customer_id === activeUser.id,
-          );
-          if (idx !== -1) {
-            memberships[idx].current_points = newCurrentPoints;
-            localStorage.setItem(
-              "local_memberships",
-              JSON.stringify(memberships),
-            );
-          }
-        }
-
-        const localTx = localStorage.getItem("local_point_transactions");
-        const txs = localTx ? JSON.parse(localTx) : [];
-        txs.push({
-          id: `tx-${Date.now()}`,
-          membership_id: activeMemberProfile.id,
-          customer_id: activeUser.id,
-          type: "redeem",
-          points: -reward.points_required,
-          description: `Tukar poin: ${reward.name} (Voucher: ${voucherCode})`,
-          balance_after: newCurrentPoints,
-          created_at: new Date().toISOString(),
-        });
-        localStorage.setItem("local_point_transactions", JSON.stringify(txs));
-      }
+      const tx = await createPointTransaction({
+        membership_id: activeMemberProfile.id,
+        order_id: null,
+        reward_id: null,
+        type: "redeem",
+        points: reward.points_required,
+        description: `Tukar poin: ${reward.name} (Voucher: ${voucherCode})`,
+      });
+      if (tx.error) throw tx.error;
 
       setSuccessToast(
         `Berhasil menukar ${reward.name}! Voucher Code: ${voucherCode}`,
       );
-      loadMemberProfile(selectedUserId);
+      loadMemberProfile(activeUser.id);
     } catch (err) {
       console.error(err);
       setErrorToast("Gagal menukar reward.");
@@ -836,7 +551,7 @@ export default function MemberShop() {
     const matchesCategory =
       activeCategory === "All" ||
       (item.category || "").toLowerCase() ===
-        (activeCategory || "").toLowerCase();
+      (activeCategory || "").toLowerCase();
     const matchesSearch = (item.name || "")
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -845,36 +560,6 @@ export default function MemberShop() {
 
   return (
     <div className="min-h-screen bg-[#F9F5EE] pb-16 font-sans text-slate-800 antialiased">
-      {/* Upper Tester bar */}
-      <div className="bg-[#4B2C20] py-3.5 px-6 text-white text-xs font-semibold shadow-md flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="bg-amber-500/20 text-amber-200 border border-amber-500/30 px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wide font-sans">
-            Testing Utility
-          </span>
-          <span>Pilih Profil Pelanggan untuk Uji Coba:</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <select
-            value={selectedUserId}
-            onChange={(e) => setSelectedUserId(e.target.value)}
-            className="bg-[#5c3729] text-white text-xs font-bold border border-white/10 rounded-lg px-3 py-1.5 focus:outline-none hover:cursor-pointer"
-          >
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name} ({u.email})
-              </option>
-            ))}
-          </select>
-          <span
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 ${
-              dbMode === "supabase" ? "text-emerald-300" : "text-amber-300"
-            }`}
-          >
-            {dbMode === "supabase" ? "Supabase Connect" : "Local Mode"}
-          </span>
-        </div>
-      </div>
-
       {/* Main Navbar */}
       <header className="sticky top-0 bg-[#FAF4EE]/90 backdrop-blur-md z-40 border-b border-slate-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-4">
@@ -896,31 +581,28 @@ export default function MemberShop() {
           <nav className="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
             <button
               onClick={() => setActiveTab("shop")}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${
-                activeTab === "shop"
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${activeTab === "shop"
                   ? "bg-white text-[#855C3B] shadow-sm"
                   : "text-slate-500 hover:text-slate-800 bg-transparent"
-              }`}
+                }`}
             >
               Katalog Menu
             </button>
             <button
               onClick={() => setActiveTab("rewards")}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${
-                activeTab === "rewards"
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${activeTab === "rewards"
                   ? "bg-white text-[#855C3B] shadow-sm"
                   : "text-slate-500 hover:text-slate-800 bg-transparent"
-              }`}
+                }`}
             >
               Tukar Hadiah
             </button>
             <button
               onClick={() => setActiveTab("transactions")}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${
-                activeTab === "transactions"
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${activeTab === "transactions"
                   ? "bg-white text-[#855C3B] shadow-sm"
                   : "text-slate-500 hover:text-slate-800 bg-transparent"
-              }`}
+                }`}
             >
               Riwayat Poin
             </button>
@@ -933,20 +615,6 @@ export default function MemberShop() {
             >
               Dashboard Admin
             </Link>
-
-            {/* Notification Bell Button */}
-            <button
-              onClick={() => {
-                setIsNotifOpen(!isNotifOpen);
-                if (!isNotifOpen) markMemberNotifsAsRead();
-              }}
-              className="relative p-2 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-all cursor-pointer border-0 bg-transparent"
-            >
-              <LuBell className="w-5 h-5" />
-              {notifications.some((n) => !n.is_read) && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white animate-pulse" />
-              )}
-            </button>
 
             {/* Cart Button trigger */}
             <button
@@ -983,31 +651,28 @@ export default function MemberShop() {
             <div className="flex md:hidden gap-2 bg-slate-100 p-1 rounded-xl mt-6">
               <button
                 onClick={() => setActiveTab("shop")}
-                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${
-                  activeTab === "shop"
+                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${activeTab === "shop"
                     ? "bg-white text-[#855C3B] shadow-sm"
                     : "text-slate-500 bg-transparent"
-                }`}
+                  }`}
               >
                 Belanja
               </button>
               <button
                 onClick={() => setActiveTab("rewards")}
-                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${
-                  activeTab === "rewards"
+                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${activeTab === "rewards"
                     ? "bg-white text-[#855C3B] shadow-sm"
                     : "text-slate-500 bg-transparent"
-                }`}
+                  }`}
               >
                 Hadiah
               </button>
               <button
                 onClick={() => setActiveTab("transactions")}
-                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${
-                  activeTab === "transactions"
+                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${activeTab === "transactions"
                     ? "bg-white text-[#855C3B] shadow-sm"
                     : "text-slate-500 bg-transparent"
-                }`}
+                  }`}
               >
                 Poin
               </button>
@@ -1091,12 +756,6 @@ export default function MemberShop() {
         onClose={() => setCheckoutSuccess(null)}
       />
 
-      {/* NOTIFICATIONS DRAWER OVERLAY */}
-      <NotificationDrawer
-        isOpen={isNotifOpen}
-        onClose={() => setIsNotifOpen(false)}
-        notifications={notifications}
-      />
     </div>
   );
 }

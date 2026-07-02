@@ -1,20 +1,10 @@
 -- ============================================================
-<<<<<<< HEAD
 -- ☕ COFFEE SHOP - SUPABASE DATABASE SCHEMA (SECURE AUTH INTEGRATION)
 -- ============================================================
 -- Project : Robby Coffee Shop (Learning Edition)
 -- Tables  : 12 tables (Integrated with Supabase Auth, using public.users)
 -- Author  : Auto-generated
 -- Date    : 2026-07-02
-=======
--- ☕ COFFEE SHOP - SUPABASE DATABASE SCHEMA (CUSTOM USERS CRUD)
--- ============================================================
--- Project : Robby Coffee Shop (Learning Edition)
--- Tables  : 14 tables (Bypassing Supabase Auth, using public.users)
--- Author  : Auto-generated
--- Date    : 2026-06-25
--- Run di  : Supabase SQL Editor
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 -- ============================================================
 
 -- ────────────────────────────────────────────────────────────
@@ -25,9 +15,6 @@ DROP VIEW IF EXISTS v_top_selling_items CASCADE;
 DROP VIEW IF EXISTS v_member_details CASCADE;
 DROP VIEW IF EXISTS v_dashboard_stats CASCADE;
 DROP TABLE IF EXISTS activity_logs CASCADE;
-DROP TABLE IF EXISTS app_settings CASCADE;
-DROP TABLE IF EXISTS notifications CASCADE;
-DROP TABLE IF EXISTS addresses CASCADE;
 DROP TABLE IF EXISTS members CASCADE;
 DROP TABLE IF EXISTS favorites CASCADE;
 DROP TABLE IF EXISTS reviews CASCADE;
@@ -37,11 +24,7 @@ DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS promotions CASCADE;
 DROP TABLE IF EXISTS menu_items CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-<<<<<<< HEAD
-=======
 DROP TABLE IF EXISTS profiles CASCADE;
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 DROP TYPE IF EXISTS user_role CASCADE;
 DROP TYPE IF EXISTS user_status CASCADE;
 DROP TYPE IF EXISTS order_status CASCADE;
@@ -49,7 +32,6 @@ DROP TYPE IF EXISTS delivery_type CASCADE;
 DROP TYPE IF EXISTS payment_method CASCADE;
 DROP TYPE IF EXISTS payment_status CASCADE;
 DROP TYPE IF EXISTS discount_type CASCADE;
-DROP TYPE IF EXISTS membership_status CASCADE;
 
 
 -- ************************************************************
@@ -69,10 +51,6 @@ CREATE TYPE delivery_type AS ENUM ('dine_in', 'takeaway');
 CREATE TYPE payment_method AS ENUM ('cash', 'card', 'e_wallet', 'qris');
 CREATE TYPE payment_status AS ENUM ('pending', 'paid', 'refunded', 'failed');
 CREATE TYPE discount_type AS ENUM ('percentage', 'fixed');
-<<<<<<< HEAD
-=======
-CREATE TYPE membership_status AS ENUM ('active', 'expired', 'suspended');
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 
 
 -- ************************************************************
@@ -80,29 +58,23 @@ CREATE TYPE membership_status AS ENUM ('active', 'expired', 'suspended');
 -- ************************************************************
 
 -- ============================================================
-<<<<<<< HEAD
 -- TABLE 1: users (PUBLIC PROFILES INTEGRATED WITH AUTH.USERS)
 -- ============================================================
-CREATE TABLE users (
+CREATE TABLE profiles (
     id              UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     name            TEXT            NOT NULL,
     email           TEXT            NOT NULL UNIQUE,
-=======
--- TABLE 1: users (CUSTOM TABLE FOR CRUD & MANUAL LOGIN)
--- ============================================================
-CREATE TABLE users (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name            TEXT            NOT NULL,
-    email           TEXT            NOT NULL UNIQUE,
-    password        TEXT            NOT NULL DEFAULT '123456', -- Password manual
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
     phone           TEXT,
     avatar_url      TEXT,
     role            user_role       NOT NULL DEFAULT 'customer',
     status          user_status     NOT NULL DEFAULT 'active',
-<<<<<<< HEAD
-    -- Membership fields merged directly:
-    member_code     TEXT            UNIQUE,
+    created_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE members (
+    id              UUID PRIMARY KEY REFERENCES profiles(id) ON DELETE CASCADE,
+    member_code     TEXT            NOT NULL UNIQUE,
     tier            TEXT            NOT NULL DEFAULT 'Bronze',
     total_points    INT             NOT NULL DEFAULT 0 CHECK (total_points >= 0),
     current_points  INT             NOT NULL DEFAULT 0 CHECK (current_points >= 0),
@@ -111,15 +83,7 @@ CREATE TABLE users (
     created_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
-COMMENT ON TABLE users IS 'Profil user di schema public yang terintegrasi dengan Supabase Auth';
-=======
-    language        TEXT            NOT NULL DEFAULT 'id',
-    timezone        TEXT            NOT NULL DEFAULT 'Asia/Jakarta',
-    created_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
-COMMENT ON TABLE users IS 'Tabel user kustom untuk belajar CRUD dan Login manual';
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
+COMMENT ON TABLE profiles IS 'Profil user di schema public yang terintegrasi dengan Supabase Auth';
 
 -- ============================================================
 -- TABLE 2: categories
@@ -184,7 +148,7 @@ CREATE TABLE promotions (
 CREATE TABLE orders (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_number        TEXT            NOT NULL UNIQUE,
-    customer_id         UUID            REFERENCES users(id) ON DELETE SET NULL,
+    customer_id         UUID            REFERENCES profiles(id) ON DELETE SET NULL,
     customer_name       TEXT,           -- Untuk guest checkout
     status              order_status    NOT NULL DEFAULT 'pending',
     delivery_type       delivery_type   NOT NULL DEFAULT 'dine_in',
@@ -234,7 +198,7 @@ CREATE TABLE payments (
 -- ============================================================
 CREATE TABLE reviews (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    customer_id     UUID            REFERENCES users(id) ON DELETE SET NULL,
+    customer_id     UUID            REFERENCES profiles(id) ON DELETE SET NULL,
     menu_item_id    INT             REFERENCES menu_items(id) ON DELETE SET NULL,
     customer_name   TEXT            NOT NULL,
     category        TEXT            NOT NULL DEFAULT 'Pelayanan',
@@ -249,7 +213,7 @@ CREATE TABLE reviews (
 -- ============================================================
 CREATE TABLE favorites (
     id              SERIAL PRIMARY KEY,
-    customer_id     UUID            NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    customer_id     UUID            NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     menu_item_id    INT             NOT NULL REFERENCES menu_items(id) ON DELETE CASCADE,
     created_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
 
@@ -257,47 +221,9 @@ CREATE TABLE favorites (
 );
 
 -- ============================================================
-<<<<<<< HEAD
--- TABLE 10: notifications
-=======
--- TABLE 10: members 🏆
--- ============================================================
-CREATE TABLE members (
-    id              UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-    member_code     TEXT            NOT NULL UNIQUE,   -- Auto: MBR-00001
-    tier            TEXT            NOT NULL DEFAULT 'Bronze',
-    total_points    INT             NOT NULL DEFAULT 0 CHECK (total_points >= 0),
-    current_points  INT             NOT NULL DEFAULT 0 CHECK (current_points >= 0),
-    join_date       DATE            NOT NULL DEFAULT CURRENT_DATE,
-    expired_date    DATE,
-    status          membership_status NOT NULL DEFAULT 'active',
-    created_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
-
--- ============================================================
--- TABLE 11: addresses
--- ============================================================
-CREATE TABLE addresses (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    customer_id     UUID            NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    label           TEXT            NOT NULL DEFAULT 'Rumah',
-    full_address    TEXT            NOT NULL,
-    city            TEXT,
-    postal_code     TEXT,
-    latitude        DECIMAL(10,8),
-    longitude       DECIMAL(11,8),
-    is_default      BOOLEAN         NOT NULL DEFAULT FALSE,
-    created_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
-
--- ============================================================
--- TABLE 12: notifications
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
--- ============================================================
 CREATE TABLE notifications (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id     UUID            NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id     UUID            NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     title       TEXT            NOT NULL,
     message     TEXT            NOT NULL,
     type        TEXT            NOT NULL DEFAULT 'system',
@@ -307,31 +233,22 @@ CREATE TABLE notifications (
 );
 
 -- ============================================================
-<<<<<<< HEAD
--- TABLE 11: app_settings
-=======
--- TABLE 13: app_settings
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
--- ============================================================
+
 CREATE TABLE app_settings (
     id              SERIAL PRIMARY KEY,
     key             TEXT            NOT NULL UNIQUE,
     value           JSONB           NOT NULL DEFAULT '{}'::JSONB,
     description     TEXT,
-    updated_by      UUID            REFERENCES users(id) ON DELETE SET NULL,
+    updated_by      UUID            REFERENCES profiles(id) ON DELETE SET NULL,
     updated_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
 
 -- ============================================================
-<<<<<<< HEAD
 -- TABLE 12: activity_logs
-=======
--- TABLE 14: activity_logs
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 -- ============================================================
 CREATE TABLE activity_logs (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id         UUID            REFERENCES users(id) ON DELETE SET NULL,
+    user_id         UUID            REFERENCES profiles(id) ON DELETE SET NULL,
     action          TEXT            NOT NULL,
     entity_type     TEXT            NOT NULL,
     entity_id       TEXT,
@@ -345,8 +262,8 @@ CREATE TABLE activity_logs (
 -- ************************************************************
 -- SECTION 4: INDEXES
 -- ************************************************************
-CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_profiles_role ON profiles(role);
+CREATE INDEX idx_profiles_email ON profiles(email);
 CREATE INDEX idx_categories_slug ON categories(slug);
 CREATE INDEX idx_menu_items_category ON menu_items(category_id);
 CREATE INDEX idx_menu_items_slug ON menu_items(slug);
@@ -357,15 +274,8 @@ CREATE INDEX idx_order_items_order ON order_items(order_id);
 CREATE INDEX idx_payments_order ON payments(order_id);
 CREATE INDEX idx_reviews_approved ON reviews(is_approved) WHERE is_approved = TRUE;
 CREATE INDEX idx_favorites_customer ON favorites(customer_id);
-<<<<<<< HEAD
-CREATE INDEX idx_users_member_code ON users(member_code);
-CREATE INDEX idx_users_tier ON users(tier);
-=======
 CREATE INDEX idx_members_code ON members(member_code);
 CREATE INDEX idx_members_tier ON members(tier);
-CREATE INDEX idx_addresses_customer ON addresses(customer_id);
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
-CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read = FALSE;
 
 
 -- ************************************************************
@@ -373,31 +283,56 @@ CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read) WHERE i
 -- ************************************************************
 
 -- ────────────────────────────────────────────────────────
-<<<<<<< HEAD
 -- Function & Trigger: Sync Supabase auth.users ke public.users
 -- ────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
     next_num INT;
+    user_role_val public.user_role;
+    user_name_val TEXT;
 BEGIN
-    SELECT COALESCE(MAX(CAST(REPLACE(member_code, 'MBR-', '') AS INT)), 0) + 1 INTO next_num FROM public.users;
+    -- Determine role safely
+    IF NEW.raw_user_meta_data IS NOT NULL AND NEW.raw_user_meta_data->>'role' IS NOT NULL THEN
+        user_role_val := (NEW.raw_user_meta_data->>'role')::public.user_role;
+    ELSE
+        user_role_val := 'customer'::public.user_role;
+    END IF;
+
+    -- Determine name safely
+    IF NEW.raw_user_meta_data IS NOT NULL AND NEW.raw_user_meta_data->>'name' IS NOT NULL THEN
+        user_name_val := NEW.raw_user_meta_data->>'name';
+    ELSE
+        user_name_val := SPLIT_PART(NEW.email, '@', 1);
+    END IF;
+
+    -- Generate member code safely
+    SELECT COALESCE(MAX(CAST(NULLIF(SUBSTRING(member_code FROM 'MBR-([0-9]+)'), '') AS INT)), 0) + 1 
+    INTO next_num 
+    FROM public.members
+    WHERE member_code LIKE 'MBR-%';
     
-    INSERT INTO public.users (id, name, email, role, status, member_code, tier, total_points, current_points)
+    INSERT INTO public.profiles (id, name, email, role, status)
     VALUES (
         NEW.id,
-        COALESCE(NEW.raw_user_meta_data->>'name', SPLIT_PART(NEW.email, '@', 1)),
+        user_name_val,
         NEW.email,
-        COALESCE((NEW.raw_user_meta_data->>'role')::user_role, 'customer'::user_role),
-        'active',
+        user_role_val,
+        'active'::public.user_status
+    );
+    
+    INSERT INTO public.members (id, member_code, tier, total_points, current_points)
+    VALUES (
+        NEW.id,
         'MBR-' || LPAD(next_num::TEXT, 5, '0'),
         'Bronze',
         0,
         0
     );
+    
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
@@ -405,8 +340,6 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ────────────────────────────────────────────────────────
-=======
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 -- Function & Trigger: Update Timestamp `updated_at` otomatis
 -- ────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION fn_update_timestamp()
@@ -417,13 +350,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_users_updated BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION fn_update_timestamp();
+CREATE TRIGGER trg_profiles_updated BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION fn_update_timestamp();
+CREATE TRIGGER trg_members_updated BEFORE UPDATE ON members FOR EACH ROW EXECUTE FUNCTION fn_update_timestamp();
 CREATE TRIGGER trg_menu_items_updated BEFORE UPDATE ON menu_items FOR EACH ROW EXECUTE FUNCTION fn_update_timestamp();
 CREATE TRIGGER trg_orders_updated BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION fn_update_timestamp();
-<<<<<<< HEAD
-=======
-CREATE TRIGGER trg_members_updated BEFORE UPDATE ON members FOR EACH ROW EXECUTE FUNCTION fn_update_timestamp();
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 
 -- ────────────────────────────────────────────────────────
 -- Function & Trigger: Generate Nomor Order Otomatis (ORD-001, ...)
@@ -444,27 +374,6 @@ WHEN (NEW.order_number IS NULL OR NEW.order_number = '')
 EXECUTE FUNCTION fn_generate_order_number();
 
 -- ────────────────────────────────────────────────────────
-<<<<<<< HEAD
-=======
--- Function & Trigger: Generate Kode Member Otomatis (MBR-00001, ...)
--- ────────────────────────────────────────────────────────
-CREATE OR REPLACE FUNCTION fn_generate_member_code()
-RETURNS TRIGGER AS $$
-DECLARE
-    next_num INT;
-BEGIN
-    SELECT COALESCE(MAX(CAST(REPLACE(member_code, 'MBR-', '') AS INT)), 0) + 1 INTO next_num FROM members;
-    NEW.member_code = 'MBR-' || LPAD(next_num::TEXT, 5, '0');
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_member_code BEFORE INSERT ON members FOR EACH ROW 
-WHEN (NEW.member_code IS NULL OR NEW.member_code = '') 
-EXECUTE FUNCTION fn_generate_member_code();
-
--- ────────────────────────────────────────────────────────
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 -- Function & Trigger: Update Rating Menu otomatis saat ulasan disetujui
 -- ────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION fn_update_menu_rating()
@@ -502,140 +411,31 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-<<<<<<< HEAD
-CREATE TRIGGER trg_check_tier_upgrade BEFORE UPDATE ON users FOR EACH ROW 
+CREATE TRIGGER trg_check_tier_upgrade BEFORE UPDATE ON members FOR EACH ROW 
 WHEN (NEW.total_points IS DISTINCT FROM OLD.total_points) 
 EXECUTE FUNCTION fn_check_tier_upgrade();
 
-=======
-CREATE TRIGGER trg_check_tier_upgrade BEFORE UPDATE ON members FOR EACH ROW 
-WHEN (NEW.total_points != OLD.total_points) 
-EXECUTE FUNCTION fn_check_tier_upgrade();
-
-
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 -- ────────────────────────────────────────────────────────
 -- Function & Trigger: Notifikasi saat Level Membership Naik
 -- ────────────────────────────────────────────────────────
-CREATE OR REPLACE FUNCTION fn_notify_tier_upgrade()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO notifications (user_id, title, message, type)
-    VALUES (
-        NEW.id,
-        'Selamat! Level Membership Naik 🎉',
-        'Membership Anda telah naik dari ' || OLD.tier || ' ke level ' || NEW.tier || '. Nikmati benefit terbarunya!',
-        'membership'
-    );
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_notify_tier_upgrade
-<<<<<<< HEAD
-AFTER UPDATE ON users
-=======
-AFTER UPDATE ON members
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
-FOR EACH ROW
-WHEN (NEW.tier IS DISTINCT FROM OLD.tier)
-EXECUTE FUNCTION fn_notify_tier_upgrade();
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 -- ────────────────────────────────────────────────────────
 -- Function & Trigger: Notifikasi saat Poin Member Berubah
 -- ────────────────────────────────────────────────────────
-CREATE OR REPLACE FUNCTION fn_notify_points_change()
-RETURNS TRIGGER AS $$
-DECLARE
-    points_diff INT;
-BEGIN
-    points_diff := NEW.current_points - OLD.current_points;
-    IF points_diff > 0 THEN
-        INSERT INTO notifications (user_id, title, message, type)
-        VALUES (
-            NEW.id,
-            'Poin Bertambah 🪙',
-            'Anda mendapatkan +' || points_diff || ' poin baru! Poin Anda saat ini: ' || NEW.current_points || ' pts.',
-            'points'
-        );
-    ELSIF points_diff < 0 THEN
-        INSERT INTO notifications (user_id, title, message, type)
-        VALUES (
-            NEW.id,
-            'Poin Digunakan 🪙',
-            'Poin Anda berkurang sebesar ' || ABS(points_diff) || ' pts untuk penukaran reward. Sisa poin: ' || NEW.current_points || ' pts.',
-            'points'
-        );
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_notify_points_change
-<<<<<<< HEAD
-AFTER UPDATE ON users
-=======
-AFTER UPDATE ON members
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
-FOR EACH ROW
-WHEN (NEW.current_points IS DISTINCT FROM OLD.current_points)
-EXECUTE FUNCTION fn_notify_points_change();
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 -- ────────────────────────────────────────────────────────
 -- Function & Trigger: Notifikasi saat Pembuatan Order & Perubahan Status Order
 -- ────────────────────────────────────────────────────────
-CREATE OR REPLACE FUNCTION fn_notify_order_status()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF TG_OP = 'INSERT' AND NEW.customer_id IS NOT NULL THEN
-        INSERT INTO notifications (user_id, title, message, type)
-        VALUES (
-            NEW.customer_id,
-            'Pesanan Diterima ☕',
-            'Pesanan ' || NEW.order_number || ' telah kami terima dan sedang diproses.',
-            'order'
-        );
-    ELSIF TG_OP = 'UPDATE' AND NEW.status IS DISTINCT FROM OLD.status AND NEW.customer_id IS NOT NULL THEN
-        INSERT INTO notifications (user_id, title, message, type)
-        VALUES (
-            NEW.customer_id,
-            CASE 
-                WHEN NEW.status = 'processing' THEN 'Pesanan Sedang Dibuat ⏳'
-                WHEN NEW.status = 'completed' THEN 'Pesanan Selesai 🎉'
-                WHEN NEW.status = 'cancelled' THEN 'Pesanan Dibatalkan ❌'
-                ELSE 'Update Status Pesanan 📦'
-            END,
-            CASE 
-                WHEN NEW.status = 'processing' THEN 'Barista kami sedang meracik pesanan ' || NEW.order_number || ' Anda.'
-                WHEN NEW.status = 'completed' THEN 'Pesanan ' || NEW.order_number || ' selesai disajikan. Selamat menikmati!'
-                WHEN NEW.status = 'cancelled' THEN 'Mohon maaf, pesanan ' || NEW.order_number || ' Anda dibatalkan.'
-                ELSE 'Status pesanan ' || NEW.order_number || ' berubah menjadi ' || NEW.status || '.'
-            END,
-            'order'
-        );
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_notify_order_status
-AFTER INSERT OR UPDATE ON orders
-FOR EACH ROW
-EXECUTE FUNCTION fn_notify_order_status();
 
 
 -- ************************************************************
 -- SECTION 6: ROW LEVEL SECURITY (RLS) & POLICIES (OPEN CRUD FOR LEARNING)
 -- ************************************************************
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
@@ -644,17 +444,11 @@ ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE promotions ENABLE ROW LEVEL SECURITY;
-<<<<<<< HEAD
-=======
-ALTER TABLE members ENABLE ROW LEVEL SECURITY;
-ALTER TABLE addresses ENABLE ROW LEVEL SECURITY;
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
-ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
-ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
 
 -- Policy global bebas hambatan agar CRUD frontend tidak terhalang RLS (Sangat pas untuk belajar)
-CREATE POLICY "Allow public CRUD on users" ON users FOR ALL USING (TRUE) WITH CHECK (TRUE);
+CREATE POLICY "Allow public CRUD on profiles" ON profiles FOR ALL USING (TRUE) WITH CHECK (TRUE);
+CREATE POLICY "Allow public CRUD on members" ON members FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Allow public CRUD on categories" ON categories FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Allow public CRUD on menu_items" ON menu_items FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Allow public CRUD on orders" ON orders FOR ALL USING (TRUE) WITH CHECK (TRUE);
@@ -663,13 +457,6 @@ CREATE POLICY "Allow public CRUD on payments" ON payments FOR ALL USING (TRUE) W
 CREATE POLICY "Allow public CRUD on reviews" ON reviews FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Allow public CRUD on favorites" ON favorites FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Allow public CRUD on promotions" ON promotions FOR ALL USING (TRUE) WITH CHECK (TRUE);
-<<<<<<< HEAD
-=======
-CREATE POLICY "Allow public CRUD on members" ON members FOR ALL USING (TRUE) WITH CHECK (TRUE);
-CREATE POLICY "Allow public CRUD on addresses" ON addresses FOR ALL USING (TRUE) WITH CHECK (TRUE);
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
-CREATE POLICY "Allow public CRUD on notifications" ON notifications FOR ALL USING (TRUE) WITH CHECK (TRUE);
-CREATE POLICY "Allow public CRUD on app_settings" ON app_settings FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Allow public CRUD on activity_logs" ON activity_logs FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 
@@ -677,29 +464,14 @@ CREATE POLICY "Allow public CRUD on activity_logs" ON activity_logs FOR ALL USIN
 -- SECTION 7: SEED DATA
 -- ************************************************************
 
-<<<<<<< HEAD
-=======
--- 7.1 Users Seed (Sesuai persis dengan data gambar local kamu)
-INSERT INTO users (id, name, email, password, role, status) VALUES
-    ('a80260b3-281c-48f1-a4ee-914101b24e8f', 'Budi Santoso', 'budi.santoso@email.com', '123456', 'customer', 'active'),
-    ('cbaf2d91-f810-47a2-b952-6092f7ad53e4', 'Siti Rahayu', 'siti.rahayu@email.com', '123456', 'customer', 'active'),
-    ('3cd16278-0a9a-4b89-b6bf-c13c83a1423a', 'Rizky Pratama', 'rizky.p@email.com', '123456', 'customer', 'active'),
-    ('7ee73c54-2b43-48ca-8804-94af3f9d1f0f', 'Nadia Putri', 'nadia.p@email.com', '123456', 'customer', 'active'),
-    ('16c9436b-cd8a-4b3f-8df5-c26e37ddc730', 'Dewi Lestari', 'dewi.l@email.com', '123456', 'customer', 'inactive'),
-    ('dc98287b-b8f7-4a46-9841-86987c3de50d', 'Maya Sari', 'maya.sari@email.com', '123456', 'customer', 'active'),
-    ('e6cb7b7d-86f3-4216-bdfe-84ccc9d073a6', 'Fajar Nugroho', 'fajar.n@email.com', '123456', 'customer', 'inactive'),
-    ('e5195942-37b9-4b50-b0e2-f7faeb16305c', 'r', 'r@gmail.com', '123456', 'admin', 'active'),
-    ('e984ee59-750d-44ea-9083-b36646bd1c92', 'ronn', 'robby@gmail.com', '123456', 'admin', 'active');
-
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
--- 7.2 Categories
+-- 7.1 Categories
 INSERT INTO categories (name, slug, description, display_order) VALUES
     ('Hot Coffee',  'hot',      'Minuman kopi panas pilihan terbaik',       1),
     ('Iced Coffee', 'iced',     'Minuman kopi dingin menyegarkan',          2),
     ('Special',     'special',  'Menu spesial dan signature drinks',        3),
     ('Food',        'food',     'Pastry, snack, dan makanan pendamping',    4);
 
--- 7.3 Menu Items
+-- 7.2 Menu Items
 INSERT INTO menu_items (category_id, name, slug, description, price, image_url, badge, rating, review_count, display_order) VALUES
     (1, 'Americano',           'americano',            'Strong and bold espresso shots',           3.75,   'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop',   'Popular',      4.6, 234, 1),
     (1, 'Mocha Delight',       'mocha-delight',        'Rich chocolate and espresso blend',        5.00,   'https://images.unsplash.com/photo-1570968015861-ad48c34c1160?w=400&h=300&fit=crop',   'Best Seller',  4.9, 456, 2),
@@ -713,33 +485,16 @@ INSERT INTO menu_items (category_id, name, slug, description, price, image_url, 
     (4, 'Butter Croissant',    'butter-croissant',     'Freshly baked flaky butter croissant',      2.50,   'https://images.unsplash.com/photo-1555507036-ab1f4038024a?w=400&h=300&fit=crop',   NULL,           4.5, 145, 1),
     (4, 'Chocolate Muffin',    'chocolate-muffin',     'Rich double chocolate chip muffin',         3.00,   'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=400&h=300&fit=crop',   'Popular',      4.3,  98, 2);
 
--- 7.4 Promotions
+-- 7.3 Promotions
 INSERT INTO promotions (code, name, description, discount_type, discount_value, min_order_amount, start_date, end_date, member_only, min_tier) VALUES
     ('WELCOME10',   'Welcome Discount',     'Diskon 10% untuk pelanggan baru',              'percentage',   10.00,  0,      '2026-01-01', '2026-12-31', FALSE, NULL),
     ('MEMBER20',    'Member Exclusive',      'Diskon 20% khusus member Silver ke atas',      'percentage',   20.00,  15.00,  '2026-01-01', '2026-12-31', TRUE,  'Silver'),
     ('KOPI50',      'Hemat 50rb',           'Potongan Rp50.000 untuk order di atas Rp100k',  'fixed',        50.00,  100.00, '2026-06-01', '2026-08-31', FALSE, NULL);
 
--- 7.5 Reviews
+-- 7.4 Reviews
 INSERT INTO reviews (customer_name, category, rating, comment, is_approved, created_at) VALUES
     ('Budi Santoso',    'Pelayanan',    5,  'Baristanya sangat ramah dan penyajian kopinya cepat sekali! Tempatnya bersih dan nyaman.',           TRUE, '2026-06-24T00:00:00+07:00'),
     ('Siti Rahayu',     'Rasa Menu',    4,  'Caramel Macchiato-nya pas manisnya, espresso-nya harum. Sangat direkomendasikan!',                   TRUE, '2026-06-23T00:00:00+07:00');
-
--- 7.6 App Settings
-INSERT INTO app_settings (key, value, description) VALUES
-    ('store_name',          '"Robby Coffee Shop"'::JSONB,                                                               'Nama toko'),
-    ('store_address',       '"Jl. Kopi Nusantara No. 17, Jakarta Selatan"'::JSONB,                                      'Alamat toko'),
-    ('store_phone',         '"+62 812-0000-0000"'::JSONB,                                                               'Nomor telepon toko'),
-    ('store_email',         '"hello@robbycoffee.com"'::JSONB,                                                           'Email toko'),
-    ('tax_percent',         '11'::JSONB,                                                                                'Persentase pajak (PPN)'),
-    ('currency',            '"IDR"'::JSONB,                                                                             'Mata uang'),
-    ('points_per_dollar',   '10'::JSONB,                                                                                'Poin yang didapat per $1 belanja'),
-    ('min_points_redeem',   '50'::JSONB,                                                                                'Minimum poin untuk redeem'),
-    ('membership_enabled',  'true'::JSONB,                                                                              'Fitur membership aktif/nonaktif'),
-    ('store_open_time',     '"08:00"'::JSONB,                                                                           'Jam buka toko'),
-    ('store_close_time',    '"22:00"'::JSONB,                                                                           'Jam tutup toko'),
-    ('social_instagram',    '"@robbycoffeeshop"'::JSONB,                                                                'Instagram handle'),
-    ('social_whatsapp',     '"+62 812-0000-0000"'::JSONB,                                                               'WhatsApp number');
-
 
 -- ************************************************************
 -- SECTION 8: DATABASE VIEWS
@@ -752,59 +507,27 @@ CREATE OR REPLACE VIEW v_dashboard_stats AS
 SELECT
     (SELECT COUNT(*) FROM orders WHERE status = 'completed') AS total_orders_completed,
     (SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE status = 'completed') AS total_revenue,
-    (SELECT COUNT(*) FROM users WHERE role = 'customer') AS total_customers,
+    (SELECT COUNT(*) FROM profiles WHERE role = 'customer') AS total_customers,
     (SELECT COUNT(*) FROM menu_items WHERE is_available = TRUE) AS total_menu_items,
-<<<<<<< HEAD
-    (SELECT COUNT(*) FROM users WHERE status = 'active' AND member_code IS NOT NULL) AS total_active_members;
-=======
-    (SELECT COUNT(*) FROM members WHERE status = 'active') AS total_active_members;
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
+    (SELECT COUNT(*) FROM profiles p JOIN members m ON p.id = m.id WHERE p.status = 'active' AND member_code IS NOT NULL) AS total_active_members;
 
 -- ────────────────────────────────────────────────────────
 -- View: Detail Member & Dinamika Benefit Tier
 -- ────────────────────────────────────────────────────────
 CREATE OR REPLACE VIEW v_member_details AS
 SELECT
-<<<<<<< HEAD
-    id AS member_id,
-    member_code,
-    name AS full_name,
-    phone,
-    avatar_url,
-    status AS user_status,
-    tier AS tier_name,
-    total_points,
-    current_points,
-    join_date,
-    expired_date,
-    status AS membership_status,
-    CASE
-        WHEN tier = 'Platinum' THEN 3.00
-        WHEN tier = 'Gold' THEN 2.00
-        WHEN tier = 'Silver' THEN 1.50
-        ELSE 1.00
-    END AS points_multiplier,
-    CASE
-        WHEN tier = 'Platinum' THEN 15.00
-        WHEN tier = 'Gold' THEN 10.00
-        WHEN tier = 'Silver' THEN 5.00
-        ELSE 0.00
-    END AS discount_percent
-FROM users
-WHERE member_code IS NOT NULL;
-=======
     m.id AS member_id,
     m.member_code,
-    u.name AS full_name,
-    u.phone,
-    u.avatar_url,
-    u.status AS user_status,
+    p.name AS full_name,
+    p.phone,
+    p.avatar_url,
+    p.status AS user_status,
     m.tier AS tier_name,
     m.total_points,
     m.current_points,
     m.join_date,
     m.expired_date,
-    m.status AS membership_status,
+    p.status AS membership_status,
     CASE
         WHEN m.tier = 'Platinum' THEN 3.00
         WHEN m.tier = 'Gold' THEN 2.00
@@ -818,8 +541,7 @@ WHERE member_code IS NOT NULL;
         ELSE 0.00
     END AS discount_percent
 FROM members m
-JOIN users u ON u.id = m.id;
->>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
+JOIN profiles p ON p.id = m.id;
 
 -- ────────────────────────────────────────────────────────
 -- View: Item Paling Laris
@@ -847,6 +569,7 @@ CREATE OR REPLACE VIEW v_order_details AS
 SELECT
     o.id AS order_id,
     o.order_number,
+    o.customer_id,
     o.customer_name,
     u.name AS registered_customer_name,
     o.status,
@@ -865,6 +588,6 @@ SELECT
     pr.code AS promo_code,
     pr.name AS promo_name
 FROM orders o
-LEFT JOIN users u ON u.id = o.customer_id
+LEFT JOIN profiles u ON u.id = o.customer_id
 LEFT JOIN payments pay ON pay.order_id = o.id
 LEFT JOIN promotions pr ON pr.id = o.promotion_id;

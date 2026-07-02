@@ -184,6 +184,7 @@ export async function createOrder(orderPayload, itemsPayload, paymentPayload) {
 }
 
 // 5. Create a point transaction and update the user's membership points
+// NOTE: Membership fields are now in the `users` table (not separate `members` table)
 export async function createPointTransaction({
   membership_id,
   type,
@@ -191,7 +192,6 @@ export async function createPointTransaction({
   description,
 }) {
   try {
-    // Fetch the member's current profile
     const { data: member, error: fetchError } = await supabase
       .from("members")
       .select("*")
@@ -199,45 +199,29 @@ export async function createPointTransaction({
       .maybeSingle();
 
     if (fetchError) throw fetchError;
+    if (!member) throw new Error("Member not found");
 
-    let currentPoints = member ? member.current_points : 0;
-    let totalPoints = member ? member.total_points : 0;
+    let currentPoints = member.current_points || 0;
+    let totalPoints = member.total_points || 0;
 
     let delta = Math.abs(points);
     if (type === "redeem") {
       currentPoints = Math.max(0, currentPoints - delta);
     } else {
-      // earn or bonus
       currentPoints = currentPoints + delta;
       totalPoints = totalPoints + delta;
     }
 
-    // Update the members table
-    if (member) {
-      const { error: updateError } = await supabase
-        .from("members")
-        .update({
-          current_points: currentPoints,
-          total_points: totalPoints,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", membership_id);
-
-      if (updateError) throw updateError;
-    } else {
-      // Auto-create a bronze profile if not present
-      const { error: insertError } = await supabase.from("members").insert({
-        id: membership_id,
-        tier: "Bronze",
-        total_points: totalPoints,
+    const { error: updateError } = await supabase
+      .from("members")
+      .update({
         current_points: currentPoints,
-        status: "active",
-      });
+        total_points: totalPoints,
+      })
+      .eq("id", membership_id);
 
-      if (insertError) throw insertError;
-    }
+    if (updateError) throw updateError;
 
-    // Insert log into activity_logs
     const { error: logError } = await supabase.from("activity_logs").insert({
       user_id: membership_id,
       action:
@@ -268,16 +252,26 @@ export async function createPointTransaction({
   }
 }
 
-// 6. Get member membership by customer ID
+// 6. Get member membership by customer ID (from users table directly)
 export async function getMemberMembershipByCustomer(customerId) {
   try {
     const { data, error } = await supabase
-      .from("members")
-      .select("*")
-      .eq("id", customerId)
+      .from("v_member_details")
+      .select(
+        "member_id, member_code, tier_name, total_points, current_points, join_date, expired_date, user_status"
+      )
+      .eq("member_id", customerId)
       .maybeSingle();
 
     if (error) throw error;
+    
+    // Map view fields to match old schema expectation if needed
+    if (data) {
+      data.id = data.member_id;
+      data.tier = data.tier_name;
+      data.status = data.user_status;
+    }
+    
     return { data, error: null };
   } catch (error) {
     console.error("Error fetching membership by customer:", error);
@@ -285,7 +279,41 @@ export async function getMemberMembershipByCustomer(customerId) {
   }
 }
 
-// 7. Get available member rewards
+// 7. Get member details from the v_member_details view
+export async function getMemberDetails(memberId) {
+  try {
+    const { data, error } = await supabase
+      .from("v_member_details")
+      .select("*")
+      .eq("member_id", memberId)
+      .maybeSingle();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error("Error fetching member details:", error);
+    return { data: null, error };
+  }
+}
+
+// 8. Get order history for a specific customer from v_order_details view
+export async function getOrderHistory(customerId) {
+  try {
+    const { data, error } = await supabase
+      .from("v_order_details")
+      .select("*")
+      .eq("customer_id", customerId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error("Error fetching order history:", error);
+    return { data: null, error };
+  }
+}
+
+// 9. Get available member rewards
 export async function getMemberRewards() {
   const rewards = [
     {
@@ -338,16 +366,16 @@ export async function getMemberRewards() {
   return { data: rewards, error: null };
 }
 
-// 8. Get membership tiers list
+// 10. Get membership tiers list
 export async function getMembershipTiers() {
   return { data: MEMBERSHIP_TIERS, error: null };
 }
 
-// --- Additional helpers for admin panels and missing tables ---
+// --- Additional helpers for admin panels ---
 export async function getUsers({ limit, offset } = {}) {
   try {
     let q = supabase
-      .from("users")
+      .from("profiles")
       .select("*")
       .order("created_at", { ascending: false });
     if (limit) q = q.limit(limit);
@@ -364,7 +392,7 @@ export async function getUsers({ limit, offset } = {}) {
 export async function createUser(payload) {
   try {
     const { data, error } = await supabase
-      .from("users")
+      .from("profiles")
       .insert(payload)
       .select()
       .single();
@@ -379,7 +407,7 @@ export async function createUser(payload) {
 export async function updateUser(id, payload) {
   try {
     const { data, error } = await supabase
-      .from("users")
+      .from("profiles")
       .update(payload)
       .eq("id", id)
       .select()
@@ -394,7 +422,7 @@ export async function updateUser(id, payload) {
 
 export async function deleteUser(id) {
   try {
-    const { error } = await supabase.from("users").delete().eq("id", id);
+    const { error } = await supabase.from("profiles").delete().eq("id", id);
     if (error) throw error;
     return { success: true, error: null };
   } catch (error) {
@@ -403,110 +431,15 @@ export async function deleteUser(id) {
   }
 }
 
-export async function getAddresses({ customerId } = {}) {
-  try {
-    let q = supabase
-      .from("addresses")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (customerId) q = q.eq("customer_id", customerId);
-    const { data, error } = await q;
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error("Error fetching addresses:", error);
-    return { data: null, error };
-  }
-}
 
-export async function upsertAddress(payload) {
-  try {
-    const { data, error } = await supabase
-      .from("addresses")
-      .upsert(payload)
-      .select()
-      .single();
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error("Error upserting address:", error);
-    return { data: null, error };
-  }
-}
 
-export async function getNotifications({ userId, unreadOnly } = {}) {
-  try {
-    let q = supabase
-      .from("notifications")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (userId) q = q.eq("user_id", userId);
-    if (unreadOnly) q = q.eq("is_read", false);
-    const { data, error } = await q;
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error("Error fetching notifications:", error);
-    return { data: null, error };
-  }
-}
 
-export async function createNotification(payload) {
-  try {
-    const { data, error } = await supabase
-      .from("notifications")
-      .insert(payload)
-      .select()
-      .single();
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error("Error creating notification:", error);
-    return { data: null, error };
-  }
-}
 
-export async function markNotificationsRead(ids = []) {
-  try {
-    if (!ids || ids.length === 0)
-      return { success: false, error: new Error("No ids provided") };
-    const { error } = await supabase
-      .from("notifications")
-      .update({ is_read: true })
-      .in("id", ids);
-    if (error) throw error;
-    return { success: true, error: null };
-  } catch (error) {
-    console.error("Error marking notifications read:", error);
-    return { success: false, error };
-  }
-}
 
-export async function getAppSettings() {
-  try {
-    const { data, error } = await supabase.from("app_settings").select("*");
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error("Error fetching app settings:", error);
-    return { data: null, error };
-  }
-}
 
-export async function updateAppSetting(key, value, updatedBy = null) {
-  try {
-    const { data, error } = await supabase
-      .from("app_settings")
-      .upsert({ key, value, updated_by: updatedBy })
-      .select()
-      .single();
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error("Error updating app setting:", error);
-    return { data: null, error };
-  }
-}
+
+
+
 
 export async function getActivityLogs({ limit } = {}) {
   try {
@@ -595,20 +528,15 @@ const db = {
   createOrder,
   createPointTransaction,
   getMemberMembershipByCustomer,
+  getMemberDetails,
+  getOrderHistory,
   getMemberRewards,
   getMembershipTiers,
   getUsers,
   createUser,
   updateUser,
   deleteUser,
-  getAddresses,
-  upsertAddress,
-  getNotifications,
-  createNotification,
-  markNotificationsRead,
-  getAppSettings,
-  updateAppSetting,
-  getActivityLogs,
+            getActivityLogs,
   getReviews,
   moderateReview,
   getFavoritesByUser,

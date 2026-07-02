@@ -5,7 +5,7 @@ import Checkbox from "../form/Checkbox";
 import Button from "../basic/Button";
 
 export default function LoginForm({
-  username,
+  email,
   password,
   onChange,
   onSubmit,
@@ -30,7 +30,7 @@ export default function LoginForm({
         </div>
       )}
 
-      {/* Email / Username */}
+      {/* Email */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Email
@@ -38,11 +38,11 @@ export default function LoginForm({
         <div className="relative">
           <LuMail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
-            id="login-username"
-            name="username"
+            id="login-email"
+            name="email"
             type="email"
             required
-            value={username}
+            value={email}
             onChange={onChange}
             placeholder="you@example.com"
             className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#BF834F] focus:ring-2 focus:ring-[#E7D4B0] transition-all duration-300"

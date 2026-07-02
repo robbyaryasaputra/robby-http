@@ -38,7 +38,7 @@ export default function Users() {
     setError(null);
     try {
       const { data, error: fetchError } = await supabase
-        .from("users")
+        .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -67,7 +67,7 @@ export default function Users() {
   const handleCreate = async (formData) => {
     setModalLoading(true);
     try {
-      const { error: insertError } = await supabase.from("users").insert([
+      const { error: insertError } = await supabase.from("profiles").insert([
         {
           name: formData.name,
           email: formData.email,
@@ -105,7 +105,7 @@ export default function Users() {
       }
 
       const { error: updateError } = await supabase
-        .from("users")
+        .from("profiles")
         .update(updateData)
         .eq("id", editingUser.id);
 
@@ -127,7 +127,7 @@ export default function Users() {
     setDeleteLoading(true);
     try {
       const { error: deleteError } = await supabase
-        .from("users")
+        .from("profiles")
         .delete()
         .eq("id", userId);
 

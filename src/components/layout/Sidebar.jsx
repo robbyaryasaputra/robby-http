@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LuLayoutDashboard,
@@ -19,33 +20,43 @@ import {
 import NavItem from "../navigation/NavItem";
 
 // Menggabungkan semua menu dari versi sebelumnya
-const navItems = [
-  { path: "/dashboard", label: "Dashboard", icon: LuLayoutDashboard },
-  { path: "/dashboard/menu", label: "Menu", icon: LuMenu },
-  { path: "/dashboard/orders", label: "Orders", icon: LuClipboardList },
-  { path: "/dashboard/users", label: "Users", icon: LuUsers },
-  { path: "/dashboard/members", label: "Members", icon: LuAward },
-  { path: "/dashboard/favorites", label: "Favorites", icon: LuHeart },
-  { path: "/dashboard/promotions", label: "Promotions", icon: LuTag },
-  { path: "/dashboard/payments", label: "Payments", icon: LuCreditCard },
-  { path: "/dashboard/app-settings", label: "App Settings", icon: LuSettings },
-  { path: "/dashboard/notifications", label: "Notifications", icon: LuLifeBuoy },
-  { path: "/dashboard/activity-logs", label: "Activity Logs", icon: LuRefreshCw },
-  { path: "/dashboard/settings", label: "Settings", icon: LuSettings },
-  { path: "/dashboard/react-hooks", label: "React Hooks", icon: LuZap },
-  { path: "/dashboard/help-center", label: "Help Center", icon: LuLifeBuoy },
+const allNavItems = [
+  { path: "/dashboard", label: "Dashboard", icon: LuLayoutDashboard, roles: ["admin", "cashier"] },
+  { path: "/dashboard/menu", label: "Menu", icon: LuMenu, roles: ["admin", "cashier"] },
+  { path: "/dashboard/orders", label: "Orders", icon: LuClipboardList, roles: ["admin", "cashier"] },
+  { path: "/dashboard/users", label: "Users", icon: LuUsers, roles: ["admin"] },
+  { path: "/dashboard/members", label: "Members", icon: LuAward, roles: ["admin"] },
+  { path: "/dashboard/favorites", label: "Favorites", icon: LuHeart, roles: ["admin"] },
+  { path: "/dashboard/promotions", label: "Promotions", icon: LuTag, roles: ["admin"] },
+  { path: "/dashboard/payments", label: "Payments", icon: LuCreditCard, roles: ["admin", "cashier"] },
+  { path: "/dashboard/app-settings", label: "App Settings", icon: LuSettings, roles: ["admin"] },
+  { path: "/dashboard/activity-logs", label: "Activity Logs", icon: LuRefreshCw, roles: ["admin"] },
+  { path: "/dashboard/settings", label: "Settings", icon: LuSettings, roles: ["admin"] },
+  { path: "/dashboard/react-hooks", label: "React Hooks", icon: LuZap, roles: ["admin"] },
+  { path: "/dashboard/help-center", label: "Help Center", icon: LuLifeBuoy, roles: ["admin", "cashier"] },
 ];
 
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { profile, signOut } = useAuth();
   
   // State untuk mengatur buka/tutup sidebar
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/auth/login");
+  // Filter nav items based on user role
+  const navItems = useMemo(() => {
+    const role = profile?.role || "admin";
+    return allNavItems.filter((item) => item.roles.includes(role));
+  }, [profile?.role]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/auth/login");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
   return (

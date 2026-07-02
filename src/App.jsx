@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Loading from "./components/layout/Loading";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const MainLayout = lazy(() => import("./layouts/MainLayout"));
 const AuthLayout = lazy(() => import("./layouts/AuthLayout"));
@@ -17,8 +18,7 @@ const HelpCenter = lazy(() => import("./pages/admin/HelpCenter"));
 const ReactHooks = lazy(() => import("./pages/admin/ReactHooks"));
 const Promotions = lazy(() => import("./pages/admin/Promotions"));
 const Payments = lazy(() => import("./pages/admin/Payments"));
-const AppSettings = lazy(() => import("./pages/admin/AppSettings"));
-const AdminNotifications = lazy(() => import("./pages/admin/Notifications"));
+
 const ActivityLogs = lazy(() => import("./pages/admin/ActivityLogs"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Register = lazy(() => import("./pages/auth/Register"));
@@ -34,10 +34,16 @@ export default function App() {
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
-        {/* Halaman utama bagi pengunjung/guest */}
+        {/* Halaman utama bagi pengunjung/guest — public access */}
         <Route path="/" element={<GuestShop />} />
-        <Route path="/member" element={<MemberShop />} />
 
+        {/* Member area — hanya customer yang sudah login */}
+        <Route
+          path="/member"
+          element={<MemberShop />}
+        />
+
+        {/* Dashboard admin/cashier — public access */}
         <Route
           path="/dashboard"
           element={<MainLayout search={search} setSearch={setSearch} />}
@@ -52,8 +58,7 @@ export default function App() {
           <Route path="promotions" element={<Promotions />} />
           <Route path="payments" element={<Payments />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="app-settings" element={<AppSettings />} />
-          <Route path="notifications" element={<AdminNotifications />} />
+
           <Route path="activity-logs" element={<ActivityLogs />} />
           <Route path="help-center" element={<HelpCenter />} />
           <Route path="react-hooks" element={<ReactHooks />} />

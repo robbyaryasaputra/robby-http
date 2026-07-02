@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LuCoffee } from "react-icons/lu";
-import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../contexts/AuthContext";
 import { LoginForm, AuthCard } from "../../components/auth";
 
 export default function Login() {
   const [dataForm, setDataForm] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,25 +27,15 @@ export default function Login() {
     setLoading(true);
     setError(null);
     try {
-      // Query users table for matching email and password
-      const { data: user, error: loginError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", dataForm.username)
-        .eq("password", dataForm.password)
-        .maybeSingle();
+      // Authenticate via Supabase Auth
+      const { profile } = await signIn(dataForm.email, dataForm.password);
 
-      if (loginError) throw loginError;
-      if (!user) {
-        throw new Error("Email atau password salah.");
+      // Redirect based on role
+      if (profile?.role === "customer") {
+        navigate("/member");
+      } else {
+        navigate("/dashboard");
       }
-      if (user.status !== "active") {
-        throw new Error("Akun Anda tidak aktif atau dibanned. Silakan hubungi admin.");
-      }
-
-      localStorage.setItem("user", JSON.stringify(user));
-
-      navigate("/dashboard");
     } catch (err) {
       const message =
         err.message ||
@@ -71,7 +62,7 @@ export default function Login() {
       {/* Form Card */}
       <AuthCard>
         <LoginForm
-          username={dataForm.username}
+          email={dataForm.email}
           password={dataForm.password}
           onChange={handleChange}
           onSubmit={handleSubmit}

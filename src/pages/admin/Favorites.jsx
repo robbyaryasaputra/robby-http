@@ -22,8 +22,10 @@ import { Breadcrumb } from "../../components/navigation";
 import { Grid } from "../../components/layout";
 import { Tooltip } from "../../components/data-display";
 import { SlideUp } from "../../components/animation";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Favorites() {
+  const { profile } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,13 +33,11 @@ export default function Favorites() {
     (async () => {
       setLoading(true);
       try {
-        const storedUser = localStorage.getItem("user");
-        const user = storedUser ? JSON.parse(storedUser) : null;
-        if (user) {
+        if (profile) {
           const { data: favs } = await supabase
             .from("favorites")
             .select("menu_item_id")
-            .eq("customer_id", user.id);
+            .eq("customer_id", profile.id);
           const ids = (favs || []).map((f) => f.menu_item_id).filter(Boolean);
           if (ids.length) {
             const { data: items } = await supabase
@@ -49,7 +49,6 @@ export default function Favorites() {
             setFavorites([]);
           }
         } else {
-          // fallback local mock
           setFavorites([]);
         }
       } catch (err) {
@@ -59,18 +58,16 @@ export default function Favorites() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [profile]);
 
   const removeFavorite = async (id) => {
     setFavorites((prev) => prev.filter((item) => item.id !== id));
     try {
-      const storedUser = localStorage.getItem("user");
-      const user = storedUser ? JSON.parse(storedUser) : null;
-      if (user) {
+      if (profile) {
         await supabase
           .from("favorites")
           .delete()
-          .eq("customer_id", user.id)
+          .eq("customer_id", profile.id)
           .eq("menu_item_id", id);
       }
     } catch (err) {

@@ -21,6 +21,7 @@ import db, {
 import { supabase } from "../../lib/supabase";
 import { MenuFormModal } from "../../components/auth";
 import { Alert } from "../../components/feedback";
+import { useAuth } from "../../contexts/AuthContext";
 
 const categories = ["All", "Hot", "Iced", "Special"];
 
@@ -49,6 +50,7 @@ const galleryImages = [
 
 export default function Menu() {
   const { search } = useOutletContext();
+  const { profile } = useAuth();
   const [activeCategory, setActiveCategory] = useState("All");
   const [favorites, setFavorites] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
@@ -101,14 +103,12 @@ export default function Menu() {
       }
 
       // fetch favorites
-      const storedUser = localStorage.getItem("user");
-      const user = storedUser ? JSON.parse(storedUser) : null;
-      if (user) {
-        setUserId(user.id);
+      if (profile) {
+        setUserId(profile.id);
         const { data: favs } = await supabase
           .from("favorites")
           .select("menu_item_id")
-          .eq("customer_id", user.id);
+          .eq("customer_id", profile.id);
         setFavorites((favs || []).map((r) => r.menu_item_id));
       }
     } catch (e) {
@@ -118,7 +118,7 @@ export default function Menu() {
 
   useEffect(() => {
     fetchMenuAndCategories();
-  }, []);
+  }, [profile]);
 
   // Auto-hide success message
   useEffect(() => {

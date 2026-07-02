@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LuUserPlus } from "react-icons/lu";
-import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../contexts/AuthContext";
 import { RegisterForm, AuthCard } from "../../components/auth";
 
 export default function Register() {
@@ -15,6 +15,7 @@ export default function Register() {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
+  const { signUp } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,35 +46,17 @@ export default function Register() {
     }
 
     try {
-      // Check if email already exists
-      const { data: existingUser, error: checkError } = await supabase
-        .from("users")
-        .select("id")
-        .eq("email", dataForm.email)
-        .maybeSingle();
-
-      if (checkError) throw checkError;
-      if (existingUser) {
-        throw new Error("Email sudah terdaftar.");
-      }
-
-      // Create new user record in custom users table
-      const { error: insertError } = await supabase
-        .from("users")
-        .insert([
-          {
-            name: dataForm.name,
-            email: dataForm.email,
-            password: dataForm.password,
-            role: "customer",
-            status: "active",
-          },
-        ]);
-
-      if (insertError) throw insertError;
+      // Register via Supabase Auth
+      // The database trigger `on_auth_user_created` will automatically:
+      // 1. Create a row in public.users
+      // 2. Generate member_code (MBR-XXXXX)
+      // 3. Set tier = Bronze, role = customer
+      await signUp(dataForm.email, dataForm.password, {
+        name: dataForm.name,
+      });
 
       setSuccessMessage(
-        "Pendaftaran berhasil! Akun Anda telah terdaftar. Mengalihkan ke halaman login...",
+        "Pendaftaran berhasil! Kode member Anda akan otomatis dibuat. Mengalihkan ke halaman login..."
       );
 
       setTimeout(() => {
