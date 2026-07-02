@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import { FadeIn } from "../components/15-animation";
-import { FooterSection } from "../components/6-section";
+import Sidebar from "../components/layout/Sidebar";
+import Header from "../components/layout/Header";
+import { FadeIn } from "../components/animation";
+import { FooterSection } from "../components/section";
 
 export default function MainLayout({ search, setSearch }) {
   return (

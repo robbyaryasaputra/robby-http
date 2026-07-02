@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { LuCoffee } from "react-icons/lu";
-import { FadeIn, SlideUp } from "../components/15-animation";
-import { Heading, Paragraph } from "../components/14-typography";
+import { FadeIn, SlideUp } from "../components/animation";
+import { Heading, Paragraph } from "../components/typography";
 
 export default function AuthLayout() {
   return (
