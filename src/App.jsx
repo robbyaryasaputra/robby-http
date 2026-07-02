@@ -1,24 +1,32 @@
 import { lazy, Suspense, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Loading from "./components/Loading";
+import Loading from "./components/layout/Loading";
 
 const MainLayout = lazy(() => import("./layouts/MainLayout"));
 const AuthLayout = lazy(() => import("./layouts/AuthLayout"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Details = lazy(() => import("./pages/Details"));
-const Menu = lazy(() => import("./pages/Menu"));
-const Favorites = lazy(() => import("./pages/Favorites"));
-const Settings = lazy(() => import("./pages/Settings"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const Users = lazy(() => import("./pages/Users"));
-const Orders = lazy(() => import("./pages/Orders"));
-const ErrorPage = lazy(() => import("./pages/ErrorPage"));
-const HelpCenter = lazy(() => import("./pages/HelpCenter"));
-const ReactHooks = lazy(() => import("./pages/ReactHooks"));
-const Login = lazy(() => import("./auth/Login"));
-const Register = lazy(() => import("./auth/Register"));
-const ForgotPassword = lazy(() => import("./auth/ForgotPassword"));
-const ResetPassword = lazy(() => import("./auth/ResetPassword"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const Details = lazy(() => import("./pages/admin/Details"));
+const Menu = lazy(() => import("./pages/admin/Menu"));
+const Favorites = lazy(() => import("./pages/admin/Favorites"));
+const Settings = lazy(() => import("./pages/admin/Settings"));
+const NotFound = lazy(() => import("./pages/admin/NotFound"));
+const Users = lazy(() => import("./pages/admin/Users"));
+const Orders = lazy(() => import("./pages/admin/Orders"));
+const ErrorPage = lazy(() => import("./pages/admin/ErrorPage"));
+const HelpCenter = lazy(() => import("./pages/admin/HelpCenter"));
+const ReactHooks = lazy(() => import("./pages/admin/ReactHooks"));
+const Promotions = lazy(() => import("./pages/admin/Promotions"));
+const Payments = lazy(() => import("./pages/admin/Payments"));
+const AppSettings = lazy(() => import("./pages/admin/AppSettings"));
+const AdminNotifications = lazy(() => import("./pages/admin/Notifications"));
+const ActivityLogs = lazy(() => import("./pages/admin/ActivityLogs"));
+const Login = lazy(() => import("./pages/auth/Login"));
+const Register = lazy(() => import("./pages/auth/Register"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
+const GuestShop = lazy(() => import("./pages/guest/GuestShop"));
+const MemberShop = lazy(() => import("./pages/member/MemberShop"));
+const Members = lazy(() => import("./pages/admin/Members"));
 
 export default function App() {
   const [search, setSearch] = useState("");
@@ -26,8 +34,9 @@ export default function App() {
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
-        {/* Halaman pertama yang dibuka adalah dashboard */}
-        <Route path="/" element={<Navigate replace to="/dashboard" />} />
+        {/* Halaman utama bagi pengunjung/guest */}
+        <Route path="/" element={<GuestShop />} />
+        <Route path="/member" element={<MemberShop />} />
 
         <Route
           path="/dashboard"
@@ -37,9 +46,15 @@ export default function App() {
           <Route path="details" element={<Details />} />
           <Route path="menu" element={<Menu />} />
           <Route path="users" element={<Users />} />
+          <Route path="members" element={<Members />} />
           <Route path="orders" element={<Orders />} />
           <Route path="favorites" element={<Favorites />} />
+          <Route path="promotions" element={<Promotions />} />
+          <Route path="payments" element={<Payments />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="app-settings" element={<AppSettings />} />
+          <Route path="notifications" element={<AdminNotifications />} />
+          <Route path="activity-logs" element={<ActivityLogs />} />
           <Route path="help-center" element={<HelpCenter />} />
           <Route path="react-hooks" element={<ReactHooks />} />
           <Route
@@ -85,7 +100,10 @@ export default function App() {
         </Route>
 
         <Route path="/login" element={<Navigate replace to="/auth/login" />} />
-        <Route path="/register" element={<Navigate replace to="/auth/register" />} />
+        <Route
+          path="/register"
+          element={<Navigate replace to="/auth/register" />}
+        />
         <Route
           path="/forgot-password"
           element={<Navigate replace to="/auth/forgot-password" />}
