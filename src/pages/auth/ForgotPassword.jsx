@@ -21,6 +21,7 @@ export default function ForgotPassword() {
     setSuccessMessage("");
 
     try {
+      // 1. Verify email exists in users table
       const { data, error: fetchError } = await supabase
         .from("users")
         .select("email")
@@ -32,10 +33,19 @@ export default function ForgotPassword() {
         throw new Error("Email tidak terdaftar.");
       }
 
-      setSuccessMessage("Email terverifikasi. Mengalihkan ke halaman reset password...");
+      // 2. Trigger Supabase password reset email
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+
+      if (resetError) throw resetError;
+
+      setSuccessMessage("Link reset password telah dikirim ke email Anda!");
+      // We don't navigate immediately since the user needs to check their email
+      // but they can also use the local flow if email isn't configured, so let's allow them to navigate:
       setTimeout(() => {
         navigate(`/auth/reset-password?email=${encodeURIComponent(email)}`);
-      }, 2000);
+      }, 3000);
     } catch (err) {
       setError(err.message || "Gagal memproses permintaan.");
     } finally {

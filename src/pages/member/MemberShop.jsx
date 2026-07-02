@@ -355,32 +355,13 @@ export default function MemberShop() {
 
       if (dbMode === "supabase") {
         const { data, error } = await supabase
-          .from("members")
+          .from("users")
           .select("*")
           .eq("id", userId)
           .single();
 
-        if (error && error.code !== "PGRST116") throw error;
-
-        if (data) {
-          membership = data;
-        } else {
-          const { data: newMem, error: insError } = await supabase
-            .from("members")
-            .insert({
-              id: userId,
-              tier: "Bronze",
-              member_code: `MBR-${String(Math.floor(Math.random() * 90000) + 10000)}`,
-              total_points: 0,
-              current_points: 0,
-              status: "active",
-            })
-            .select()
-            .single();
-
-          if (insError) throw insError;
-          membership = newMem;
-        }
+        if (error) throw error;
+        membership = data;
       } else {
         const localData = localStorage.getItem("local_memberships");
         let memberships = localData ? JSON.parse(localData) : [];

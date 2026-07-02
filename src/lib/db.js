@@ -50,6 +50,7 @@ export async function getMenuItems({ limit } = {}) {
     let query = supabase
       .from("menu_items")
       .select("*, categories(name)")
+      .eq("is_available", true)
       .order("display_order", { ascending: true });
 
     if (limit) {
@@ -59,11 +60,13 @@ export async function getMenuItems({ limit } = {}) {
     const { data, error } = await query;
     if (error) throw error;
 
-    const mapped = data?.map((item) => ({
+    const mapped = (data || []).map((item) => ({
       ...item,
       category: item.categories?.name || "Uncategorized",
       image: item.image_url || item.image,
       reviews: item.review_count || 0,
+      price: Number(item.price || 0),
+      rating: Number(item.rating || 0),
     }));
 
     return { data: mapped, error: null };
@@ -190,7 +193,7 @@ export async function createPointTransaction({
   try {
     // Fetch the member's current profile
     const { data: member, error: fetchError } = await supabase
-      .from("members")
+      .from("users")
       .select("*")
       .eq("id", membership_id)
       .maybeSingle();
@@ -209,10 +212,10 @@ export async function createPointTransaction({
       totalPoints = totalPoints + delta;
     }
 
-    // Update the members table
+    // Update the users table
     if (member) {
       const { error: updateError } = await supabase
-        .from("members")
+        .from("users")
         .update({
           current_points: currentPoints,
           total_points: totalPoints,
@@ -221,17 +224,6 @@ export async function createPointTransaction({
         .eq("id", membership_id);
 
       if (updateError) throw updateError;
-    } else {
-      // Auto-create a bronze profile if not present
-      const { error: insertError } = await supabase.from("members").insert({
-        id: membership_id,
-        tier: "Bronze",
-        total_points: totalPoints,
-        current_points: currentPoints,
-        status: "active",
-      });
-
-      if (insertError) throw insertError;
     }
 
     // Insert log into activity_logs
@@ -269,7 +261,7 @@ export async function createPointTransaction({
 export async function getMemberMembershipByCustomer(customerId) {
   try {
     const { data, error } = await supabase
-      .from("members")
+      .from("users")
       .select("*")
       .eq("id", customerId)
       .maybeSingle();

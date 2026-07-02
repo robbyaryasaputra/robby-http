@@ -132,24 +132,29 @@ export default function UserFormModal({
             )}
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Password {isEdit && <span className="text-slate-400 font-normal">(kosongkan jika tidak ingin mengubah)</span>}
-            </label>
-            <div className="relative">
-              <LuLock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                name="password"
-                type="password"
-                required={!isEdit}
-                value={formData.password}
-                onChange={handleChange}
-                placeholder={isEdit ? "••••••••" : "Masukkan password"}
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#BF834F] focus:ring-2 focus:ring-[#E7D4B0] transition-all duration-300"
-              />
+          {/* Password — hanya tampil saat tambah user baru */}
+          {!isEdit && (
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <LuLock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Minimal 6 karakter"
+                  className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#BF834F] focus:ring-2 focus:ring-[#E7D4B0] transition-all duration-300"
+                />
+              </div>
+              <p className="text-xs text-slate-400 mt-1.5">
+                Password dikelola aman oleh Supabase Auth
+              </p>
             </div>
-          </div>
+          )}
 
           {/* Role and Status Grid */}
           <div className="grid grid-cols-2 gap-4">

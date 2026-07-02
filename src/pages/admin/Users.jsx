@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { supabase } from "../../lib/supabase";
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 import { PageHeader } from "../../components/section";
 import { Avatar } from "../../components/media";
 import { Table, Tooltip } from "../../components/data-display";
@@ -67,17 +71,48 @@ export default function Users() {
   const handleCreate = async (formData) => {
     setModalLoading(true);
     try {
-      const { error: insertError } = await supabase.from("users").insert([
-        {
-          name: formData.name,
-          email: formData.email,
-          password: formData.password || "123456",
-          role: formData.role || "customer",
-          status: formData.status || "active",
-        },
-      ]);
+      // 1. Daftar via Supabase Auth (session tidak disimpan agar admin tidak ter-logout)
+      const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: { persistSession: false }
+      });
 
-      if (insertError) throw insertError;
+      const { data: authData, error: signUpError } = await authClient.auth.signUp({
+        email: formData.email,
+        password: formData.password || "Robby123!",
+      });
+
+      if (signUpError) throw signUpError;
+
+      const userId = authData?.user?.id;
+      if (!userId) throw new Error("Gagal mendapatkan ID user baru.");
+
+      // 2. Hitung member_code berikutnya
+      const { data: existing } = await supabase
+        .from("users")
+        .select("member_code")
+        .not("member_code", "is", null);
+
+      const maxNum = (existing || []).reduce((max, u) => {
+        const m = u.member_code?.match(/^MBR-(\d+)$/);
+        return m ? Math.max(max, parseInt(m[1])) : max;
+      }, 0);
+
+      const memberCode = `MBR-${String(maxNum + 1).padStart(5, "0")}`;
+
+      // 3. Insert profil ke public.users
+      const { error: profileError } = await supabase.from("users").insert({
+        id: userId,
+        name: formData.name,
+        email: formData.email,
+        role: formData.role || "customer",
+        status: formData.status || "active",
+        member_code: memberCode,
+        tier: "Bronze",
+        total_points: 0,
+        current_points: 0,
+      });
+
+      if (profileError) throw profileError;
 
       setSuccessMsg("User berhasil ditambahkan!");
       setModalOpen(false);
@@ -99,10 +134,6 @@ export default function Users() {
         role: formData.role,
         status: formData.status,
       };
-      // Hanya update password jika diisi
-      if (formData.password) {
-        updateData.password = formData.password;
-      }
 
       const { error: updateError } = await supabase
         .from("users")

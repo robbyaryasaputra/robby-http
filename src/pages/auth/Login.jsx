@@ -27,17 +27,27 @@ export default function Login() {
     setError(null);
 
     try {
-      // Query users table for matching email and password
+      // 1. Sign in via Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: dataForm.username,
+        password: dataForm.password,
+      });
+
+      if (authError) throw authError;
+      if (!authData.user) {
+        throw new Error("Login gagal. User tidak ditemukan.");
+      }
+
+      // 2. Fetch profile from public users table
       const { data: user, error: loginError } = await supabase
         .from("users")
         .select("*")
-        .eq("email", dataForm.username)
-        .eq("password", dataForm.password)
+        .eq("id", authData.user.id)
         .maybeSingle();
 
       if (loginError) throw loginError;
       if (!user) {
-        throw new Error("Email atau password salah.");
+        throw new Error("Profil user tidak ditemukan di database.");
       }
 
       if (user.status !== "active") {

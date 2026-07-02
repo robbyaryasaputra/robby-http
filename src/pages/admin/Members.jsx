@@ -84,7 +84,7 @@ export default function Members() {
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch all registered users
+      // 1. Fetch all registered users (which now hold membership details)
       const { data: usersData, error: usersError } = await supabase
         .from("users")
         .select("*")
@@ -92,74 +92,28 @@ export default function Members() {
 
       if (usersError) throw usersError;
 
-      // 2. Fetch memberships from Supabase
-      let membershipsData = [];
-      let mode = "supabase";
+      setDbMode("supabase");
 
-      const { data: mData, error: mError } = await supabase
-        .from("members")
-        .select("*");
-
-      if (mError) {
-        console.warn("Supabase members error. Falling back to local database mode:", mError.message);
-        mode = "local";
-        // Retrieve local memberships from localStorage or create new ones
-        const localData = localStorage.getItem("local_memberships");
-        if (localData) {
-          membershipsData = JSON.parse(localData);
-        }
-      } else {
-        membershipsData = mData || [];
-      }
-
-      setDbMode(mode);
-
-      // 3. For each user, ensure a membership profile exists
-      const mergedMembers = usersData.map((user) => {
-        let membership = membershipsData.find((m) => (mode === "supabase" ? m.id === user.id : m.customer_id === user.id));
-
-        if (!membership) {
-          // Auto create a Bronze membership profile
-          membership = {
-            id: user.id,
-            customer_id: user.id,
-            tier: "Bronze",
-            tier_id: 1, // Bronze
-            member_code: `MBR-${String(Math.floor(Math.random() * 90000) + 10000)}`,
-            total_points: 0,
-            current_points: 0,
-            join_date: new Date(user.created_at || Date.now()).toISOString().split("T")[0],
-            status: "active",
-            created_at: user.created_at || new Date().toISOString(),
-          };
-
-          // Save to local memberships array if in local mode
-          if (mode === "local") {
-            membershipsData.push(membership);
-          }
-        }
-
-        const tierId = mode === "supabase" ? (tierNameToId[membership.tier] || 1) : (membership.tier_id || 1);
+      // 2. Map the users and extract tier info
+      const mergedMembers = (usersData || []).map((user) => {
+        const memberCode = user.member_code || `MBR-${String(Math.floor(Math.random() * 90000) + 10000)}`;
+        const tierId = tierNameToId[user.tier] || 1;
         const tier = MEMBERSHIP_TIERS.find((t) => t.id === tierId) || MEMBERSHIP_TIERS[0];
 
         return {
           ...user,
-          membershipId: membership.id,
-          member_code: membership.member_code,
+          membershipId: user.id,
+          member_code: memberCode,
           tier_id: tierId,
           tierName: tier.name,
           badgeColor: tier.badge_color,
           badgeClass: tier.text_color,
-          total_points: membership.total_points,
-          current_points: membership.current_points,
-          join_date: membership.join_date,
-          status: membership.status,
+          total_points: user.total_points || 0,
+          current_points: user.current_points || 0,
+          join_date: user.join_date ? user.join_date.split("T")[0] : new Date(user.created_at).toISOString().split("T")[0],
+          status: user.status || "active",
         };
       });
-
-      if (mode === "local") {
-        localStorage.setItem("local_memberships", JSON.stringify(membershipsData));
-      }
 
       setMembers(mergedMembers);
     } catch (err) {
@@ -292,28 +246,12 @@ export default function Members() {
     setError(null);
     try {
       if (dbMode === "supabase") {
-        if (member.membershipId) {
-          const { error: updateError } = await supabase
-            .from("members")
-            .update({ status: newStatus })
-            .eq("id", member.membershipId);
+        const { error: updateError } = await supabase
+          .from("users")
+          .update({ status: newStatus })
+          .eq("id", member.id);
 
-          if (updateError) throw updateError;
-        } else {
-          // Auto create membership with status suspended/active
-          const { error: insError } = await supabase
-            .from("members")
-            .insert({
-              id: member.id,
-              tier: "Bronze",
-              member_code: `MBR-${String(Math.floor(Math.random() * 90000) + 10000)}`,
-              total_points: 0,
-              current_points: 0,
-              status: newStatus,
-            });
-
-          if (insError) throw insError;
-        }
+        if (updateError) throw updateError;
       } else {
         // Local Mode
         const localData = localStorage.getItem("local_memberships");
@@ -362,39 +300,17 @@ export default function Members() {
       const txDescription = adjustData.description || (changeAmount > 0 ? "Penyesuaian Poin oleh Admin" : "Pengurangan Poin oleh Admin");
 
       if (dbMode === "supabase") {
-        // If membership does not have an ID yet (auto-creation flow)
-        let membershipId = selectedMember.membershipId;
+        // Update user profile directly
+        const { error: updError } = await supabase
+          .from("users")
+          .update({
+            current_points: newCurrentPoints,
+            total_points: newTotalPoints,
+            tier: tierNameMap[newTierId] || 'Bronze',
+          })
+          .eq("id", selectedMember.id);
 
-        if (!membershipId) {
-          // Check if table supports inserting a new membership
-          const { data: newMem, error: insError } = await supabase
-            .from("members")
-            .insert({
-              id: selectedMember.id,
-              tier: tierNameMap[newTierId] || 'Bronze',
-              member_code: `MBR-${String(Math.floor(Math.random() * 90000) + 10000)}`,
-              total_points: newTotalPoints,
-              current_points: newCurrentPoints,
-              status: "active",
-            })
-            .select()
-            .single();
-
-          if (insError) throw insError;
-          membershipId = newMem.id;
-        } else {
-          // Update existing membership
-          const { error: updError } = await supabase
-            .from("members")
-            .update({
-              current_points: newCurrentPoints,
-              total_points: newTotalPoints,
-              tier: tierNameMap[newTierId] || 'Bronze',
-            })
-            .eq("id", membershipId);
-
-          if (updError) throw updError;
-        }
+        if (updError) throw updError;
 
         // Insert point transaction
         const { error: txError } = await supabase
@@ -402,7 +318,7 @@ export default function Members() {
           .insert({
             user_id: selectedMember.id,
             action: changeAmount > 0 ? "POINTS_BONUS" : "POINTS_REDEEM",
-            entity_type: "members",
+            entity_type: "users",
             entity_id: selectedMember.id,
             new_data: {
               delta: changeAmount,
