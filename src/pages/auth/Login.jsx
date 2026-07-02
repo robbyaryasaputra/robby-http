@@ -27,6 +27,7 @@ export default function Login() {
     setError(null);
 
     try {
+<<<<<<< HEAD
       // 1. Sign in via Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: dataForm.username,
@@ -50,6 +51,21 @@ export default function Login() {
         throw new Error("Profil user tidak ditemukan di database.");
       }
 
+=======
+      // Query users table for matching email and password
+      const { data: user, error: loginError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", dataForm.username)
+        .eq("password", dataForm.password)
+        .maybeSingle();
+
+      if (loginError) throw loginError;
+      if (!user) {
+        throw new Error("Email atau password salah.");
+      }
+
+>>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
       if (user.status !== "active") {
         throw new Error("Akun Anda tidak aktif atau dibanned. Silakan hubungi admin.");
       }

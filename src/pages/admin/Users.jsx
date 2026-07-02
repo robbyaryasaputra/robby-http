@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { createClient } from "@supabase/supabase-js";
 import { supabase } from "../../lib/supabase";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+=======
+import { supabase } from "../../lib/supabase";
+>>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 import { PageHeader } from "../../components/section";
 import { Avatar } from "../../components/media";
 import { Table, Tooltip } from "../../components/data-display";
@@ -71,10 +75,22 @@ export default function Users() {
   const handleCreate = async (formData) => {
     setModalLoading(true);
     try {
+<<<<<<< HEAD
       // 1. Daftar via Supabase Auth (session tidak disimpan agar admin tidak ter-logout)
       const authClient = createClient(supabaseUrl, supabaseAnonKey, {
         auth: { persistSession: false }
       });
+=======
+      const { error: insertError } = await supabase.from("users").insert([
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password || "123456",
+          role: formData.role || "customer",
+          status: formData.status || "active",
+        },
+      ]);
+>>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 
       const { data: authData, error: signUpError } = await authClient.auth.signUp({
         email: formData.email,
@@ -134,6 +150,13 @@ export default function Users() {
         role: formData.role,
         status: formData.status,
       };
+<<<<<<< HEAD
+=======
+      // Hanya update password jika diisi
+      if (formData.password) {
+        updateData.password = formData.password;
+      }
+>>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 
       const { error: updateError } = await supabase
         .from("users")

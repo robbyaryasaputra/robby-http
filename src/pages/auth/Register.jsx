@@ -30,12 +30,20 @@ export default function Register() {
     setError(null);
     setSuccessMessage("");
 
+<<<<<<< HEAD
+=======
+    // Validasi password match
+>>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
     if (dataForm.password !== dataForm.confirmPassword) {
       setError("Password dan konfirmasi password tidak cocok.");
       setLoading(false);
       return;
     }
 
+<<<<<<< HEAD
+=======
+    // Validasi panjang password minimal 6 karakter
+>>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
     if (dataForm.password.length < 6) {
       setError("Password minimal 6 karakter.");
       setLoading(false);
@@ -43,6 +51,7 @@ export default function Register() {
     }
 
     try {
+<<<<<<< HEAD
       // 1. Daftar via Supabase Auth — password dikelola sepenuhnya oleh Supabase
       const { data, error: registerError } = await supabase.auth.signUp({
         email: dataForm.email,
@@ -107,14 +116,54 @@ export default function Register() {
         emailSent
           ? "Pendaftaran berhasil! Cek email Anda untuk konfirmasi akun sebelum login."
           : "Pendaftaran berhasil! Akun Anda siap digunakan. Mengalihkan ke login..."
+=======
+      // Check if email already exists
+      const { data: existingUser, error: checkError } = await supabase
+        .from("users")
+        .select("id")
+        .eq("email", dataForm.email)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+      if (existingUser) {
+        throw new Error("Email sudah terdaftar.");
+      }
+
+      // Create new user record in custom users table
+      const { error: insertError } = await supabase
+        .from("users")
+        .insert([
+          {
+            name: dataForm.name,
+            email: dataForm.email,
+            password: dataForm.password,
+            role: "customer",
+            status: "active",
+          },
+        ]);
+
+      if (insertError) throw insertError;
+
+      setSuccessMessage(
+        "Pendaftaran berhasil! Akun Anda telah terdaftar. Mengalihkan ke halaman login...",
+>>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
       );
 
       setTimeout(() => {
         navigate("/auth/login");
+<<<<<<< HEAD
       }, 3000);
     } catch (err) {
       console.error("Register error:", err);
       setError(err.message || "Terjadi kesalahan saat mendaftar. Silakan coba lagi.");
+=======
+      }, 2000);
+    } catch (err) {
+      console.error("Register error:", err);
+      const message =
+        err.message || "Terjadi kesalahan saat mendaftar. Silakan coba lagi.";
+      setError(message);
+>>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
     } finally {
       setLoading(false);
     }

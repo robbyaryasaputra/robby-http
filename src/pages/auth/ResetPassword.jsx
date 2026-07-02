@@ -48,9 +48,16 @@ export default function ResetPassword() {
     }
 
     try {
+<<<<<<< HEAD
       const { error: updateError } = await supabase.auth.updateUser({
         password: dataForm.password,
       });
+=======
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({ password: dataForm.password })
+        .eq("email", email);
+>>>>>>> 2a55e1abcd64a1f7358cceba9e08b24c924586ee
 
       if (updateError) throw updateError;
 
