@@ -16,6 +16,7 @@ import {
   LuCreditCard,
   LuLifeBuoy,
   LuZap,
+  LuMessageSquare,
 } from "react-icons/lu";
 import NavItem from "../navigation/NavItem";
 
@@ -29,6 +30,7 @@ const allNavItems = [
   { path: "/dashboard/favorites", label: "Favorites", icon: LuHeart, roles: ["admin"] },
   { path: "/dashboard/promotions", label: "Promotions", icon: LuTag, roles: ["admin"] },
   { path: "/dashboard/payments", label: "Payments", icon: LuCreditCard, roles: ["admin", "cashier"] },
+  { path: "/dashboard/reviews", label: "Reviews", icon: LuMessageSquare, roles: ["admin", "cashier"] },
   { path: "/dashboard/app-settings", label: "App Settings", icon: LuSettings, roles: ["admin"] },
   { path: "/dashboard/activity-logs", label: "Activity Logs", icon: LuRefreshCw, roles: ["admin"] },
   { path: "/dashboard/settings", label: "Settings", icon: LuSettings, roles: ["admin"] },

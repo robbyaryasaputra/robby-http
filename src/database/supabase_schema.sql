@@ -418,17 +418,138 @@ EXECUTE FUNCTION fn_check_tier_upgrade();
 -- ────────────────────────────────────────────────────────
 -- Function & Trigger: Notifikasi saat Level Membership Naik
 -- ────────────────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION fn_notify_tier_upgrade()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Only fire when tier actually changes
+    IF OLD.tier IS DISTINCT FROM NEW.tier THEN
+        INSERT INTO notifications (user_id, title, message, type)
+        VALUES (
+            NEW.id,
+            '🎉 Level Membership Naik!',
+            'Selamat! Level Membership Anda telah naik ke level ' || NEW.tier || '. Nikmati benefit eksklusif yang lebih besar sekarang!',
+            'tier_upgrade'
+        );
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
+DROP TRIGGER IF EXISTS trg_notify_tier_upgrade ON members;
+CREATE TRIGGER trg_notify_tier_upgrade
+    AFTER UPDATE ON members
+    FOR EACH ROW
+    WHEN (OLD.tier IS DISTINCT FROM NEW.tier)
+    EXECUTE FUNCTION fn_notify_tier_upgrade();
 
 -- ────────────────────────────────────────────────────────
--- Function & Trigger: Notifikasi saat Poin Member Berubah
+-- Function & Trigger: Notifikasi saat Poin Member Berubah (earn)
 -- ────────────────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION fn_notify_points_earned()
+RETURNS TRIGGER AS $$
+DECLARE
+    delta INT;
+BEGIN
+    -- Only when points increased (earn)
+    IF NEW.current_points > OLD.current_points THEN
+        delta := NEW.current_points - OLD.current_points;
+        INSERT INTO notifications (user_id, title, message, type)
+        VALUES (
+            NEW.id,
+            '☕ Poin Bertambah!',
+            'Anda mendapatkan +' || delta || ' poin dari transaksi terbaru. Total poin aktif: ' || NEW.current_points || ' pts.',
+            'points_earned'
+        );
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
+DROP TRIGGER IF EXISTS trg_notify_points_earned ON members;
+CREATE TRIGGER trg_notify_points_earned
+    AFTER UPDATE ON members
+    FOR EACH ROW
+    WHEN (NEW.current_points IS DISTINCT FROM OLD.current_points AND NEW.current_points > OLD.current_points)
+    EXECUTE FUNCTION fn_notify_points_earned();
 
 -- ────────────────────────────────────────────────────────
--- Function & Trigger: Notifikasi saat Pembuatan Order & Perubahan Status Order
+-- Function & Trigger: Auto Award Poin saat Order 'completed' & Notifikasi
 -- ────────────────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION fn_award_member_points_on_complete()
+RETURNS TRIGGER AS $$
+DECLARE
+    member_rec RECORD;
+    base_points INT;
+    multiplier NUMERIC;
+    final_points INT;
+BEGIN
+    -- Only fire when status changes to 'completed' and customer_id is not null
+    IF OLD.status != 'completed' AND NEW.status = 'completed' AND NEW.customer_id IS NOT NULL THEN
+        -- Get member data
+        SELECT m.*, 
+            CASE
+                WHEN m.tier = 'Platinum' THEN 3.00
+                WHEN m.tier = 'Gold' THEN 2.00
+                WHEN m.tier = 'Silver' THEN 1.50
+                ELSE 1.00
+            END AS pt_multiplier
+        INTO member_rec
+        FROM members m
+        WHERE m.id = NEW.customer_id;
 
+        IF FOUND THEN
+            -- Calculate points: floor(total/10000) * 10 * multiplier
+            base_points := FLOOR(NEW.total_amount / 10000) * 10;
+            multiplier := member_rec.pt_multiplier;
+            final_points := GREATEST(0, ROUND(base_points * multiplier));
+
+            IF final_points > 0 THEN
+                -- Update member points
+                UPDATE members
+                SET
+                    current_points = current_points + final_points,
+                    total_points = total_points + final_points
+                WHERE id = NEW.customer_id;
+
+                -- Log to activity_logs
+                INSERT INTO activity_logs (user_id, action, entity_type, entity_id, new_data)
+                VALUES (
+                    NEW.customer_id,
+                    'POINTS_EARN',
+                    'orders',
+                    NEW.id::TEXT,
+                    jsonb_build_object(
+                        'delta', final_points,
+                        'description', 'Poin dari Order ' || NEW.order_number,
+                        'order_id', NEW.id
+                    )
+                );
+
+                -- Notify order completed
+                INSERT INTO notifications (user_id, title, message, type)
+                VALUES (
+                    NEW.customer_id,
+                    '✅ Pesanan Selesai!',
+                    'Pesanan ' || NEW.order_number || ' telah selesai. Anda mendapatkan +' || final_points || ' poin!',
+                    'order_completed'
+                );
+            END IF;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+DROP TRIGGER IF EXISTS trg_award_points_on_complete ON orders;
+CREATE TRIGGER trg_award_points_on_complete
+    AFTER UPDATE ON orders
+    FOR EACH ROW
+    WHEN (OLD.status IS DISTINCT FROM NEW.status AND NEW.status = 'completed')
+    EXECUTE FUNCTION fn_award_member_points_on_complete();
+
+-- Enable RLS for notifications table
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public CRUD on notifications" ON notifications FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 
 -- ************************************************************

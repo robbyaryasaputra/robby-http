@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { LuCoffee } from "react-icons/lu";
 import { useAuth } from "../../contexts/AuthContext";
 import { LoginForm, AuthCard } from "../../components/auth";
@@ -12,6 +12,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || null;
   const { signIn } = useAuth();
 
   const handleChange = (e) => {
@@ -30,7 +32,13 @@ export default function Login() {
       // Authenticate via Supabase Auth
       const { profile } = await signIn(dataForm.email, dataForm.password);
 
-      // Redirect based on role
+      // If a redirect target was specified (e.g. coming from guest cart wall), go there
+      if (redirectTo) {
+        navigate(redirectTo);
+        return;
+      }
+
+      // Default redirect based on role
       if (profile?.role === "customer") {
         navigate("/member");
       } else {
@@ -45,6 +53,7 @@ export default function Login() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="animate-[fadeIn_0.6s_ease-out]">

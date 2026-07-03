@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { LuShoppingCart, LuSearch } from "react-icons/lu";
+import { LuShoppingCart, LuSearch, LuAward } from "react-icons/lu";
 import { supabase } from "../../lib/supabase";
 import {
   getMenuItems,
@@ -8,6 +8,7 @@ import {
   createOrder as createOrderDb,
   toggleFavorite as toggleFavDb,
 } from "../../lib/db";
+import { useAuth } from "../../contexts/AuthContext";
 import { CoffeeBeanIcon } from "../../components/media";
 import { SlideUp } from "../../components/animation";
 
@@ -20,9 +21,15 @@ import CheckoutSuccessModal from "./components/CheckoutSuccessModal";
 import OrderTracking from "./components/OrderTracking";
 import ReviewSection from "./components/ReviewSection";
 import ContactWidget from "./components/ContactWidget";
+import AuthPromptModal from "./components/AuthPromptModal";
 
 export default function GuestShop() {
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
+  const isLoggedIn = !!user;
+
+  // Auth prompt modal state (cart wall)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Shop States
   const [cart, setCart] = useState([]);
@@ -176,6 +183,24 @@ export default function GuestShop() {
     alert("Terima kasih atas ulasan Anda!");
   };
 
+  // Auto-open cart after login redirect (cart_intent) and auto-fill name from profile
+  useEffect(() => {
+    if (isLoggedIn) {
+      const intent = sessionStorage.getItem("cart_intent");
+      if (intent === "open") {
+        sessionStorage.removeItem("cart_intent");
+        setIsCartOpen(true);
+      }
+      // Auto-fill checkout name from member profile
+      if (profile?.name) {
+        setCheckoutForm((prev) => ({
+          ...prev,
+          name: prev.name || profile.name,
+        }));
+      }
+    }
+  }, [isLoggedIn, profile]);
+
   // Load favorites
   useEffect(() => {
     const init = async () => {
@@ -268,6 +293,15 @@ export default function GuestShop() {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
+  // Cart wall: show auth modal if not logged in, else open cart
+  const handleOpenCart = () => {
+    if (!isLoggedIn) {
+      setIsAuthModalOpen(true);
+    } else {
+      setIsCartOpen(true);
+    }
+  };
+
   // Handle Order Submit
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
@@ -288,7 +322,7 @@ export default function GuestShop() {
     try {
       const orderPayload = {
         order_number: null,
-        customer_id: null,
+        customer_id: user?.id || null,  // ← gunakan auth session, bukan localStorage
         customer_name: checkoutForm.name,
         status: "pending",
         delivery_type:
@@ -312,9 +346,8 @@ export default function GuestShop() {
         subtotal: item.price * (item.qty || item.quantity || 1),
       }));
 
-      const storedUser = localStorage.getItem("user");
-      const user = storedUser ? JSON.parse(storedUser) : null;
-      orderPayload.customer_id = user?.id || null;
+      // customer_id sudah di-set dari useAuth session di atas
+      // (localStorage fallback dihapus — gunakan Supabase auth)
 
       const res = await createOrderDb(orderPayload, itemsPayload, {
         payment_method: checkoutForm.paymentMethod.toLowerCase(),
@@ -501,9 +534,21 @@ export default function GuestShop() {
         </div>
 
         {/* Buttons */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          {/* Tombol Menu Member — hanya tampil jika sudah login */}
+          {isLoggedIn && (
+            <button
+              onClick={() => navigate("/member")}
+              className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-[#855C3B] text-white px-4 py-2.5 rounded-2xl text-xs font-extrabold hover:opacity-90 transition-all shadow-md shadow-amber-700/20 active:scale-[0.97] border-0 cursor-pointer"
+            >
+              <LuAward className="w-3.5 h-3.5" />
+              Portal Member
+            </button>
+          )}
+
+          {/* Cart icon — guarded by handleOpenCart */}
           <button
-            onClick={() => setIsCartOpen(true)}
+            onClick={handleOpenCart}
             className="relative p-2.5 rounded-full bg-[#FAF4EE] hover:bg-[#F2E7DC] text-[#4B2C20] transition-all duration-200 shadow-sm cursor-pointer border-0"
           >
             <LuShoppingCart className="w-5.5 h-5.5" />
@@ -773,6 +818,12 @@ export default function GuestShop() {
         checkoutForm={checkoutForm}
         setCheckoutForm={setCheckoutForm}
         onSubmitOrder={handlePlaceOrder}
+      />
+
+      {/* Auth Prompt Modal (Cart Wall) */}
+      <AuthPromptModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
       />
 
       {/* Floating Social Contact CTA Widget */}

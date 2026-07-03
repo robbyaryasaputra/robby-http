@@ -18,6 +18,7 @@ const HelpCenter = lazy(() => import("./pages/admin/HelpCenter"));
 const ReactHooks = lazy(() => import("./pages/admin/ReactHooks"));
 const Promotions = lazy(() => import("./pages/admin/Promotions"));
 const Payments = lazy(() => import("./pages/admin/Payments"));
+const Reviews = lazy(() => import("./pages/admin/Reviews"));
 
 const ActivityLogs = lazy(() => import("./pages/admin/ActivityLogs"));
 const Login = lazy(() => import("./pages/auth/Login"));
@@ -43,10 +44,14 @@ export default function App() {
           element={<MemberShop />}
         />
 
-        {/* Dashboard admin/cashier — public access */}
+        {/* Dashboard admin/cashier — protected access */}
         <Route
           path="/dashboard"
-          element={<MainLayout search={search} setSearch={setSearch} />}
+          element={
+            <ProtectedRoute allowedRoles={["admin", "cashier"]}>
+              <MainLayout search={search} setSearch={setSearch} />
+            </ProtectedRoute>
+          }
         >
           <Route index element={<Dashboard search={search} />} />
           <Route path="details" element={<Details />} />
@@ -59,6 +64,7 @@ export default function App() {
           <Route path="payments" element={<Payments />} />
           <Route path="settings" element={<Settings />} />
 
+          <Route path="reviews" element={<Reviews />} />
           <Route path="activity-logs" element={<ActivityLogs />} />
           <Route path="help-center" element={<HelpCenter />} />
           <Route path="react-hooks" element={<ReactHooks />} />

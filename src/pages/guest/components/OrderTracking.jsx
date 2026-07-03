@@ -1,12 +1,100 @@
-import { LuSearch, LuUtensils, LuCircleAlert } from "react-icons/lu";
+import { useState } from "react";
+import { LuUtensils, LuCircleAlert, LuLoader } from "react-icons/lu";
+import { supabase } from "../../../lib/supabase";
 
 export default function OrderTracking({
   trackIdInput,
   setTrackIdInput,
-  onTrackOrder,
-  trackedOrder,
-  trackError,
+  trackedOrder: externalTrackedOrder,
+  trackError: externalTrackError,
 }) {
+  const [internalTracked, setInternalTracked] = useState(null);
+  const [internalError, setInternalError] = useState(null);
+  const [searching, setSearching] = useState(false);
+
+  // Use internal state if controlled externally is null
+  const trackedOrder = externalTrackedOrder || internalTracked;
+  const trackError = externalTrackError || internalError;
+
+  const handleTrack = async (e) => {
+    e.preventDefault();
+    setInternalError(null);
+    setInternalTracked(null);
+
+    const input = (trackIdInput || "").trim().toUpperCase();
+    if (!input) {
+      setInternalError("Harap masukkan ID Pesanan terlebih dahulu.");
+      return;
+    }
+
+    setSearching(true);
+    try {
+      // 1. Try Supabase first
+      const { data: dbOrder, error: dbErr } = await supabase
+        .from("orders")
+        .select(`
+          id, order_number, customer_name, status, total_amount,
+          delivery_type, table_number, notes, created_at,
+          order_items ( item_name, quantity, unit_price ),
+          payments ( payment_method )
+        `)
+        .ilike("order_number", input)
+        .maybeSingle();
+
+      if (!dbErr && dbOrder) {
+        const statusMap = {
+          pending: "Pending",
+          processing: "Processing",
+          completed: "Completed",
+          cancelled: "Cancelled",
+        };
+        const mapped = {
+          id: dbOrder.order_number || dbOrder.id,
+          customer: dbOrder.customer_name || "Guest",
+          status: statusMap[dbOrder.status] || "Pending",
+          total: Number(dbOrder.total_amount || 0),
+          tableNumber: dbOrder.table_number,
+          notes: dbOrder.notes,
+          paymentMethod: dbOrder.payments?.[0]?.payment_method || "cash",
+          items: (dbOrder.order_items || []).map((i) => ({
+            name: i.item_name,
+            qty: i.quantity,
+            price: Number(i.unit_price || 0),
+          })),
+        };
+        setInternalTracked(mapped);
+        setSearching(false);
+        return;
+      }
+
+      // 2. Fallback to localStorage
+      const stored = localStorage.getItem("orders");
+      if (stored) {
+        try {
+          const list = JSON.parse(stored);
+          const found = list.find(
+            (o) => (o.id || "").toUpperCase() === input
+          );
+          if (found) {
+            setInternalTracked(found);
+            setSearching(false);
+            return;
+          }
+        } catch (_) {}
+      }
+
+      setInternalError(
+        `ID Pesanan "${input}" tidak ditemukan. Pastikan penulisan benar (contoh: ORD-001).`
+      );
+    } catch (err) {
+      console.error("Track order error:", err);
+      setInternalError("Gagal melacak pesanan. Coba lagi.");
+    } finally {
+      setSearching(false);
+    }
+  };
+
+
   const getStatusColor = (status) => {
     switch (status) {
       case "Completed":
@@ -97,21 +185,25 @@ export default function OrderTracking({
 
         {/* Form */}
         <form
-          onSubmit={onTrackOrder}
+          onSubmit={handleTrack}
           className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto bg-[#F9F5EE] p-3 rounded-2xl border border-[#EBE3D5]"
         >
           <input
             type="text"
             placeholder="Masukkan ID Pesanan (contoh: ORD-123)..."
             value={trackIdInput}
-            onChange={(e) => setTrackIdInput(e.target.value)}
+            onChange={(e) => setTrackIdInput(e.target.value.toUpperCase())}
             className="flex-1 px-4 py-3 rounded-xl bg-white border border-[#EBE3D5] text-[#2C1A0E] text-sm focus:outline-none focus:ring-2 focus:ring-[#855C3B]/20"
           />
           <button
             type="submit"
-            className="py-3 px-6 rounded-xl bg-[#855C3B] text-white hover:bg-[#5F3A27] font-bold text-sm shadow-md transition-colors active:scale-[0.98] cursor-pointer"
+            disabled={searching}
+            className="py-3 px-6 rounded-xl bg-[#855C3B] text-white hover:bg-[#5F3A27] font-bold text-sm shadow-md transition-colors active:scale-[0.98] cursor-pointer disabled:opacity-60 flex items-center gap-2"
           >
-            Lacak Sekarang
+            {searching ? (
+              <LuLoader className="w-4 h-4 animate-spin" />
+            ) : null}
+            {searching ? "Mencari..." : "Lacak Sekarang"}
           </button>
         </form>
 
@@ -203,11 +295,11 @@ export default function OrderTracking({
                         {item.name}
                       </div>
                       <div className="text-xs text-slate-500">
-                        {item.qty} x ${Number(item.price).toFixed(2)}
+                      {item.qty} x IDR {Number(item.price).toLocaleString("id-ID")}
                       </div>
                     </div>
                     <div className="text-sm font-bold text-[#855C3B] text-right">
-                      ${Number(item.price * item.qty).toFixed(2)}
+                    IDR {Number(item.price * item.qty).toLocaleString("id-ID")}
                     </div>
                   </div>
                 ))}
@@ -216,7 +308,7 @@ export default function OrderTracking({
                     <span className="block text-[10px] uppercase tracking-wider text-slate-400">
                       Metode Pembayaran
                     </span>
-                    <span className="block pt-1 text-sm font-bold text-slate-800">
+                <span className="block pt-1 text-sm font-bold text-slate-800 capitalize">
                       {trackedOrder.paymentMethod || "Cash"}
                     </span>
                   </div>
@@ -233,7 +325,7 @@ export default function OrderTracking({
                 </div>
                 <div className="flex justify-between items-center pt-3 mt-3 font-extrabold text-base text-[#2C1A0E]">
                   <span>Total Pembayaran</span>
-                  <span>${trackedOrder.total.toFixed(2)}</span>
+                  <span>IDR {Number(trackedOrder.total).toLocaleString("id-ID")}</span>
                 </div>
               </div>
               {trackedOrder.tableNumber && (

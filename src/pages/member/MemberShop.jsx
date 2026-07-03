@@ -6,6 +6,7 @@ import {
   LuShoppingCart,
   LuCheck,
   LuCircleAlert,
+  LuLogOut,
 } from "react-icons/lu";
 import { supabase } from "../../lib/supabase";
 import {
@@ -28,6 +29,7 @@ import MemberRewards from "./components/MemberRewards";
 import MemberTransactions from "./components/MemberTransactions";
 import MemberCartDrawer from "./components/MemberCartDrawer";
 import MemberCheckoutSuccess from "./components/MemberCheckoutSuccess";
+import NotificationDrawer, { useUnreadNotifCount } from "./components/NotificationDrawer";
 
 
 // Seed Tiers
@@ -137,7 +139,16 @@ const tierNameToId = {
 
 export default function MemberShop() {
   const navigate = useNavigate();
-  const { profile, refreshProfile } = useAuth();
+  const { profile, refreshProfile, signOut } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
 
   // App States
   const [activeUser, setActiveUser] = useState(null);
@@ -172,6 +183,10 @@ export default function MemberShop() {
   // Toast messages
   const [successToast, setSuccessToast] = useState("");
   const [errorToast, setErrorToast] = useState("");
+
+  // Notification Drawer state
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const unreadNotifCount = useUnreadNotifCount(activeUser?.id || null);
 
   useEffect(() => {
     if (profile) {
@@ -379,13 +394,13 @@ export default function MemberShop() {
         customer_id: activeUser?.id || null,
         customer_name: activeUser?.name || "Member",
         status: "processing",
-        delivery_type: "dine_in",
-        table_number: null,
+        delivery_type: checkoutForm.deliveryType || "dine_in",
+        table_number: checkoutForm.deliveryType === "dine_in" ? (checkoutForm.tableNumber || null) : null,
         subtotal: subtotal,
         discount_amount: discount,
         tax_amount: 0,
         total_amount: total,
-        notes: null,
+        notes: checkoutForm.notes || null,
       };
 
       const itemsPayload = cart.map((i) => ({
@@ -490,40 +505,72 @@ export default function MemberShop() {
     return 0;
   };
 
-  const handleApplyPromo = (code) => {
+  const handleApplyPromo = async (code) => {
     const normalizedCode = (code || promoCode || "").trim().toUpperCase();
-    if (!normalizedCode) {
-      setPromoError("Masukkan kode promo terlebih dahulu.");
-      setAppliedPromo(null);
-      return;
-    }
-
-    const PROMO_CODES = [
-      {
-        code: "MEMBER10",
-        type: "percent",
-        value: 10,
-        description: "Diskon 10% untuk member",
-      },
-      {
-        code: "COFFEE20",
-        type: "fixed",
-        value: 20000,
-        description: "Potongan Rp20.000 untuk pesanan",
-      },
-    ];
-
-    const found = PROMO_CODES.find((promo) => promo.code === normalizedCode);
-    if (!found) {
-      setPromoError("Kode promo tidak valid.");
-      setAppliedPromo(null);
-      return;
-    }
-
     setPromoError("");
-    setAppliedPromo(found);
-    setPromoCode(found.code);
-    setSuccessToast(`Promo ${found.code} berhasil diterapkan!`);
+    if (!normalizedCode) {
+      setAppliedPromo(null);
+      setPromoError("Masukkan kode promo terlebih dahulu.");
+      return;
+    }
+
+    try {
+      // Query Supabase promotions table (same as GuestShop)
+      const { data, error } = await supabase
+        .from("promotions")
+        .select("*")
+        .eq("code", normalizedCode)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+        setPromoError("Kode promo tidak valid.");
+        setAppliedPromo(null);
+        return;
+      }
+
+      const now = new Date();
+      if (data.start_date && now < new Date(data.start_date)) {
+        setPromoError("Voucher ini belum dimulai.");
+        setAppliedPromo(null);
+        return;
+      }
+      if (data.end_date && now > new Date(data.end_date)) {
+        setPromoError("Voucher ini sudah kedaluwarsa.");
+        setAppliedPromo(null);
+        return;
+      }
+      if (data.max_uses && data.current_uses >= data.max_uses) {
+        setPromoError("Kuota voucher ini sudah habis.");
+        setAppliedPromo(null);
+        return;
+      }
+      if (calculateCartSubtotal() < Number(data.min_order_amount || 0)) {
+        setPromoError(
+          `Minimal belanja IDR ${Number(data.min_order_amount).toLocaleString("id-ID")} untuk voucher ini.`
+        );
+        setAppliedPromo(null);
+        return;
+      }
+
+      // Map db fields to local promo format
+      const mapped = {
+        ...data,
+        code: data.code,
+        type: data.discount_type === "percentage" ? "percent" : "fixed",
+        value: Number(data.discount_value || 0),
+        description: data.description || `Voucher ${data.code}`,
+      };
+      setPromoError("");
+      setAppliedPromo(mapped);
+      setPromoCode(mapped.code);
+      setSuccessToast(`Promo ${mapped.code} berhasil diterapkan!`);
+    } catch (err) {
+      console.error("Promo validation error:", err);
+      setPromoError("Gagal memvalidasi kode promo.");
+    }
   };
 
   const [menuItems, setMenuItems] = useState([]);
@@ -609,12 +656,38 @@ export default function MemberShop() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link
-              to="/dashboard"
-              className="text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors hidden sm:block border-r border-slate-200 pr-3.5"
-            >
-              Dashboard Admin
-            </Link>
+            {profile ? (
+              <button
+                onClick={handleLogout}
+                className="text-xs font-bold text-rose-600 hover:text-rose-800 transition-colors pr-3.5 border-r border-slate-200 cursor-pointer border-0 bg-transparent flex items-center gap-1.5"
+              >
+                <LuLogOut className="w-4 h-4" />
+                Logout
+              </button>
+            ) : (
+              <Link
+                to="/auth/login"
+                className="text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors pr-3.5 border-r border-slate-200"
+              >
+                Login
+              </Link>
+            )}
+
+            {/* Notification Bell */}
+            {activeUser?.id && (
+              <button
+                onClick={() => setIsNotifOpen(true)}
+                className="relative p-2 rounded-xl hover:bg-slate-100 transition-all cursor-pointer flex items-center gap-1 text-slate-500 border-0 bg-transparent"
+                title="Notifikasi"
+              >
+                <LuBell className="w-5 h-5" />
+                {unreadNotifCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-black">
+                    {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {/* Cart Button trigger */}
             <button
@@ -755,6 +828,15 @@ export default function MemberShop() {
         checkoutSuccess={checkoutSuccess}
         onClose={() => setCheckoutSuccess(null)}
       />
+
+      {/* NOTIFICATION DRAWER */}
+      {activeUser?.id && (
+        <NotificationDrawer
+          userId={activeUser.id}
+          isOpen={isNotifOpen}
+          onClose={() => setIsNotifOpen(false)}
+        />
+      )}
 
     </div>
   );
