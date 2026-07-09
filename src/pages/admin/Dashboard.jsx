@@ -18,7 +18,7 @@ export default function Dashboard() {
       change: "+0%",
       trend: "up",
       icon: LuTrendingUp,
-      color: "from-amber-500 to-amber-700",
+      color: "from-[#8b6f47] to-[#3d2311]",
       bgLight: "bg-amber-50",
       sparkline: [0, 0, 0, 0, 0, 0, 0],
     },
@@ -28,8 +28,8 @@ export default function Dashboard() {
       change: "+0%",
       trend: "up",
       icon: LuShoppingCart,
-      color: "from-emerald-500 to-emerald-700",
-      bgLight: "bg-emerald-50",
+      color: "from-[#1c1109] to-[#3d2311]",
+      bgLight: "bg-amber-50",
       sparkline: [0, 0, 0, 0, 0, 0, 0],
     },
     {
@@ -38,8 +38,8 @@ export default function Dashboard() {
       change: "+0%",
       trend: "up",
       icon: LuUsers,
-      color: "from-blue-500 to-blue-700",
-      bgLight: "bg-blue-50",
+      color: "from-[#5f3a27] to-[#8b6f47]",
+      bgLight: "bg-amber-50",
       sparkline: [0, 0, 0, 0, 0, 0, 0],
     },
     {
@@ -48,8 +48,8 @@ export default function Dashboard() {
       change: "0%",
       trend: "up",
       icon: LuCoffee,
-      color: "from-purple-500 to-purple-700",
-      bgLight: "bg-purple-50",
+      color: "from-[#2e1e12] to-[#5f3a27]",
+      bgLight: "bg-amber-50",
       sparkline: [0, 0, 0, 0, 0, 0, 0],
     },
   ]);
@@ -78,32 +78,27 @@ export default function Dashboard() {
       // 3. Fetch Orders (to compute Total Orders, Total Revenue, Sparklines, Charts)
       const { data: ordersData, error: ordersErr } = await supabase
         .from("orders")
-        .select("id, total_amount, status, created_at, customer_name, order_number, users(name)")
+        .select("id, total_amount, status, created_at, customer_name, order_number, profiles(name)")
         .order("created_at", { ascending: false });
 
-      if (ordersErr) throw ordersErr;
-
+      // Calculate daily sales from orders
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const dailySales = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+      const dailyOrderCounts = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+      
       const totalOrders = ordersData?.length || 0;
       const completedOrders = ordersData?.filter(o => o.status === 'completed' || o.status === 'processing') || [];
       const totalRevenue = completedOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
 
-      // Target monthly revenue is 500,000 IDR
-      const targetRevenue = 500000;
-      const calculatedPercent = Math.min(100, Math.round((totalRevenue / targetRevenue) * 100));
-      setTargetPercent(calculatedPercent);
-
-      // Compute weekly trend
-      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const dailySales = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
-      
       ordersData?.forEach(o => {
         const d = new Date(o.created_at);
         const dayName = dayNames[d.getDay()];
         if (o.status === 'completed' || o.status === 'processing') {
           dailySales[dayName] = (dailySales[dayName] || 0) + Number(o.total_amount || 0);
         }
+        dailyOrderCounts[dayName] = (dailyOrderCounts[dayName] || 0) + 1;
       });
-      
+
       const salesTrendValues = [
         dailySales.Mon,
         dailySales.Tue,
@@ -114,13 +109,6 @@ export default function Dashboard() {
         dailySales.Sun
       ];
 
-      // Sparklines (e.g. order counts per day of week)
-      const dailyOrderCounts = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
-      ordersData?.forEach(o => {
-        const d = new Date(o.created_at);
-        const dayName = dayNames[d.getDay()];
-        dailyOrderCounts[dayName] = (dailyOrderCounts[dayName] || 0) + 1;
-      });
       const orderSparkline = [
         dailyOrderCounts.Mon,
         dailyOrderCounts.Tue,
@@ -131,15 +119,20 @@ export default function Dashboard() {
         dailyOrderCounts.Sun
       ];
 
+      // Target monthly revenue is 500 USD
+      const targetRevenue = 500;
+      const calculatedPercent = Math.min(100, Math.round((totalRevenue / targetRevenue) * 100));
+      setTargetPercent(calculatedPercent);
+
       // Update stats cards
       setStats([
         {
           label: "Total Revenue",
-          value: `IDR ${totalRevenue.toLocaleString("id-ID")}`,
+          value: `$ ${totalRevenue.toFixed(2)}`,
           change: totalRevenue > 0 ? "+12.5%" : "0%",
           trend: "up",
           icon: LuTrendingUp,
-          color: "from-amber-500 to-amber-700",
+          color: "from-[#8b6f47] to-[#3d2311]",
           bgLight: "bg-amber-50",
           sparkline: salesTrendValues,
         },
@@ -149,8 +142,8 @@ export default function Dashboard() {
           change: totalOrders > 0 ? "+8.2%" : "0%",
           trend: "up",
           icon: LuShoppingCart,
-          color: "from-emerald-500 to-emerald-700",
-          bgLight: "bg-emerald-50",
+          color: "from-[#1c1109] to-[#3d2311]",
+          bgLight: "bg-amber-50",
           sparkline: orderSparkline,
         },
         {
@@ -159,8 +152,8 @@ export default function Dashboard() {
           change: usersCount > 0 ? "+5.1%" : "0%",
           trend: "up",
           icon: LuUsers,
-          color: "from-blue-500 to-blue-700",
-          bgLight: "bg-blue-50",
+          color: "from-[#5f3a27] to-[#8b6f47]",
+          bgLight: "bg-amber-50",
           sparkline: [10, 15, 18, 20, 22, 25, 28],
         },
         {
@@ -169,8 +162,8 @@ export default function Dashboard() {
           change: "0.0%",
           trend: "up",
           icon: LuCoffee,
-          color: "from-purple-500 to-purple-700",
-          bgLight: "bg-purple-50",
+          color: "from-[#2e1e12] to-[#5f3a27]",
+          bgLight: "bg-amber-50",
           sparkline: [menuCount || 0, menuCount || 0, menuCount || 0, menuCount || 0, menuCount || 0, menuCount || 0, menuCount || 0],
         },
       ]);
@@ -179,7 +172,7 @@ export default function Dashboard() {
       const mappedRecent = (ordersData || []).slice(0, 5).map(o => ({
         id: o.order_number || `ORD-${String(o.id).padStart(3, '0')}`,
         realId: o.id,
-        customer: o.users?.name || o.customer_name || "Guest",
+        customer: o.profiles?.name || o.customer_name || "Guest",
         item: "Memuat...",
         total: Number(o.total_amount || 0),
         status: o.status.charAt(0).toUpperCase() + o.status.slice(1)
@@ -321,11 +314,11 @@ export default function Dashboard() {
         {/* Monthly Target Progress */}
         <SlideUp duration={0.5} delay={0.1}>
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
-            <Heading level={3} className="!text-base mb-4">Monthly Sales Target</Heading>
+            <Heading level={3} className="!text-base mb-4" style={{ fontFamily: "'Georgia', serif" }}>Monthly Sales Target</Heading>
             <ProgressBar
               label="Revenue Target"
               value={targetPercent}
-              target="IDR 500.000"
+              target="$ 500.00"
               color="bg-gradient-to-r from-amber-500 to-amber-600"
             />
           </div>
@@ -335,7 +328,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2">
             <TrendLine
-              title="Weekly Sales Trend (IDR)"
+              title="Weekly Sales Trend ($)"
               data={salesTrend}
               labels={trendLabels}
               height={200}
@@ -354,7 +347,7 @@ export default function Dashboard() {
           {/* Recent Orders */}
           <div className="lg:col-span-3 bg-white rounded-2xl p-6 shadow-sm border border-gray-50 flex flex-col justify-between">
             <div className="flex-1">
-              <Heading level={3} className="!text-lg mb-4">Recent Orders</Heading>
+              <Heading level={3} className="!text-lg mb-4" style={{ fontFamily: "'Georgia', serif" }}>Recent Orders</Heading>
               {recentOrders.length === 0 ? (
                 <div className="text-center py-10 text-slate-400 text-sm">Belum ada pesanan masuk</div>
               ) : (
@@ -389,7 +382,7 @@ export default function Dashboard() {
 
           {/* Top Products */}
           <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
-            <Heading level={3} className="!text-lg mb-4">Top Products</Heading>
+            <Heading level={3} className="!text-lg mb-4" style={{ fontFamily: "'Georgia', serif" }}>Top Products</Heading>
             {topProducts.length === 0 ? (
               <div className="text-center py-10 text-slate-400 text-sm">Belum ada produk terjual</div>
             ) : (
@@ -414,7 +407,7 @@ export default function Dashboard() {
         <SlideUp duration={0.5} delay={0.2}>
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50 flex flex-col justify-between">
             <div>
-              <Heading level={3} className="!text-lg mb-4">Customer Feedbacks & Ratings</Heading>
+              <Heading level={3} className="!text-lg mb-4" style={{ fontFamily: "'Georgia', serif" }}>Customer Feedbacks & Ratings</Heading>
               {feedbacks.length === 0 ? (
                 <div className="text-center py-10 text-slate-400 text-sm">Belum ada ulasan dari pelanggan</div>
               ) : (

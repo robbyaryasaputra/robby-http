@@ -712,3 +712,56 @@ FROM orders o
 LEFT JOIN profiles u ON u.id = o.customer_id
 LEFT JOIN payments pay ON pay.order_id = o.id
 LEFT JOIN promotions pr ON pr.id = o.promotion_id;
+
+
+-- ────────────────────────────────────────────────────────
+-- Function: Adjust Member Points manually via RPC (POST)
+-- ────────────────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION public.adjust_member_points(
+    p_member_id UUID,
+    p_change_amount INT,
+    p_description TEXT
+)
+RETURNS VOID AS $$
+DECLARE
+    v_current_points INT;
+    v_total_points INT;
+    v_new_current_points INT;
+    v_new_total_points INT;
+BEGIN
+    -- Get current points
+    SELECT current_points, total_points 
+    INTO v_current_points, v_total_points
+    FROM public.members
+    WHERE id = p_member_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Member not found';
+    END IF;
+
+    -- Calculate new points
+    v_new_current_points := GREATEST(0, v_current_points + p_change_amount);
+    v_new_total_points := GREATEST(0, v_total_points + (CASE WHEN p_change_amount > 0 THEN p_change_amount ELSE 0 END));
+
+    -- Update member points
+    UPDATE public.members
+    SET current_points = v_new_current_points,
+        total_points = v_new_total_points
+    WHERE id = p_member_id;
+
+    -- Insert point transaction log
+    INSERT INTO public.activity_logs (user_id, action, entity_type, entity_id, new_data)
+    VALUES (
+        p_member_id,
+        CASE WHEN p_change_amount > 0 THEN 'POINTS_BONUS' ELSE 'POINTS_REDEEM' END,
+        'members',
+        p_member_id::TEXT,
+        jsonb_build_object(
+            'delta', p_change_amount,
+            'points', v_new_current_points,
+            'total', v_new_total_points,
+            'description', p_description
+        )
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;

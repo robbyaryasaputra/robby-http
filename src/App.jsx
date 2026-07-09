@@ -8,7 +8,6 @@ const AuthLayout = lazy(() => import("./layouts/AuthLayout"));
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
 const Details = lazy(() => import("./pages/admin/Details"));
 const Menu = lazy(() => import("./pages/admin/Menu"));
-const Favorites = lazy(() => import("./pages/admin/Favorites"));
 const Settings = lazy(() => import("./pages/admin/Settings"));
 const NotFound = lazy(() => import("./pages/admin/NotFound"));
 const Users = lazy(() => import("./pages/admin/Users"));
@@ -59,7 +58,6 @@ export default function App() {
           <Route path="users" element={<Users />} />
           <Route path="members" element={<Members />} />
           <Route path="orders" element={<Orders />} />
-          <Route path="favorites" element={<Favorites />} />
           <Route path="promotions" element={<Promotions />} />
           <Route path="payments" element={<Payments />} />
           <Route path="settings" element={<Settings />} />

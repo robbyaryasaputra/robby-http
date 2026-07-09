@@ -27,7 +27,6 @@ const allNavItems = [
   { path: "/dashboard/orders", label: "Orders", icon: LuClipboardList, roles: ["admin", "cashier"] },
   { path: "/dashboard/users", label: "Users", icon: LuUsers, roles: ["admin"] },
   { path: "/dashboard/members", label: "Members", icon: LuAward, roles: ["admin"] },
-  { path: "/dashboard/favorites", label: "Favorites", icon: LuHeart, roles: ["admin"] },
   { path: "/dashboard/promotions", label: "Promotions", icon: LuTag, roles: ["admin"] },
   { path: "/dashboard/payments", label: "Payments", icon: LuCreditCard, roles: ["admin", "cashier"] },
   { path: "/dashboard/reviews", label: "Reviews", icon: LuMessageSquare, roles: ["admin", "cashier"] },
@@ -63,9 +62,10 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`fixed left-0 top-0 z-50 flex flex-col h-screen bg-[#855C3B] shadow-[10px_0_60px_rgba(34,20,14,0.12)] transition-all duration-300 ease-in-out ${
+      className={`fixed left-0 top-0 z-50 flex flex-col h-screen shadow-[10px_0_60px_rgba(34,20,14,0.15)] transition-all duration-300 ease-in-out ${
         isCollapsed ? "w-24" : "w-72"
       }`}
+      style={{ background: "#1c1109" }}
     >
       {/* Bagian Header (Logo & Toggle) */}
       <div className="flex items-center justify-between px-6 py-7 shrink-0">
@@ -76,18 +76,23 @@ export default function Sidebar() {
             isCollapsed ? "w-0 opacity-0 hidden" : "w-auto opacity-100"
           }`}
         >
-          <div className="w-11 h-11 rounded-3xl bg-[#5F3A27] flex items-center justify-center shadow-lg shadow-black/10 shrink-0">
-            <LuCoffee className="w-5 h-5 text-white" />
+          <div className="w-11 h-11 rounded-3xl bg-[#3d2311] flex items-center justify-center shadow-lg shadow-black/10 shrink-0">
+            <LuCoffee className="w-5 h-5 text-[#f5c842]" />
           </div>
-          <span className="text-[#FAF4EE] font-semibold text-lg tracking-wide whitespace-nowrap">
-            Coffee Shop
-          </span>
+          <div>
+            <span className="text-white font-bold text-base tracking-wide whitespace-nowrap block" style={{ fontFamily: "'Georgia', serif" }}>
+              Artisanal Bean
+            </span>
+            <span className="text-[8px] text-[#f5c842] font-bold uppercase tracking-widest block -mt-1">
+              Admin Portal
+            </span>
+          </div>
         </Link>
 
         {/* Tombol Toggle Buka/Tutup */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`p-2 rounded-xl text-white hover:bg-[#7A503C] transition-colors ${
+          className={`p-2 rounded-xl text-white hover:bg-[#3d2311] transition-colors border-0 bg-transparent cursor-pointer ${
             isCollapsed ? "mx-auto" : ""
           }`}
           title={isCollapsed ? "Buka Menu" : "Tutup Menu"}
@@ -122,18 +127,19 @@ export default function Sidebar() {
       </nav>
 
       {/* Bagian Bawah (Refresh & Logout) */}
-      <div className="px-4 pb-6 pt-4 space-y-3 shrink-0 bg-[#855C3B] shadow-[0_-10px_20px_rgba(133,92,59,1)]">
+      <div className="px-4 pb-6 pt-4 space-y-3 shrink-0" style={{ background: "#1c1109", borderTop: "1px solid #2e1e12" }}>
         <button
           id="sidebar-refresh"
-          className="w-full h-11 rounded-2xl bg-[#7A503C] flex items-center justify-center text-[#F2E7DC] hover:bg-[#6d4734] transition-all duration-300"
+          className="w-full h-11 rounded-2xl flex items-center justify-center text-[#F2E7DC] hover:text-white hover:bg-[#3d2311] transition-all duration-300 border-0 cursor-pointer bg-[#2e1e12]"
           title="Refresh"
+          onClick={() => window.location.reload()}
         >
           <LuRefreshCw className="w-5 h-5" />
         </button>
         <button
           id="sidebar-logout"
           onClick={handleLogout}
-          className={`w-full h-11 rounded-2xl bg-[#4B2C20] flex items-center justify-center text-[#F8EDE5] hover:bg-[#3f2419] transition-all duration-300 font-semibold text-sm ${
+          className={`w-full h-11 rounded-2xl bg-[#4B2C20] flex items-center justify-center text-[#F8EDE5] hover:bg-[#3f2419] transition-all duration-300 font-semibold text-sm border-0 cursor-pointer ${
             isCollapsed ? "px-0" : "px-4"
           }`}
           title="Logout"

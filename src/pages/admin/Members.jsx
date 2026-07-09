@@ -84,33 +84,49 @@ export default function Members() {
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch all registered members from v_member_details
+      // 1. Fetch all registered members from members table joining profiles relation
       const { data: usersData, error: usersError } = await supabase
-        .from("v_member_details")
-        .select("*")
+        .from("members")
+        .select(`
+          id,
+          member_code,
+          tier,
+          total_points,
+          current_points,
+          join_date,
+          expired_date,
+          profiles (
+            name,
+            email,
+            phone,
+            avatar_url,
+            status
+          )
+        `)
         .order("join_date", { ascending: false });
 
       if (usersError) throw usersError;
       setDbMode("supabase");
 
-      const mergedMembers = usersData.map((user) => {
-        const tierId = tierNameToId[user.tier_name] || 1;
+      const mergedMembers = usersData.map((m) => {
+        const tierId = tierNameToId[m.tier] || 1;
         const tier = MEMBERSHIP_TIERS.find((t) => t.id === tierId) || MEMBERSHIP_TIERS[0];
         
         return {
-          id: user.member_id,
-          name: user.full_name,
-          email: user.phone || "", // using phone space for now if email unavailable
-          membershipId: user.member_id,
-          member_code: user.member_code,
+          id: m.id,
+          name: m.profiles?.name || "Guest",
+          email: m.profiles?.email || m.profiles?.phone || "",
+          phone: m.profiles?.phone || "",
+          membershipId: m.id,
+          member_code: m.member_code,
           tier_id: tierId,
           tierName: tier.name,
           badgeColor: tier.badge_color,
           badgeClass: tier.text_color,
-          total_points: user.total_points,
-          current_points: user.current_points,
-          join_date: user.join_date,
-          status: user.user_status,
+          total_points: m.total_points,
+          current_points: m.current_points,
+          join_date: m.join_date,
+          status: m.profiles?.status || "active",
         };
       });
 
@@ -271,40 +287,16 @@ export default function Members() {
     setError(null);
 
     try {
-      const newCurrentPoints = Math.max(0, selectedMember.current_points + changeAmount);
-      // Lifetime points only increase when earn or bonus, adjustments can reduce it too if negative
-      const newTotalPoints = Math.max(0, selectedMember.total_points + (changeAmount > 0 ? changeAmount : 0));
-
       const txDescription = adjustData.description || (changeAmount > 0 ? "Penyesuaian Poin oleh Admin" : "Pengurangan Poin oleh Admin");
 
-      // Update existing membership (tier is handled by db trigger)
-      const { error: updError } = await supabase
-        .from("members")
-        .update({
-          current_points: newCurrentPoints,
-          total_points: newTotalPoints,
-        })
-        .eq("id", selectedMember.id);
+      // Call database function (RPC) using POST to bypass PATCH CORS blocking
+      const { error: rpcError } = await supabase.rpc("adjust_member_points", {
+        p_member_id: selectedMember.id,
+        p_change_amount: changeAmount,
+        p_description: txDescription
+      });
 
-      if (updError) throw updError;
-
-      // Insert point transaction
-      const { error: txError } = await supabase
-        .from("activity_logs")
-        .insert({
-          user_id: selectedMember.id,
-          action: changeAmount > 0 ? "POINTS_BONUS" : "POINTS_REDEEM",
-          entity_type: "members",
-          entity_id: selectedMember.id,
-          new_data: {
-            delta: changeAmount,
-            points: newCurrentPoints,
-            total: newTotalPoints,
-            description: txDescription
-          }
-        });
-
-      if (txError) console.error("Could not write transaction log:", txError.message);
+      if (rpcError) throw rpcError;
 
       setSuccessMsg(`Poin ${selectedMember.name} berhasil disesuaikan (${changeAmount > 0 ? "+" : ""}${changeAmount} Poin)!`);
       setAdjustModalOpen(false);
@@ -577,11 +569,11 @@ export default function Members() {
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-2xs font-bold uppercase tracking-wider ${
                     member.status === "active"
                       ? "text-emerald-700 bg-emerald-50 border border-emerald-200"
-                      : member.status === "suspended"
+                      : member.status === "banned" || member.status === "suspended"
                       ? "text-red-700 bg-red-50 border border-red-200"
                       : "text-slate-500 bg-slate-50 border border-slate-200"
                   }`}>
-                    {member.status === "active" ? "Aktif" : member.status === "suspended" ? "Suspen" : "Expired"}
+                    {member.status === "active" ? "Aktif" : member.status === "banned" ? "Banned" : member.status === "suspended" ? "Suspen" : "Nonaktif"}
                   </span>
                 </td>
 
@@ -650,6 +642,12 @@ export default function Members() {
             </div>
 
             <form onSubmit={handleAdjustPointsSubmit} className="space-y-4">
+              {error && (
+                <div className="flex items-center gap-2 p-3 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl animate-[fadeIn_0.2s_ease-out]">
+                  <LuCircleAlert className="w-4 h-4 text-red-500 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
               {/* Member Info Snippet */}
               <div className="bg-slate-50 p-3 rounded-xl flex items-center gap-3">
                 <Avatar name={selectedMember.name} size="sm" />

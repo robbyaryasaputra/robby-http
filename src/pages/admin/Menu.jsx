@@ -5,7 +5,7 @@ import { HeroSection, ProductSection } from "../../components/section";
 import { TabBar, Breadcrumb } from "../../components/navigation";
 import { RatingStars } from "../../components/status";
 import { Price, Paragraph, Caption } from "../../components/typography";
-import { FavoriteButton, FAB } from "../../components/action";
+import { FAB } from "../../components/action";
 import { Tooltip } from "../../components/data-display";
 import { Gallery } from "../../components/media";
 import { ModalOverlay } from "../../components/overlay";
@@ -16,7 +16,6 @@ import { useEffect } from "react";
 import db, {
   getMenuItems,
   getCategories,
-  toggleFavorite as toggleFav,
 } from "../../lib/db";
 import { supabase } from "../../lib/supabase";
 import { MenuFormModal } from "../../components/auth";
@@ -52,7 +51,6 @@ export default function Menu() {
   const { search } = useOutletContext();
   const { profile } = useAuth();
   const [activeCategory, setActiveCategory] = useState("All");
-  const [favorites, setFavorites] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [categoryList, setCategoryList] = useState(categories);
   const [dbCategories, setDbCategories] = useState([]);
@@ -75,17 +73,6 @@ export default function Menu() {
     return matchSearch && matchCategory;
   });
 
-  const handleToggleFavorite = async (menuItemId) => {
-    if (!userId) return alert("Please sign in to favorite items");
-    const res = await toggleFav(userId, menuItemId);
-    if (res.error) return console.error(res.error);
-    // refetch favorites
-    const { data } = await supabase
-      .from("favorites")
-      .select("menu_item_id")
-      .eq("customer_id", userId);
-    setFavorites((data || []).map((r) => r.menu_item_id));
-  };
 
   const fetchMenuAndCategories = async () => {
     try {
@@ -105,11 +92,6 @@ export default function Menu() {
       // fetch favorites
       if (profile) {
         setUserId(profile.id);
-        const { data: favs } = await supabase
-          .from("favorites")
-          .select("menu_item_id")
-          .eq("customer_id", profile.id);
-        setFavorites((favs || []).map((r) => r.menu_item_id));
       }
     } catch (e) {
       console.error("Gagal memuat data menu:", e);
@@ -314,12 +296,6 @@ export default function Menu() {
                     </div>
                   )
                 )}
-                <div className="absolute top-4 right-4">
-                  <FavoriteButton
-                    isFavorite={favorites.includes(coffee.id)}
-                    onClick={() => handleToggleFavorite(coffee.id)}
-                  />
-                </div>
               </div>
 
               <div className="p-6">

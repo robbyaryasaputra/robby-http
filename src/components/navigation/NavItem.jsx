@@ -18,8 +18,8 @@ export default function NavItem({
         transition-all duration-300
         ${
           isActive
-            ? "bg-[#D1876A] text-white shadow-lg shadow-[#0000001a]"
-            : "text-[#E9D7C7] hover:bg-[#7b4f31] hover:text-white"
+            ? "bg-[#8b6f47] text-white shadow-lg shadow-[#0000001a]"
+            : "text-[#ede8e1] hover:bg-[#3d2311]/40 hover:text-white"
         }
         ${className}
       `}
