@@ -765,3 +765,19 @@ BEGIN
     );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+
+-- ────────────────────────────────────────────────────────
+-- Function: Update Order Status via RPC (POST)
+-- ────────────────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION public.update_order_status(
+    p_order_id UUID,
+    p_status TEXT
+)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE public.orders
+    SET status = p_status::public.order_status
+    WHERE id = p_order_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;

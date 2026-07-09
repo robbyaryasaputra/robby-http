@@ -21,19 +21,20 @@ export default function Payments() {
       const { data, error: fetchError } = await supabase
         .from("payments")
         .select(
-          `id, order_id, payment_method, amount, status, paid_at, created_at, orders(order_number, customer_name)`,
+          `id, order_id, payment_method, amount, status, paid_at, created_at, orders(order_number, customer_name, profiles(name))`,
         )
         .order("created_at", { ascending: false });
 
       if (fetchError) throw fetchError;
 
       const mapped = (data || []).map((payment) => {
-        const order = payment.orders || payment.orders?.[0] || {};
+        const order = payment.orders || {};
+        const customerName = order.profiles?.name || order.customer_name || "Guest";
         return {
           id: payment.id,
           orderId: payment.order_id,
           orderNumber: order.order_number || "-",
-          customerName: order.customer_name || "Guest",
+          customerName: customerName,
           method: payment.payment_method || "cash",
           amount: Number(payment.amount || 0),
           status: payment.status || "pending",
@@ -165,11 +166,7 @@ export default function Payments() {
                 />
               </td>
               <td className="px-6 py-4 text-sm font-semibold text-[#2C1A0E]">
-                Rp
-                {payment.amount.toLocaleString("id-ID", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                ${payment.amount.toFixed(2)}
               </td>
               <td className="px-6 py-4 text-sm">
                 {renderStatus(payment.status)}

@@ -148,14 +148,17 @@ export default function Orders() {
     const dbStatus = newStatus.toLowerCase(); // 'Completed' -> 'completed'
 
     try {
-      const { error } = await supabase
-        .from("orders")
-        .update({ status: dbStatus })
-        .eq("id", dbId);
+      // Call database function (RPC) using POST to bypass PATCH CORS blocking
+      const { error } = await supabase.rpc("update_order_status", {
+        p_order_id: dbId,
+        p_status: dbStatus
+      });
 
       if (error) throw error;
     } catch (err) {
       console.error("Gagal memperbarui status order di Supabase:", err);
+      alert(`Gagal memperbarui status order: ${err.message}`);
+      return; // Stop update if database fails
     }
 
     const updated = orders.map((o) => {
@@ -450,15 +453,15 @@ export default function Orders() {
               )}
               {(selectedOrder.status === "Pending" ||
                 selectedOrder.status === "Processing") && (
-                <button
-                  onClick={() =>
-                    updateOrderStatus(selectedOrder.id, "Cancelled")
-                  }
-                  className="py-3 px-4 rounded-xl border border-red-200 text-red-600 font-semibold text-sm hover:bg-red-50 transition-colors active:scale-[0.98]"
-                >
-                  Cancel Order
-                </button>
-              )}
+                  <button
+                    onClick={() =>
+                      updateOrderStatus(selectedOrder.id, "Cancelled")
+                    }
+                    className="py-3 px-4 rounded-xl border border-red-200 text-red-600 font-semibold text-sm hover:bg-red-50 transition-colors active:scale-[0.98]"
+                  >
+                    Cancel Order
+                  </button>
+                )}
             </div>
           </div>
         )}

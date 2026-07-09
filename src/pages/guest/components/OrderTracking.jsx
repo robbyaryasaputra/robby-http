@@ -80,7 +80,7 @@ export default function OrderTracking({
             setSearching(false);
             return;
           }
-        } catch (_) {}
+        } catch (_) { }
       }
 
       setInternalError(
@@ -250,15 +250,14 @@ export default function OrderTracking({
                     <div key={idx} className="relative flex flex-col gap-1">
                       {/* Bullet */}
                       <div
-                        className={`absolute -left-8.5 top-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 z-10 ${
-                          isCompleted
+                        className={`absolute -left-8.5 top-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 z-10 ${isCompleted
                             ? "bg-[#8b6f47] border-[#8b6f47] text-white"
                             : isActive
                               ? "bg-amber-400 border-amber-400 text-[#1a0f07] animate-pulse"
                               : isFailed
                                 ? "bg-red-500 border-red-500 text-white"
                                 : "bg-white border-gray-300 text-gray-300"
-                        }`}
+                          }`}
                       >
                         {isCompleted ? (
                           <span className="text-[10px] font-black">✓</span>
@@ -299,11 +298,11 @@ export default function OrderTracking({
                         {item.name}
                       </div>
                       <div className="text-xs text-slate-500">
-                      {item.qty} x IDR {Number(item.price).toLocaleString("id-ID")}
+                        {item.qty} x IDR {Number(item.price).toLocaleString("id-ID")}
                       </div>
                     </div>
                     <div className="text-sm font-bold text-[#8b6f47] text-right">
-                    IDR {Number(item.price * item.qty).toLocaleString("id-ID")}
+                      IDR {Number(item.price * item.qty).toLocaleString("id-ID")}
                     </div>
                   </div>
                 ))}
@@ -312,7 +311,7 @@ export default function OrderTracking({
                     <span className="block text-[10px] uppercase tracking-wider text-slate-400">
                       Metode Pembayaran
                     </span>
-                <span className="block pt-1 text-sm font-bold text-slate-800 capitalize">
+                    <span className="block pt-1 text-sm font-bold text-slate-800 capitalize">
                       {trackedOrder.paymentMethod || "Cash"}
                     </span>
                   </div>
