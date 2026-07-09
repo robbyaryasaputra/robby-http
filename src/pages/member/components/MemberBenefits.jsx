@@ -1,12 +1,11 @@
-import { LuAward, LuCheck, LuStar, LuTrendingUp, LuPercent, LuCoins, LuZap } from "react-icons/lu";
+import { LuCheck, LuTrendingUp, LuZap, LuInfo } from "react-icons/lu";
 
 const TIER_META = {
-  Bronze: { gradient: "from-amber-600 to-amber-800", icon: "🥉", ring: "ring-amber-300", badge: "bg-amber-100 text-amber-800 border-amber-300" },
-  Silver: { gradient: "from-slate-400 to-slate-600", icon: "🥈", ring: "ring-slate-300", badge: "bg-slate-100 text-slate-700 border-slate-300" },
-  Gold:   { gradient: "from-yellow-400 to-amber-500", icon: "🥇", ring: "ring-yellow-300", badge: "bg-yellow-100 text-yellow-800 border-yellow-300" },
-  Platinum: { gradient: "from-purple-500 to-slate-700", icon: "💎", ring: "ring-purple-300", badge: "bg-purple-100 text-purple-800 border-purple-300" },
+  Bronze:   { icon: "🥉", nextBadge: "bg-slate-100 text-slate-700 border-slate-300", nextGradient: "linear-gradient(135deg, #9ca3af, #6b7280)" },
+  Silver:   { icon: "🥈", nextBadge: "bg-yellow-100 text-yellow-800 border-yellow-300", nextGradient: "linear-gradient(135deg, #facc15, #d97706)" },
+  Gold:     { icon: "🥇", nextBadge: "bg-purple-100 text-purple-800 border-purple-300", nextGradient: "linear-gradient(135deg, #a855f7, #6b21a8)" },
+  Platinum: { icon: "💎", nextBadge: null, nextGradient: null },
 };
-
 const NEXT_TIER = { Bronze: "Silver", Silver: "Gold", Gold: "Platinum", Platinum: null };
 
 export default function MemberBenefits({ activeMemberProfile }) {
@@ -15,105 +14,136 @@ export default function MemberBenefits({ activeMemberProfile }) {
   const tierName = activeMemberProfile.tier?.name || "Bronze";
   const meta = TIER_META[tierName] || TIER_META.Bronze;
   const nextTierName = NEXT_TIER[tierName];
-  const nextMeta = nextTierName ? TIER_META[nextTierName] : null;
-
   const discount = activeMemberProfile.tier?.discount_percent ?? 0;
   const multiplier = activeMemberProfile.tier?.points_multiplier ?? 1.0;
 
   return (
-    <div className="space-y-4 animate-[fadeIn_0.5s_ease-out]">
-      {/* Active Tier Stats */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-        {/* Header Bar */}
-        <div className={`bg-gradient-to-r ${meta.gradient} px-5 py-3.5 flex items-center justify-between`}>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">{meta.icon}</span>
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      {/* Active Level Card */}
+      <div style={{
+        background: "#fff", borderRadius: "14px",
+        border: "1px solid #ede8e1",
+        boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
+        overflow: "hidden",
+      }}>
+        {/* Header */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "14px 18px", borderBottom: "1px solid #f0ebe3",
+          background: "#faf7f4",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{
+              width: "36px", height: "36px", borderRadius: "10px",
+              background: "linear-gradient(135deg, #cd7f32, #9e5e1e)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "18px",
+            }}>
+              {meta.icon}
+            </div>
             <div>
-              <p className="text-[10px] text-white/70 font-bold uppercase tracking-widest">Level Aktif</p>
-              <h4 className="text-sm font-black text-white tracking-wide">{tierName} Member</h4>
+              <p style={{ fontSize: "10px", fontWeight: "700", letterSpacing: "0.08em", textTransform: "uppercase", color: "#a89078", margin: 0 }}>Level Aktif</p>
+              <p style={{ fontSize: "14px", fontWeight: "700", color: "#1a0f07", margin: 0 }}>{tierName} Member</p>
             </div>
           </div>
-          <LuAward className="w-5 h-5 text-white/40" />
+          <LuInfo style={{ width: "16px", height: "16px", color: "#c5b8a8" }} />
         </div>
 
-        {/* Stat Grid */}
-        <div className="grid grid-cols-2 divide-x divide-slate-100 border-b border-slate-100">
-          <div className="px-4 py-3.5 text-left">
-            <div className="flex items-center gap-1.5 mb-1">
-              <LuPercent className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Auto Diskon</span>
-            </div>
-            <p className="text-xl font-black text-slate-800">
-              {discount > 0 ? `${discount}%` : <span className="text-sm font-bold text-slate-400">—</span>}
+        {/* Stats grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: "1px solid #f0ebe3" }}>
+          <div style={{ padding: "14px 18px", borderRight: "1px solid #f0ebe3" }}>
+            <p style={{ fontSize: "9px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#b0a090", margin: "0 0 4px 0" }}>
+              % Auto Diskon
             </p>
-            <p className="text-[10px] text-slate-400 font-medium mt-0.5">setiap pembelian</p>
+            <p style={{ fontSize: "20px", fontWeight: "800", color: "#1a0f07", margin: 0, lineHeight: 1 }}>
+              {discount > 0 ? `${discount}%` : <span style={{ fontSize: "16px", color: "#c5b8a8" }}>—</span>}
+            </p>
+            <p style={{ fontSize: "10px", color: "#c5b8a8", margin: "3px 0 0 0" }}>setiap pembelian</p>
           </div>
-          <div className="px-4 py-3.5 text-left">
-            <div className="flex items-center gap-1.5 mb-1">
-              <LuCoins className="w-3.5 h-3.5 text-amber-500" />
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Poin Multiplier</span>
-            </div>
-            <p className="text-xl font-black text-slate-800">{multiplier}x</p>
-            <p className="text-[10px] text-slate-400 font-medium mt-0.5">dari setiap transaksi</p>
+          <div style={{ padding: "14px 18px" }}>
+            <p style={{ fontSize: "9px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#b0a090", margin: "0 0 4px 0" }}>
+              🔁 Poin Multiplier
+            </p>
+            <p style={{ fontSize: "20px", fontWeight: "800", color: "#1a0f07", margin: 0, lineHeight: 1 }}>
+              {multiplier}x
+            </p>
+            <p style={{ fontSize: "10px", color: "#c5b8a8", margin: "3px 0 0 0" }}>dari setiap transaksi</p>
           </div>
         </div>
 
-        {/* Benefits List */}
-        <div className="px-5 py-4">
-          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <LuStar className="w-3.5 h-3.5 text-amber-500" /> Keuntungan Level Ini
+        {/* Benefits list */}
+        <div style={{ padding: "14px 18px" }}>
+          <p style={{ fontSize: "9px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#b0a090", margin: "0 0 10px 0" }}>
+            ☆ Keuntungan Level Ini
           </p>
-          <ul className="space-y-2">
-            {(activeMemberProfile.tier?.benefits || []).map((benefit, i) => (
-              <li key={i} className="flex items-start gap-2.5">
-                <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
-                  <LuCheck className="w-2.5 h-2.5 text-emerald-600" />
+          <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "7px" }}>
+            {(activeMemberProfile.tier?.benefits || []).slice(0, 4).map((benefit, i) => (
+              <li key={i} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div style={{
+                  width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0,
+                  background: "#ecfdf5", border: "1px solid #bbf7d0",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <LuCheck style={{ width: "9px", height: "9px", color: "#16a34a" }} />
                 </div>
-                <span className="text-xs text-slate-600 font-medium leading-snug">{benefit}</span>
+                <span style={{ fontSize: "12px", color: "#5a4a3a", fontWeight: "500" }}>{benefit}</span>
               </li>
             ))}
           </ul>
         </div>
       </div>
 
-      {/* Next Tier Preview (if not Platinum) */}
-      {nextTierName && nextMeta && (
-        <div className="bg-white rounded-3xl border border-dashed border-slate-200 p-4 text-left">
-          <div className="flex items-center gap-2 mb-3">
-            <LuTrendingUp className="w-3.5 h-3.5 text-slate-400" />
-            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+      {/* Next Tier Card */}
+      {nextTierName && (
+        <div style={{
+          background: "#fff", borderRadius: "14px",
+          border: "1px dashed #ddd8d0",
+          padding: "14px 18px",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "10px" }}>
+            <LuTrendingUp style={{ width: "13px", height: "13px", color: "#b0a090" }} />
+            <p style={{ fontSize: "9px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#b0a090", margin: 0 }}>
               Level Berikutnya
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${nextMeta.gradient} flex items-center justify-center text-lg shadow-md`}>
-              {nextMeta.icon}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px" }}>
+            <div style={{
+              width: "40px", height: "40px", borderRadius: "10px",
+              background: meta.nextGradient,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "20px", flexShrink: 0,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            }}>
+              {TIER_META[nextTierName]?.icon}
             </div>
             <div>
-              <p className="text-sm font-black text-slate-800">{nextTierName}</p>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${nextMeta.badge}`}>
-                  <LuZap className="inline w-2.5 h-2.5 mr-0.5" />
-                  Diskon lebih besar
-                </span>
-              </div>
+              <p style={{ fontSize: "14px", fontWeight: "700", color: "#1a0f07", margin: "0 0 4px 0" }}>{nextTierName}</p>
+              <span style={{
+                display: "inline-flex", alignItems: "center", gap: "3px",
+                fontSize: "10px", fontWeight: "600", padding: "2px 8px",
+                borderRadius: "999px", border: "1px solid",
+                background: "#fef9f0", color: "#92400e", borderColor: "#fed7aa",
+              }}>
+                <LuZap style={{ width: "10px", height: "10px" }} />
+                Diskon lebih besar
+              </span>
             </div>
           </div>
-          <p className="text-[10px] text-slate-400 font-medium mt-3 leading-relaxed">
+          <p style={{ fontSize: "11px", color: "#8a7868", lineHeight: "1.6", margin: 0 }}>
             Kumpulkan lebih banyak poin untuk membuka level <strong>{nextTierName}</strong> dan
             nikmati diskon otomatis yang lebih besar serta multiplier poin eksklusif.
           </p>
         </div>
       )}
 
-      {/* Platinum badge if at top */}
+      {/* Platinum badge */}
       {!nextTierName && (
-        <div className="bg-gradient-to-r from-purple-500/10 to-slate-700/10 rounded-3xl border border-purple-200/40 p-4 text-left">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">💎</span>
+        <div style={{ background: "linear-gradient(135deg, rgba(168,85,247,0.08), rgba(107,33,168,0.06))", borderRadius: "14px", border: "1px solid rgba(168,85,247,0.2)", padding: "14px 18px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "24px" }}>💎</span>
             <div>
-              <p className="text-sm font-black text-purple-800">Platinum Member</p>
-              <p className="text-[10px] text-purple-600 font-medium">Level tertinggi — Anda sudah di puncak!</p>
+              <p style={{ fontSize: "13px", fontWeight: "700", color: "#6b21a8", margin: 0 }}>Platinum Member</p>
+              <p style={{ fontSize: "11px", color: "#9333ea", margin: "2px 0 0 0" }}>Level tertinggi — Anda sudah di puncak!</p>
             </div>
           </div>
         </div>

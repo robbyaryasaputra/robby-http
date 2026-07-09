@@ -9,7 +9,7 @@ export default function MenuGrid({
 }) {
   if (filteredMenu.length > 0) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
         {filteredMenu.map((item, index) => {
           const isFav = favorites.includes(item.id);
           return (
@@ -28,14 +28,22 @@ export default function MenuGrid({
   }
 
   return (
-    <div className="bg-white border border-[#EBE3D5] rounded-3xl p-16 text-center max-w-md mx-auto space-y-4 animate-[fadeIn_0.5s_ease-out]">
-      <LuCoffee className="w-16 h-16 text-gray-300 mx-auto animate-bounce" />
-      <h3 className="font-bold text-lg text-[#4B2C20]">
+    <div style={{
+      background: "#fff",
+      border: "1px solid #ede8e1",
+      borderRadius: "24px",
+      padding: "60px 20px",
+      textAlign: "center",
+      maxWidth: "400px",
+      margin: "0 auto",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+    }}>
+      <LuCoffee style={{ width: "48px", height: "48px", color: "#c5b8a8", margin: "0 auto 16px" }} />
+      <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#1a0f07", margin: "0 0 8px 0", fontFamily: "'Georgia', serif" }}>
         Kopi Tidak Ditemukan
       </h3>
-      <p className="text-gray-500 text-sm">
-        Kata kunci pencarian Anda tidak cocok dengan menu kami saat ini.
-        Harap coba kata kunci lainnya.
+      <p style={{ fontSize: "13px", color: "#8a7868", margin: 0, lineHeight: "1.6" }}>
+        Kata kunci pencarian Anda tidak cocok dengan menu kami saat ini. Harap coba kata kunci lainnya.
       </p>
     </div>
   );

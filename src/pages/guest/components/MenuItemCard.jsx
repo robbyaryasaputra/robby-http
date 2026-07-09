@@ -9,67 +9,135 @@ export default function MenuItemCard({
   onToggleFavorite,
   onAddToCart,
 }) {
+  const formatPrice = (p) => {
+    const val = p / 1000;
+    return `IDR ${val.toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 1 })}`;
+  };
+
+  const badge = item.badge || item.tag || null;
+  const badgeUpper = badge ? badge.toUpperCase() : null;
+
   return (
     <FadeIn
       duration={0.4}
       delay={Math.min(index * 0.05, 0.3)}
       className="h-full"
     >
-      <div className="group bg-white rounded-3xl border border-[#EBE3D5] overflow-hidden shadow-sm hover:shadow-xl hover:border-[#855C3B]/25 transition-all duration-300 flex flex-col h-full">
-        {/* Image & Badge overlay */}
-        <div className="relative h-56 overflow-hidden">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          {/* Badge */}
-          {item.badge && (
-            <span className="absolute top-4 left-4 bg-amber-500 text-[#4B2C20] text-[10px] font-black uppercase tracking-wider py-1 px-3 rounded-full shadow-sm">
-              {item.badge}
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: "14px",
+          border: "1px solid #ede8e1",
+          overflow: "hidden",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+          transition: "box-shadow 0.2s, transform 0.2s",
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,0,0,0.08)";
+          e.currentTarget.style.transform = "translateY(-2px)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.04)";
+          e.currentTarget.style.transform = "translateY(0)";
+        }}
+      >
+        {/* Image & Favorite button */}
+        <div style={{ height: "180px", position: "relative", background: "#f5ede3", overflow: "hidden" }}>
+          {item.image ? (
+            <img
+              src={item.image}
+              alt={item.name}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px" }}>☕</div>
+          )}
+          {badgeUpper && (
+            <span style={{
+              position: "absolute", top: "10px", left: "10px",
+              background: "rgba(30,15,5,0.75)",
+              backdropFilter: "blur(4px)",
+              color: "#fff",
+              fontSize: "9px", fontWeight: "700", letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              padding: "3px 9px", borderRadius: "5px",
+            }}>
+              {badgeUpper}
             </span>
           )}
+          
           {/* Favorite Button */}
           <button
-            onClick={() => onToggleFavorite(item.id)}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur-sm text-gray-500 hover:text-red-500 transition-colors shadow-md cursor-pointer"
+            onClick={(e) => { e.stopPropagation(); onToggleFavorite(item.id); }}
+            style={{
+              position: "absolute", top: "10px", right: "10px",
+              width: "32px", height: "32px", borderRadius: "50%",
+              background: "rgba(255,255,255,0.85)", backdropFilter: "blur(4px)",
+              border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              transition: "transform 0.15s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.1)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
           >
             <LuHeart
-              className={`w-5 h-5 transition-all duration-300 ${
-                isFavorite ? "text-red-500 fill-red-500 scale-110" : ""
+              className={`w-4.5 h-4.5 transition-all duration-300 ${
+                isFavorite ? "text-red-500 fill-red-500 scale-110" : "text-gray-500"
               }`}
             />
           </button>
         </div>
 
-        {/* Card Content */}
-        <div className="p-6 flex-1 flex flex-col justify-between space-y-4 text-left">
-          <div className="space-y-2">
-            <div className="flex justify-between items-start gap-2">
-              <h3 className="font-bold text-lg text-[#4B2C20] group-hover:text-[#855C3B] transition-colors">
+        {/* Content */}
+        <div style={{ padding: "16px 18px 18px", flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", marginBottom: "6px" }}>
+              <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1a0f07", margin: 0, fontFamily: "'Georgia', serif" }}>
                 {item.name}
-              </h3>
-              <span className="inline-block bg-[#F9F5EE] text-[#855C3B] font-semibold text-xs py-0.5 px-2 rounded-lg">
+              </h4>
+              <span style={{
+                fontSize: "10px", fontWeight: "600", color: "#8b6f47",
+                background: "#fdf8f0", border: "1px solid #fed7aa",
+                padding: "2px 8px", borderRadius: "999px",
+              }}>
                 {item.category}
               </span>
             </div>
-            {/* Rating */}
-            <RatingStars rating={item.rating} size={14} />
-            <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed">
+            
+            <div style={{ marginBottom: "8px", display: "flex", alignItems: "center" }}>
+              <RatingStars rating={item.rating} size={11} />
+            </div>
+
+            <p style={{ fontSize: "12px", color: "#8a7868", lineHeight: "1.55", margin: 0 }}>
               {item.description}
             </p>
           </div>
 
-          <div className="flex justify-between items-center pt-4 border-t border-[#F2E7DC]">
-            <span className="text-lg font-black text-[#4B2C20]">
-              ${item.price.toFixed(2)}
+          {/* Price + Add button */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "14px", borderTop: "1px solid #f2e7dc", marginTop: "14px" }}>
+            <span style={{ fontSize: "15px", fontWeight: "700", color: "#7c3c1a" }}>
+              {formatPrice(item.price)}
             </span>
             <button
-              onClick={() => onAddToCart(item)}
-              className="flex items-center gap-2 py-2 px-5 rounded-xl bg-[#FAF4EE] hover:bg-[#855C3B] text-[#855C3B] hover:text-white border border-[#855C3B]/20 transition-all duration-300 font-bold text-xs active:scale-[0.97] cursor-pointer"
+              onClick={(e) => { e.stopPropagation(); onAddToCart(item); }}
+              style={{
+                width: "36px", height: "36px", borderRadius: "50%",
+                background: "#1a0f07", color: "#fff",
+                border: "none", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+                transition: "background 0.2s, transform 0.15s",
+                boxShadow: "0 2px 8px rgba(26,15,7,0.25)",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#3d2311"; e.currentTarget.style.transform = "scale(1.1)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#1a0f07"; e.currentTarget.style.transform = "scale(1)"; }}
             >
-              <LuPlus className="w-4 h-4" />
-              Keranjang
+              <LuPlus style={{ width: "16px", height: "16px" }} />
             </button>
           </div>
         </div>

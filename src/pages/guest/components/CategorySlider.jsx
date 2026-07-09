@@ -4,20 +4,33 @@ export default function CategorySlider({
   onSelectCategory,
 }) {
   return (
-    <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-thin">
-      {categoriesList.map((cat) => (
-        <button
-          key={cat}
-          onClick={() => onSelectCategory(cat)}
-          className={`px-6 py-2 rounded-xl text-sm font-bold transition-all duration-300 whitespace-nowrap cursor-pointer ${
-            activeCategory === cat
-              ? "bg-[#855C3B] text-white shadow-md shadow-[#855C3B]/20"
-              : "bg-[#FAF4EE] text-[#5F3A27] hover:bg-[#F2E7DC]"
-          }`}
-        >
-          {cat === "All" ? "Semua" : cat}
-        </button>
-      ))}
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", overflowX: "auto" }}>
+      {categoriesList.map((cat) => {
+        const isActive = activeCategory === cat;
+        return (
+          <button
+            key={cat}
+            onClick={() => onSelectCategory(cat)}
+            style={{
+              padding: "7px 16px",
+              borderRadius: "999px",
+              fontSize: "13px",
+              fontWeight: "600",
+              border: isActive ? "none" : "1px solid #ede8e1",
+              background: isActive ? "#1a0f07" : "transparent",
+              color: isActive ? "#fff" : "#7a6a58",
+              cursor: "pointer",
+              transition: "all 0.15s",
+              whiteSpace: "nowrap",
+              fontFamily: "inherit",
+            }}
+            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "#f5f0ea"; }}
+            onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+          >
+            {cat === "All" ? "Semua" : cat}
+          </button>
+        );
+      })}
     </div>
   );
 }

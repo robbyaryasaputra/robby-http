@@ -606,98 +606,152 @@ export default function MemberShop() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F9F5EE] pb-16 font-sans text-slate-800 antialiased">
-      {/* Main Navbar */}
-      <header className="sticky top-0 bg-[#FAF4EE]/90 backdrop-blur-md z-40 border-b border-slate-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-4">
-          <Link to="/member" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-2xl bg-[#855C3B] flex items-center justify-center text-white shadow-md shadow-[#855C3B]/10 group-hover:scale-105 transition-transform duration-300">
-              <LuCoffee className="w-5 h-5" />
+    <div className="min-h-screen font-sans antialiased" style={{ background: "#faf8f3", color: "#1a0f07", width: "100%", flex: 1, boxSizing: "border-box" }}>
+      {/* ===== MAIN NAVBAR ===== */}
+      <header style={{
+        position: "sticky", top: 0, zIndex: 40,
+        background: "rgba(250,248,243,0.92)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid #ede8e1",
+      }}>
+        <div style={{
+          maxWidth: "1100px", margin: "0 auto",
+          padding: "0 32px", height: "68px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
+          {/* Logo */}
+          <Link to="/member" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+            <div style={{
+              width: "34px", height: "34px", borderRadius: "8px",
+              background: "#2c1a0e",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <LuCoffee style={{ width: "17px", height: "17px", color: "#f5c842" }} />
             </div>
-            <div className="text-left">
-              <span className="text-[#4B2C20] font-black text-base tracking-wide block">
-                Coffee Shop
+            <div>
+              <span style={{ display: "block", fontFamily: "'Georgia', serif", fontSize: "18px", fontWeight: "700", color: "#1a0f07", lineHeight: 1.1 }}>
+                Artisanal Bean
               </span>
-              <span className="text-[10px] text-amber-700 font-extrabold uppercase tracking-widest block -mt-1">
+              <span style={{ display: "block", fontSize: "9px", fontWeight: "700", letterSpacing: "0.15em", textTransform: "uppercase", color: "#8b6f47", marginTop: "1px" }}>
                 Member Portal
               </span>
             </div>
           </Link>
 
-          {/* Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
-            <button
-              onClick={() => setActiveTab("shop")}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${activeTab === "shop"
-                  ? "bg-white text-[#855C3B] shadow-sm"
-                  : "text-slate-500 hover:text-slate-800 bg-transparent"
-                }`}
-            >
-              Katalog Menu
-            </button>
-            <button
-              onClick={() => setActiveTab("rewards")}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${activeTab === "rewards"
-                  ? "bg-white text-[#855C3B] shadow-sm"
-                  : "text-slate-500 hover:text-slate-800 bg-transparent"
-                }`}
-            >
-              Tukar Hadiah
-            </button>
-            <button
-              onClick={() => setActiveTab("transactions")}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${activeTab === "transactions"
-                  ? "bg-white text-[#855C3B] shadow-sm"
-                  : "text-slate-500 hover:text-slate-800 bg-transparent"
-                }`}
-            >
-              Riwayat Poin
-            </button>
+          {/* Center Nav Links */}
+          <nav style={{ display: "flex", alignItems: "center", gap: "28px" }} className="hidden md:flex">
+            {[
+              { label: "Katalog Menu", tab: "shop" },
+              { label: "Tukar Hadiah", tab: "rewards" },
+              { label: "Riwayat Poin", tab: "transactions" },
+            ].map(({ label, tab }) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  fontSize: "14px", fontWeight: "500", fontFamily: "inherit",
+                  color: activeTab === tab ? "#1a0f07" : "#8a7868",
+                  borderBottom: activeTab === tab ? "2px solid #1a0f07" : "2px solid transparent",
+                  paddingBottom: "3px",
+                  transition: "color 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#1a0f07"; }}
+                onMouseLeave={(e) => { if (activeTab !== tab) e.currentTarget.style.color = "#8a7868"; }}
+              >
+                {label}
+              </button>
+            ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          {/* Right actions */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {profile ? (
               <button
                 onClick={handleLogout}
-                className="text-xs font-bold text-rose-600 hover:text-rose-800 transition-colors pr-3.5 border-r border-slate-200 cursor-pointer border-0 bg-transparent flex items-center gap-1.5"
+                style={{
+                  display: "flex", alignItems: "center", gap: "6px",
+                  fontSize: "13px", fontWeight: "600", color: "#c0392b",
+                  background: "none", border: "1px solid #e8c5c0",
+                  borderRadius: "8px", padding: "7px 14px",
+                  cursor: "pointer", fontFamily: "inherit",
+                  transition: "background 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#fdf0ee"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}
               >
-                <LuLogOut className="w-4 h-4" />
-                Logout
+                <LuLogOut style={{ width: "14px", height: "14px" }} />
+                Sign Out
               </button>
             ) : (
               <Link
                 to="/auth/login"
-                className="text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors pr-3.5 border-r border-slate-200"
+                style={{
+                  display: "flex", alignItems: "center", gap: "6px",
+                  fontSize: "13px", fontWeight: "600", color: "#c0392b",
+                  border: "1px solid #e8c5c0",
+                  borderRadius: "8px", padding: "7px 14px",
+                  textDecoration: "none",
+                  transition: "background 0.15s",
+                }}
               >
-                Login
+                <LuLogOut style={{ width: "14px", height: "14px" }} />
+                Sign In
               </Link>
             )}
 
-            {/* Notification Bell */}
+            {/* Bell */}
             {activeUser?.id && (
               <button
                 onClick={() => setIsNotifOpen(true)}
-                className="relative p-2 rounded-xl hover:bg-slate-100 transition-all cursor-pointer flex items-center gap-1 text-slate-500 border-0 bg-transparent"
-                title="Notifikasi"
+                style={{
+                  position: "relative", width: "38px", height: "38px",
+                  borderRadius: "10px", background: "none", border: "1px solid #ede8e1",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer", color: "#7a6a58",
+                  transition: "background 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#f5f0ea"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}
               >
-                <LuBell className="w-5 h-5" />
+                <LuBell style={{ width: "18px", height: "18px" }} />
                 {unreadNotifCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-black">
+                  <span style={{
+                    position: "absolute", top: "-4px", right: "-4px",
+                    background: "#e53935", color: "#fff",
+                    fontSize: "9px", width: "16px", height: "16px",
+                    borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                    fontWeight: "700",
+                  }}>
                     {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
                   </span>
                 )}
               </button>
             )}
 
-            {/* Cart Button trigger */}
+            {/* Cart */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-xl hover:bg-slate-100 transition-all cursor-pointer flex items-center gap-1 bg-amber-500/10 text-[#855C3B] border-0"
+              style={{
+                position: "relative", width: "38px", height: "38px",
+                borderRadius: "10px", background: "none", border: "1px solid #ede8e1",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", color: "#7a6a58",
+                transition: "background 0.15s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#f5f0ea"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}
             >
-              <LuShoppingCart className="w-5 h-5" />
+              <LuShoppingCart style={{ width: "18px", height: "18px" }} />
               {cart.length > 0 && (
-                <span className="bg-[#855C3B] text-white text-[10px] px-1.5 py-0.5 rounded-full font-black">
-                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                <span style={{
+                  position: "absolute", top: "-4px", right: "-4px",
+                  background: "#2c1a0e", color: "#fff",
+                  fontSize: "9px", width: "16px", height: "16px",
+                  borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontWeight: "700",
+                }}>
+                  {cart.reduce((s, i) => s + i.quantity, 0)}
                 </span>
               )}
             </button>
@@ -705,10 +759,10 @@ export default function MemberShop() {
         </div>
       </header>
 
-      {/* Main Grid Content Layout */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* ===== MAIN CONTENT ===== */}
+      <main style={{ maxWidth: "1100px", margin: "0 auto", padding: "32px 32px 80px", display: "grid", gridTemplateColumns: "340px 1fr", gap: "28px", alignItems: "start" }}>
         {/* Left Col: Member Profile & Card */}
-        <div className="space-y-6 lg:col-span-1">
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           <FadeIn duration={0.5}>
             {/* Digital Membership Card */}
             <MemberProfileCard
@@ -718,7 +772,9 @@ export default function MemberShop() {
             />
 
             {/* Level Benefits summary */}
-            <MemberBenefits activeMemberProfile={activeMemberProfile} />
+            <div style={{ marginTop: "14px" }}>
+              <MemberBenefits activeMemberProfile={activeMemberProfile} />
+            </div>
 
             {/* Quick Mobile Navigation */}
             <div className="flex md:hidden gap-2 bg-slate-100 p-1 rounded-xl mt-6">
@@ -753,8 +809,8 @@ export default function MemberShop() {
           </FadeIn>
         </div>
 
-        {/* Right Col: Dynamic Portal Tabs */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Right Col */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {successToast && (
             <div className="flex items-center gap-2 p-3 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl animate-[fadeIn_0.3s_ease-out]">
               <LuCheck className="w-4 h-4 text-emerald-500" />
@@ -769,7 +825,6 @@ export default function MemberShop() {
             </div>
           )}
 
-          {/* TAB 1: Shop Catalogue */}
           {activeTab === "shop" && (
             <MemberShopCatalogue
               categoriesList={categoriesList}
@@ -783,7 +838,6 @@ export default function MemberShop() {
             />
           )}
 
-          {/* TAB 2: Rewards List */}
           {activeTab === "rewards" && (
             <MemberRewards
               memberRewards={memberRewards}
@@ -793,12 +847,31 @@ export default function MemberShop() {
             />
           )}
 
-          {/* TAB 3: Transactions Points History */}
           {activeTab === "transactions" && (
             <MemberTransactions transactions={transactions} />
           )}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer style={{ borderTop: "1px solid #ede8e1", background: "#faf8f3", padding: "28px 32px" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+          <span style={{ fontFamily: "'Georgia', serif", fontSize: "16px", fontWeight: "700", color: "#7c3c1a" }}>
+            Artisanal Bean
+          </span>
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+            {["Privacy Policy", "Terms of Service", "Shipping & Returns", "Wholesale"].map((link) => (
+              <a key={link} href="#" style={{ fontSize: "13px", color: "#8a7868", textDecoration: "none" }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#1a0f07"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "#8a7868"; }}
+              >
+                {link}
+              </a>
+            ))}
+          </div>
+          <span style={{ fontSize: "12px", color: "#b0a090" }}>© 2024 Artisanal Bean Roasters. Crafted with care.</span>
+        </div>
+      </footer>
 
       {/* SHOPPING CART SIDEBAR PANEL */}
       <MemberCartDrawer

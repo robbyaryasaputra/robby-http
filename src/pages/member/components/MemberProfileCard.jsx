@@ -1,4 +1,4 @@
-import { LuCoffee, LuAward } from "react-icons/lu";
+import { LuQrCode, LuAward } from "react-icons/lu";
 
 export default function MemberProfileCard({
   activeMemberProfile,
@@ -9,70 +9,96 @@ export default function MemberProfileCard({
 
   return (
     <div
-      className={`rounded-3xl bg-gradient-to-br ${activeMemberProfile.tier.bg_gradient} p-6 text-white shadow-xl relative overflow-hidden border border-white/5 animate-[fadeIn_0.5s_ease-out]`}
+      style={{
+        background: "linear-gradient(145deg, #2c1a0e 0%, #3d2311 60%, #4a2c16 100%)",
+        borderRadius: "16px",
+        padding: "22px 24px",
+        color: "#fff",
+        position: "relative",
+        overflow: "hidden",
+        boxShadow: "0 8px 32px rgba(44,26,14,0.35)",
+      }}
     >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-6 -mt-6"></div>
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-6 -mb-6"></div>
+      {/* Decorative circles */}
+      <div style={{ position: "absolute", top: "-30px", right: "-30px", width: "120px", height: "120px", borderRadius: "50%", background: "rgba(255,255,255,0.03)" }} />
+      <div style={{ position: "absolute", bottom: "-20px", left: "-20px", width: "80px", height: "80px", borderRadius: "50%", background: "rgba(255,255,255,0.03)" }} />
 
-      <div className="flex items-center justify-between mb-8 relative z-10">
-        <span className="text-[10px] font-extrabold tracking-widest uppercase bg-white/15 px-2.5 py-0.5 rounded-md border border-white/10">
+      {/* Top row */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", position: "relative", zIndex: 1 }}>
+        <span style={{
+          fontSize: "9px", fontWeight: "700", letterSpacing: "0.12em", textTransform: "uppercase",
+          background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.15)",
+          borderRadius: "5px", padding: "4px 10px", color: "rgba(255,255,255,0.85)",
+        }}>
           Loyalty Member Card
         </span>
-        <LuCoffee className="w-6 h-6 text-white/30" />
+        <LuQrCode style={{ width: "22px", height: "22px", color: "rgba(255,255,255,0.25)" }} />
       </div>
 
-      <div className="mb-8 relative z-10 text-left">
-        <span className="text-[10px] text-white/60 font-bold uppercase tracking-wider block">
+      {/* Customer info */}
+      <div style={{ marginBottom: "20px", position: "relative", zIndex: 1 }}>
+        <p style={{ fontSize: "9px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", margin: "0 0 5px 0" }}>
           Nama Pelanggan
-        </span>
-        <h3 className="text-lg font-black tracking-wide leading-none">
-          {activeUser?.name}
+        </p>
+        <h3 style={{ fontSize: "20px", fontWeight: "700", margin: "0 0 4px 0", letterSpacing: "-0.3px", fontFamily: "'Georgia', serif" }}>
+          {activeUser?.name || "—"}
         </h3>
-        <span className="text-[10px] text-white/40 block mt-1 font-mono tracking-wider">
+        <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", fontFamily: "monospace", letterSpacing: "0.05em" }}>
           {activeMemberProfile.member_code}
         </span>
       </div>
 
-      <div className="flex justify-between items-end relative z-10 pt-4 border-t border-white/10">
-        <div className="text-left">
-          <span className="text-[10px] text-white/60 font-bold uppercase tracking-wider block">
+      {/* Status + Points row */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "flex-end",
+        paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.1)",
+        position: "relative", zIndex: 1,
+      }}>
+        <div>
+          <p style={{ fontSize: "9px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", margin: "0 0 6px 0" }}>
             Status Level
-          </span>
-          <span className="inline-flex items-center gap-1 mt-0.5 text-xs font-black tracking-wider px-2 py-0.5 rounded bg-white text-slate-800 shadow-sm border border-slate-100">
-            <LuAward
-              className="w-3.5 h-3.5"
-              style={{ color: activeMemberProfile.tier.badge_color }}
-            />
-            {activeMemberProfile.tier.name}
+          </p>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: "5px",
+            background: "#fff", color: "#1a0f07",
+            fontSize: "11px", fontWeight: "700", padding: "4px 10px", borderRadius: "6px",
+          }}>
+            <LuAward style={{ width: "12px", height: "12px", color: activeMemberProfile.tier?.badge_color }} />
+            {activeMemberProfile.tier?.name}
           </span>
         </div>
-        <div className="text-right">
-          <span className="text-[10px] text-white/60 font-bold uppercase tracking-wider block">
+        <div style={{ textAlign: "right" }}>
+          <p style={{ fontSize: "9px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", margin: "0 0 4px 0" }}>
             Poin Aktif
+          </p>
+          <span style={{ fontSize: "26px", fontWeight: "800", color: "#f5c842", lineHeight: 1 }}>
+            {activeMemberProfile.current_points}
           </span>
-          <span className="text-xl font-black tracking-wide text-amber-300">
-            {activeMemberProfile.current_points}{" "}
-            <span className="text-[10px] text-white/80 font-bold">pts</span>
-          </span>
+          <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginLeft: "4px" }}>pts</span>
         </div>
       </div>
 
-      {/* Progress bar info */}
+      {/* Progress bar */}
       {nextTierInfo && (
-        <div className="mt-5 pt-4 border-t border-white/5 relative z-10 space-y-1.5 text-left">
-          <div className="flex justify-between items-center text-[10px] font-bold text-white/70">
-            <span>Progress ke {nextTierInfo.name}</span>
-            <span>
+        <div style={{ marginTop: "16px", paddingTop: "14px", borderTop: "1px solid rgba(255,255,255,0.08)", position: "relative", zIndex: 1 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "7px" }}>
+            <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.6)", fontWeight: "600" }}>
+              Progress ke {nextTierInfo.name}
+            </span>
+            <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.6)", fontWeight: "600" }}>
               {activeMemberProfile.total_points} / {nextTierInfo.targetPoints} pts
             </span>
           </div>
-          <div className="w-full bg-black/25 h-1.5 rounded-full overflow-hidden p-0.5 border border-white/5">
-            <div
-              className="bg-amber-400 h-full rounded-full transition-all duration-500"
-              style={{ width: `${nextTierInfo.percent}%` }}
-            />
+          <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: "99px", height: "5px", overflow: "hidden" }}>
+            <div style={{
+              width: `${nextTierInfo.percent}%`,
+              height: "100%",
+              background: "linear-gradient(90deg, #f5c842, #e09b2a)",
+              borderRadius: "99px",
+              transition: "width 0.5s ease",
+            }} />
           </div>
-          <p className="text-[10px] text-white/50 font-medium pt-0.5">
+          <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.38)", marginTop: "6px", fontWeight: "500" }}>
             Butuh {nextTierInfo.pointsNeeded} poin lagi untuk naik tingkat.
           </p>
         </div>

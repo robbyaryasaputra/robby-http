@@ -37,18 +37,19 @@ export default function ReviewSection({ reviews, onAddReview }) {
   return (
     <section
       id="feedback"
-      className="py-24 px-6 md:px-12 bg-[#F9F5EE] border-t border-[#EBE3D5]"
+      className="py-24 px-6 md:px-12 border-t border-[#ede8e1]"
+      style={{ background: "#faf8f3" }}
     >
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#855C3B]">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#8b6f47]">
             Ulasan & Masukan Pelanggan
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#4B2C20]">
+          <h2 className="text-3xl md:text-4xl font-normal text-[#1a0f07]" style={{ fontFamily: "'Georgia', serif" }}>
             Bagikan Pengalaman Anda
           </h2>
-          <p className="text-gray-600 text-sm">
+          <p className="text-[#8a7868] text-sm">
             Pendapat Anda sangat berarti bagi kami untuk terus meningkatkan
             cita rasa kopi dan kenyamanan kedai.
           </p>
@@ -58,17 +59,17 @@ export default function ReviewSection({ reviews, onAddReview }) {
           {/* Feedback Form */}
           <SlideUp
             delay={0.1}
-            className="lg:col-span-5 bg-white rounded-3xl border border-[#EBE3D5] p-6 md:p-8 space-y-6 shadow-sm text-left"
+            className="lg:col-span-5 bg-white rounded-2xl border border-[#ede8e1] p-6 md:p-8 space-y-6 shadow-sm text-left"
           >
-            <h3 className="font-extrabold text-lg text-[#4B2C20] border-b border-[#F2E7DC] pb-3 flex items-center gap-2">
-              <LuPenLine className="w-5 h-5 text-[#855C3B]" />
+            <h3 className="font-bold text-lg text-[#1a0f07] border-b border-[#ede8e1] pb-3 flex items-center gap-2" style={{ fontFamily: "'Georgia', serif" }}>
+              <LuPenLine className="w-5 h-5 text-[#8b6f47]" />
               Tulis Ulasan
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Rating selection */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-600 block">
+                <label className="text-xs font-bold text-[#8a7868] block">
                   NILAI PELAYANAN / PRODUK
                 </label>
                 <div className="flex items-center gap-1.5">
@@ -79,7 +80,7 @@ export default function ReviewSection({ reviews, onAddReview }) {
                       onClick={() =>
                         setNewReview({ ...newReview, rating: star })
                       }
-                      className="focus:outline-none transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+                      className="focus:outline-none transition-transform hover:scale-110 active:scale-95 cursor-pointer border-0 bg-transparent"
                     >
                       <LuStar
                         className={`w-7 h-7 transition-colors ${
@@ -98,7 +99,7 @@ export default function ReviewSection({ reviews, onAddReview }) {
 
               {/* Name */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-600 block">
+                <label className="text-xs font-bold text-[#8a7868] block">
                   NAMA ANDA
                 </label>
                 <input
@@ -109,13 +110,13 @@ export default function ReviewSection({ reviews, onAddReview }) {
                   onChange={(e) =>
                     setNewReview({ ...newReview, name: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F9F5EE] border border-[#EBE3D5] text-[#2C1A0E] text-sm focus:outline-none focus:ring-2 focus:ring-[#855C3B]/20"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#faf8f3] border border-[#ede8e1] text-[#1a0f07] text-sm focus:outline-none focus:border-[#8b6f47]/50"
                 />
               </div>
 
               {/* Category */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-600 block">
+                <label className="text-xs font-bold text-[#8a7868] block">
                   KATEGORI ULASAN
                 </label>
                 <select
@@ -123,7 +124,7 @@ export default function ReviewSection({ reviews, onAddReview }) {
                   onChange={(e) =>
                     setNewReview({ ...newReview, category: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F9F5EE] border border-[#EBE3D5] text-[#2C1A0E] text-sm focus:outline-none focus:ring-2 focus:ring-[#855C3B]/20 hover:cursor-pointer"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#faf8f3] border border-[#ede8e1] text-[#1a0f07] text-sm focus:outline-none focus:border-[#8b6f47]/50 hover:cursor-pointer"
                 >
                   <option value="Pelayanan">Pelayanan</option>
                   <option value="Rasa Menu">Rasa Menu</option>
@@ -135,7 +136,7 @@ export default function ReviewSection({ reviews, onAddReview }) {
 
               {/* Comment */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-600 block">
+                <label className="text-xs font-bold text-[#8a7868] block">
                   ULASAN / SARAN
                 </label>
                 <textarea
@@ -146,13 +147,17 @@ export default function ReviewSection({ reviews, onAddReview }) {
                   onChange={(e) =>
                     setNewReview({ ...newReview, comment: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F9F5EE] border border-[#EBE3D5] text-[#2C1A0E] text-sm focus:outline-none focus:ring-2 focus:ring-[#855C3B]/20 resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#faf8f3] border border-[#ede8e1] text-[#1a0f07] text-sm focus:outline-none focus:border-[#8b6f47]/50 resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-[#855C3B] hover:bg-[#5F3A27] text-white font-extrabold text-sm transition-colors shadow-md active:scale-[0.98] cursor-pointer"
+                className="w-full py-3 rounded-xl text-white font-bold text-sm transition-colors shadow-md active:scale-[0.98] cursor-pointer border-0"
+                style={{
+                  background: "#1a0f07",
+                  boxShadow: "0 2px 8px rgba(26, 15, 7, 0.2)",
+                }}
               >
                 Kirim Ulasan
               </button>
@@ -161,9 +166,9 @@ export default function ReviewSection({ reviews, onAddReview }) {
 
           {/* Reviews List */}
           <SlideUp delay={0.2} className="lg:col-span-7 space-y-6 text-left">
-            <div className="flex justify-between items-center border-b border-[#EBE3D5] pb-3">
-              <h3 className="font-extrabold text-lg text-[#4B2C20] flex items-center gap-2">
-                <LuMessageSquare className="w-5 h-5 text-[#855C3B]" />
+            <div className="flex justify-between items-center border-b border-[#ede8e1] pb-3">
+              <h3 className="font-bold text-lg text-[#1a0f07] flex items-center gap-2" style={{ fontFamily: "'Georgia', serif" }}>
+                <LuMessageSquare className="w-5 h-5 text-[#8b6f47]" />
                 Semua Ulasan ({reviews.length})
               </h3>
             </div>
@@ -173,10 +178,10 @@ export default function ReviewSection({ reviews, onAddReview }) {
               {reviews.length > 0 ? (
                 reviews.map((rev) => (
                   <FadeIn key={rev.id} duration={0.3}>
-                    <div className="bg-white rounded-2xl border border-[#EBE3D5] p-5 space-y-3 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-white rounded-2xl border border-[#ede8e1] p-5 space-y-3 shadow-sm hover:shadow-md transition-shadow">
                       <div className="flex justify-between items-start gap-4">
                         <div>
-                          <h4 className="font-bold text-[#4B2C20] text-sm">
+                          <h4 className="font-bold text-[#1a0f07] text-sm" style={{ fontFamily: "'Georgia', serif" }}>
                             {rev.name}
                           </h4>
                           <span className="text-[10px] text-gray-400 font-semibold">
@@ -202,14 +207,14 @@ export default function ReviewSection({ reviews, onAddReview }) {
                           <RatingStars rating={rev.rating} size={12} />
                         </div>
                       </div>
-                      <p className="text-gray-600 text-xs leading-relaxed">
+                      <p className="text-[#8a7868] text-xs leading-relaxed">
                         {rev.comment}
                       </p>
                     </div>
                   </FadeIn>
                 ))
               ) : (
-                <div className="bg-white rounded-2xl border border-[#EBE3D5] p-12 text-center text-gray-500">
+                <div className="bg-white rounded-2xl border border-[#ede8e1] p-12 text-center text-gray-500">
                   Belum ada ulasan. Jadilah yang pertama memberikan masukan!
                 </div>
               )}

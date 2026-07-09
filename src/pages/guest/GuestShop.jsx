@@ -487,73 +487,77 @@ export default function GuestShop() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F9F5EE] text-[#2C1A0E] font-sans antialiased scroll-smooth">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#EBE3D5] shadow-sm py-4 px-6 md:px-12 flex justify-between items-center transition-all duration-300">
+    <div className="min-h-screen text-[#1a0f07] font-sans antialiased scroll-smooth" style={{ background: "#faf8f3" }}>
+      {/* ===== NAVBAR ===== */}
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#ede8e1] shadow-sm py-4 px-6 md:px-12 flex justify-between items-center transition-all duration-300">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#855C3B] flex items-center justify-center shadow-md">
-            <CoffeeBeanIcon size="sm" color="#FAF4EE" />
+          <div className="w-10 h-10 rounded-2xl bg-[#2c1a0e] flex items-center justify-center shadow-md">
+            <CoffeeBeanIcon size="sm" color="#f5c842" />
           </div>
-          <span className="font-extrabold text-xl tracking-wide text-[#4B2C20]">
-            Bean & Brew
-          </span>
+          <div>
+            <span className="font-bold text-lg tracking-wide text-[#1a0f07] block" style={{ fontFamily: "'Georgia', serif" }}>
+              Artisanal Bean
+            </span>
+            <span className="text-[9px] text-[#8b6f47] font-bold uppercase tracking-widest block -mt-1">
+              Coffee & Roastery
+            </span>
+          </div>
         </div>
 
         {/* Desktop Menu links */}
-        <div className="hidden md:flex items-center gap-8 font-semibold text-sm text-[#5F3A27]">
-          <a
-            href="#hero"
-            className="hover:text-[#855C3B] transition-colors duration-200"
-          >
+        <div className="hidden md:flex items-center gap-8 font-semibold text-sm text-[#7a6a58]">
+          <a href="#hero" className="hover:text-[#1a0f07] transition-colors duration-200">
             Beranda
           </a>
-          <a
-            href="#about"
-            className="hover:text-[#855C3B] transition-colors duration-200"
-          >
+          <a href="#about" className="hover:text-[#1a0f07] transition-colors duration-200">
             Tentang Kami
           </a>
-          <a
-            href="#menu"
-            className="hover:text-[#855C3B] transition-colors duration-200"
-          >
+          <a href="#menu" className="hover:text-[#1a0f07] transition-colors duration-200">
             Menu Kopi
           </a>
-          <a
-            href="#track"
-            className="hover:text-[#855C3B] transition-colors duration-200"
-          >
+          <a href="#track" className="hover:text-[#1a0f07] transition-colors duration-200">
             Lacak Pesanan
           </a>
-          <a
-            href="#feedback"
-            className="hover:text-[#855C3B] transition-colors duration-200"
-          >
+          <a href="#feedback" className="hover:text-[#1a0f07] transition-colors duration-200">
             Ulasan
           </a>
         </div>
 
         {/* Buttons */}
         <div className="flex items-center gap-3">
-          {/* Tombol Menu Member — hanya tampil jika sudah login */}
-          {isLoggedIn && (
+          {isLoggedIn ? (
             <button
               onClick={() => navigate("/member")}
-              className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-[#855C3B] text-white px-4 py-2.5 rounded-2xl text-xs font-extrabold hover:opacity-90 transition-all shadow-md shadow-amber-700/20 active:scale-[0.97] border-0 cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:opacity-90 transition-all shadow-md active:scale-[0.97] border-0 cursor-pointer"
+              style={{
+                background: "#8b6f47",
+                boxShadow: "0 2px 8px rgba(139, 111, 71, 0.2)",
+              }}
             >
               <LuAward className="w-3.5 h-3.5" />
               Portal Member
             </button>
+          ) : (
+            <button
+              onClick={() => navigate("/auth/login")}
+              className="hidden sm:flex items-center gap-1.5 text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:opacity-90 transition-all shadow-md active:scale-[0.97] border-0 cursor-pointer"
+              style={{
+                background: "#1a0f07",
+                boxShadow: "0 2px 8px rgba(26, 15, 7, 0.2)",
+              }}
+            >
+              Sign In
+            </button>
           )}
 
-          {/* Cart icon — guarded by handleOpenCart */}
+          {/* Cart icon */}
           <button
             onClick={handleOpenCart}
-            className="relative p-2.5 rounded-full bg-[#FAF4EE] hover:bg-[#F2E7DC] text-[#4B2C20] transition-all duration-200 shadow-sm cursor-pointer border-0"
+            className="relative p-2.5 rounded-xl hover:bg-[#f5f0ea] text-[#1a0f07] border border-[#ede8e1] transition-all duration-200 shadow-sm cursor-pointer bg-transparent"
           >
-            <LuShoppingCart className="w-5.5 h-5.5" />
+            <LuShoppingCart className="w-5 h-5" />
             {cart.length > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-[#855C3B] text-[#FAF4EE] text-xs font-bold w-5.5 h-5.5 rounded-full flex items-center justify-center animate-bounce shadow-md">
+              <span className="absolute -top-1.5 -right-1.5 bg-[#1a0f07] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">
                 {cart.reduce((sum, i) => sum + i.qty, 0)}
               </span>
             )}
@@ -571,54 +575,54 @@ export default function GuestShop() {
             <img
               src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=350&h=450&fit=crop"
               alt="Biji Kopi"
-              className="w-full h-80 object-cover rounded-3xl shadow-lg transform translate-y-8"
+              className="w-full h-80 object-cover rounded-2xl shadow-lg transform translate-y-8"
             />
             <img
               src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=350&h=450&fit=crop"
               alt="Barista brewing"
-              className="w-full h-80 object-cover rounded-3xl shadow-lg"
+              className="w-full h-80 object-cover rounded-2xl shadow-lg"
             />
           </SlideUp>
 
           <SlideUp delay={0.3} className="space-y-6 text-left">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#855C3B]">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#8b6f47]">
               Filosofi Cangkir Kami
             </span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#4B2C20] tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-normal text-[#1a0f07] tracking-tight" style={{ fontFamily: "'Georgia', serif" }}>
               Di Sini, Kopi Bukan Sekadar Minuman, Kopi Adalah Karya Seni.
             </h2>
-            <p className="text-gray-600 leading-relaxed">
-              Bean & Brew hadir dari mimpi menghadirkan cangkir kopi berkualitas
+            <p className="text-[#8a7868] leading-relaxed text-sm">
+              Artisanal Bean hadir dari mimpi menghadirkan cangkir kopi berkualitas
               dunia langsung ke genggaman Anda. Kami mendatangkan biji kopi
               organik langsung dari petani lokal terbaik, melalui penyortiran
               ketat, serta proses pemanggangan (roasting) modern untuk mengunci
               cita rasa khasnya.
             </p>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-[#8a7868] leading-relaxed text-sm">
               Barista kami dilatih khusus dengan dedikasi tinggi agar setiap
               ekstraksi espresso menghasilkan keseimbangan rasa (body, acidity,
               sweetness) yang sempurna. Nikmati di kedai kami yang nyaman atau
               pesan ke meja Anda secara instan.
             </p>
 
-            <div className="grid grid-cols-3 gap-6 pt-4 border-t border-gray-100">
+            <div className="grid grid-cols-3 gap-6 pt-4 border-t border-[#ede8e1]">
               <div>
-                <h4 className="text-2xl font-black text-[#855C3B]">100%</h4>
-                <p className="text-xs text-gray-500 mt-1 font-semibold">
+                <h4 className="text-2xl font-bold text-[#8b6f47]">100%</h4>
+                <p className="text-xs text-[#8a7868] mt-1 font-semibold">
                   Organik & Asli
                 </p>
               </div>
               <div>
-                <h4 className="text-2xl font-black text-[#855C3B]">Freshly</h4>
-                <p className="text-xs text-gray-500 mt-1 font-semibold">
+                <h4 className="text-2xl font-bold text-[#8b6f47]">Freshly</h4>
+                <p className="text-xs text-[#8a7868] mt-1 font-semibold">
                   Dipanggang Harian
                 </p>
               </div>
               <div>
-                <h4 className="text-2xl font-black text-[#855C3B]">
+                <h4 className="text-2xl font-bold text-[#8b6f47]">
                   Professional
                 </h4>
-                <p className="text-xs text-gray-500 mt-1 font-semibold">
+                <p className="text-xs text-[#8a7868] mt-1 font-semibold">
                   Barista Bersertifikat
                 </p>
               </div>
@@ -628,17 +632,17 @@ export default function GuestShop() {
       </section>
 
       {/* Menu Section */}
-      <section id="menu" className="py-24 px-6 md:px-12 bg-[#F9F5EE]">
+      <section id="menu" className="py-24 px-6 md:px-12 bg-[#faf8f3]">
         <div className="max-w-7xl mx-auto space-y-12">
           {/* Header */}
           <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#855C3B]">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#8b6f47]">
               Seleksi Menu Terbaik
             </span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#4B2C20]">
+            <h2 className="text-3xl md:text-4xl font-normal text-[#1a0f07]" style={{ fontFamily: "'Georgia', serif" }}>
               Jelajahi Cita Rasa Favorit Anda
             </h2>
-            <p className="text-gray-600 text-sm">
+            <p className="text-[#8a7868] text-sm leading-relaxed">
               Dari rasa manis latte caramel yang lembut hingga rasa espresso
               murni yang kuat dan tegas, temukan pilihan kopi yang paling cocok
               dengan selera hari ini.
@@ -646,16 +650,16 @@ export default function GuestShop() {
           </div>
 
           {/* Search & Category Filter Controls */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-4 rounded-3xl shadow-sm border border-[#EBE3D5]">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-4 rounded-2xl shadow-sm border border-[#ede8e1]">
             {/* Search */}
             <div className="relative w-full md:w-80">
-              <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#b0a090] w-4 h-4" />
               <input
                 type="text"
                 placeholder="Cari kopi..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 rounded-2xl bg-[#F9F5EE] border border-[#EBE3D5] text-[#2C1A0E] text-sm focus:outline-none focus:ring-2 focus:ring-[#855C3B]/20 focus:border-[#855C3B] transition-all"
+                className="w-full pl-10 pr-4 py-2 bg-[#faf8f3] border border-[#ede8e1] rounded-xl text-[#1a0f07] text-sm focus:outline-none focus:border-[#8b6f47]/50 transition-all"
               />
             </div>
 
@@ -676,12 +680,12 @@ export default function GuestShop() {
           />
 
           {/* Online Delivery Platform Integration */}
-          <div className="bg-gradient-to-r from-[#855C3B]/10 to-[#5F3A27]/5 rounded-3xl p-8 border border-[#855C3B]/20 flex flex-col lg:flex-row justify-between items-center gap-6 mt-16 text-left animate-[fadeIn_0.5s_ease-out]">
+          <div className="bg-gradient-to-r from-[#8b6f47]/10 to-[#2c1a0e]/5 rounded-2xl p-8 border border-[#ede8e1] flex flex-col lg:flex-row justify-between items-center gap-6 mt-16 text-left animate-[fadeIn_0.5s_ease-out]">
             <div className="space-y-1 max-w-xl">
-              <h3 className="font-extrabold text-lg text-[#4B2C20]">
+              <h3 className="font-bold text-lg text-[#1a0f07]">
                 Ingin Menikmati Kopi di Rumah?
               </h3>
-              <p className="text-gray-600 text-xs leading-relaxed">
+              <p className="text-[#8a7868] text-xs leading-relaxed">
                 Selain melalui pemesanan langsung (*Order & Pay Ahead*) untuk
                 makan di tempat atau bawa pulang, Anda juga bisa memesan menu
                 kopi favorit kami melalui platform pengiriman online favorit
@@ -731,59 +735,53 @@ export default function GuestShop() {
       <ReviewSection reviews={reviews} onAddReview={handleAddReview} />
 
       {/* Footer */}
-      <footer className="bg-[#4B2C20] text-amber-100 py-16 px-6 md:px-12 border-t border-[#3F2419]">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 text-left">
-          <div className="space-y-4 md:col-span-2">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center">
-                <CoffeeBeanIcon size="sm" color="#FAF4EE" />
-              </div>
-              <span className="font-extrabold text-xl tracking-wide text-white">
-                Bean & Brew
-              </span>
-            </div>
-            <p className="text-sm text-amber-100/60 max-w-sm leading-relaxed">
+      <footer style={{ borderTop: "1px solid #ede8e1", background: "#faf8f3", padding: "48px 32px" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "32px", textAlign: "left" }}>
+          <div className="space-y-4">
+            <span style={{ fontFamily: "'Georgia', serif", fontSize: "20px", fontWeight: "700", color: "#1a0f07" }}>
+              Artisanal Bean
+            </span>
+            <p className="text-xs text-[#8a7868] max-w-xs leading-relaxed">
               Kedai kopi modern yang mengutamakan kualitas ekstraksi kopi
               premium, suasana santai yang nyaman, dan layanan pelanggan tanpa
               hambatan.
             </p>
           </div>
 
-          <div className="space-y-4">
-            <h4 className="font-bold text-white tracking-wide text-sm uppercase">
+          <div className="space-y-3">
+            <h4 className="font-bold text-[#1a0f07] tracking-wider text-xs uppercase">
               Jam Operasional
             </h4>
-            <ul className="text-sm text-amber-100/70 space-y-2">
+            <ul className="text-xs text-[#8a7868] space-y-1.5" style={{ listStyle: "none", padding: 0, margin: 0 }}>
               <li className="flex justify-between">
                 <span>Senin - Jumat</span>
-                <span className="font-bold">07:00 - 22:00</span>
+                <span className="font-bold text-[#1a0f07]">07:00 - 22:00</span>
               </li>
               <li className="flex justify-between">
                 <span>Sabtu - Minggu</span>
-                <span className="font-bold">08:00 - 23:00</span>
+                <span className="font-bold text-[#1a0f07]">08:00 - 23:00</span>
               </li>
             </ul>
           </div>
 
-          <div className="space-y-4">
-            <h4 className="font-bold text-white tracking-wide text-sm uppercase">
+          <div className="space-y-3">
+            <h4 className="font-bold text-[#1a0f07] tracking-wider text-xs uppercase">
               Hubungi Kami
             </h4>
-            <p className="text-sm text-amber-100/70 leading-relaxed">
+            <p className="text-xs text-[#8a7868] leading-relaxed">
               Jl. Kopi Senja No. 42, Kota Jakarta
               <br />
-              <span className="font-bold text-white block mt-1">
-                support@beanbrew.com
+              <span className="font-bold text-[#1a0f07] block mt-1">
+                support@artisanalbean.com
               </span>
-              <span className="font-bold text-white">(+62) 21-8888-999</span>
+              <span className="font-bold text-[#1a0f07]">(+62) 21-8888-999</span>
             </p>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto pt-8 mt-12 border-t border-[#3F2419]/60 text-center text-xs text-amber-100/40">
+        <div className="max-w-7xl mx-auto pt-8 mt-12 border-t border-[#ede8e1] text-center text-xs text-[#b0a090]">
           <p>
-            © {new Date().getFullYear()} Bean & Brew Coffee Shop. All rights
-            reserved.
+            © {new Date().getFullYear()} Artisanal Bean Coffee Shop. All rights reserved.
           </p>
         </div>
       </footer>
@@ -831,3 +829,4 @@ export default function GuestShop() {
     </div>
   );
 }
+

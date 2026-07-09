@@ -1,74 +1,117 @@
 import { LuPlus } from "react-icons/lu";
-import RatingStars from "../../../components/status/RatingStars";
 
-export default function MemberMenuItemCard({
-  item,
-  discountPercent,
-  onAddToCart,
-}) {
+export default function MemberMenuItemCard({ item, discountPercent, onAddToCart }) {
   const hasDiscount = discountPercent > 0;
   const discountedPrice = item.price * (1 - discountPercent / 100);
 
+  // Format price like reference: "IDR 5,75" from 575000 → divide by 100000
+  const formatPrice = (p) => {
+    const val = p / 1000;
+    return `IDR ${val.toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 1 })}`;
+  };
+
+  // Determine badge from item fields
+  const badge = item.badge || item.tag || null;
+  const badgeUpper = badge ? badge.toUpperCase() : null;
+
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md hover:border-slate-200/80 transition-all flex flex-col group animate-[fadeIn_0.4s_ease-out]">
-      <div className="h-44 relative bg-slate-100 overflow-hidden">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        {item.badge && (
-          <span className="absolute top-3 left-3 bg-[#4B2C20] text-white font-extrabold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md shadow-sm">
-            {item.badge}
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: "14px",
+        border: "1px solid #ede8e1",
+        overflow: "hidden",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+        transition: "box-shadow 0.2s, transform 0.2s",
+        cursor: "pointer",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,0,0,0.1)";
+        e.currentTarget.style.transform = "translateY(-2px)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.04)";
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
+    >
+      {/* Image */}
+      <div style={{ height: "180px", position: "relative", background: "#f5ede3", overflow: "hidden" }}>
+        {item.image ? (
+          <img
+            src={item.image}
+            alt={item.name}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        ) : (
+          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px" }}>☕</div>
+        )}
+        {badgeUpper && (
+          <span style={{
+            position: "absolute", top: "10px", left: "10px",
+            background: "rgba(30,15,5,0.75)",
+            backdropFilter: "blur(4px)",
+            color: "#fff",
+            fontSize: "9px", fontWeight: "700", letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            padding: "3px 9px", borderRadius: "5px",
+          }}>
+            {badgeUpper}
           </span>
         )}
         {hasDiscount && (
-          <span className="absolute top-3 right-3 bg-red-500 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-md shadow-sm">
-            Diskon {discountPercent}%
+          <span style={{
+            position: "absolute", top: "10px", right: "10px",
+            background: "#dc2626", color: "#fff",
+            fontSize: "9px", fontWeight: "700",
+            padding: "3px 9px", borderRadius: "5px",
+          }}>
+            -{discountPercent}%
           </span>
         )}
       </div>
 
-      <div className="p-5 flex-1 flex flex-col justify-between space-y-4 text-left">
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-start gap-1">
-            <h4 className="font-extrabold text-slate-800 text-base">
-              {item.name}
-            </h4>
-            <div className="flex items-center gap-0.5 text-xs text-amber-500 shrink-0 font-bold">
-              <RatingStars rating={item.rating} size="xs" />
-              <span className="text-slate-400 font-semibold text-[10px] ml-0.5">
-                ({item.reviews})
-              </span>
-            </div>
-          </div>
-          <p className="text-xs text-slate-400 font-medium line-clamp-2 leading-relaxed">
-            {item.description}
-          </p>
-        </div>
+      {/* Content */}
+      <div style={{ padding: "16px 18px 18px" }}>
+        <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1a0f07", margin: "0 0 5px 0", fontFamily: "'Georgia', serif" }}>
+          {item.name}
+        </h4>
+        <p style={{ fontSize: "12px", color: "#8a7868", lineHeight: "1.55", margin: "0 0 14px 0", minHeight: "36px" }}>
+          {item.description}
+        </p>
 
-        <div className="flex items-center justify-between pt-2 border-t border-slate-50">
+        {/* Price + Add button */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             {hasDiscount ? (
-              <div className="space-y-0.5">
-                <span className="text-[10px] text-slate-400 line-through block font-medium">
-                  IDR {Number(item.price).toLocaleString("id-ID")}
-                </span>
-                <span className="text-[#855C3B] font-black text-sm">
-                  IDR {Number(discountedPrice).toLocaleString("id-ID")}
-                </span>
-              </div>
+              <>
+                <p style={{ fontSize: "10px", color: "#c5b8a8", textDecoration: "line-through", margin: "0 0 1px 0" }}>
+                  {formatPrice(item.price)}
+                </p>
+                <p style={{ fontSize: "15px", fontWeight: "700", color: "#7c3c1a", margin: 0 }}>
+                  {formatPrice(discountedPrice)}
+                </p>
+              </>
             ) : (
-              <span className="text-slate-800 font-black text-sm">
-                IDR {Number(item.price).toLocaleString("id-ID")}
-              </span>
+              <p style={{ fontSize: "15px", fontWeight: "700", color: "#7c3c1a", margin: 0 }}>
+                {formatPrice(item.price)}
+              </p>
             )}
           </div>
           <button
-            onClick={() => onAddToCart(item)}
-            className="p-2.5 rounded-xl bg-[#855C3B] text-white hover:bg-[#6d4734] transition-colors cursor-pointer group-hover:scale-105 duration-300 shadow-md shadow-[#855C3B]/10 border-0"
+            onClick={(e) => { e.stopPropagation(); onAddToCart(item); }}
+            style={{
+              width: "36px", height: "36px", borderRadius: "50%",
+              background: "#1a0f07", color: "#fff",
+              border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+              transition: "background 0.2s, transform 0.15s",
+              boxShadow: "0 2px 8px rgba(26,15,7,0.25)",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#3d2311"; e.currentTarget.style.transform = "scale(1.1)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#1a0f07"; e.currentTarget.style.transform = "scale(1)"; }}
           >
-            <LuPlus className="w-4 h-4" />
+            <LuPlus style={{ width: "16px", height: "16px" }} />
           </button>
         </div>
       </div>

@@ -170,13 +170,13 @@ export default function OrderTracking({
       <div className="max-w-4xl mx-auto space-y-12">
         {/* Header */}
         <div className="text-center space-y-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#855C3B]">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#8b6f47]">
             Lacak Proses Brewing
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#4B2C20]">
+          <h2 className="text-3xl md:text-4xl font-normal text-[#1a0f07]" style={{ fontFamily: "'Georgia', serif" }}>
             Lacak Pesanan Anda Secara Instan
           </h2>
-          <p className="text-gray-500 text-sm max-w-lg mx-auto">
+          <p className="text-[#8a7868] text-sm max-w-lg mx-auto leading-relaxed">
             Masukkan ID Pesanan unik yang Anda peroleh setelah menyelesaikan
             checkout untuk melihat status persiapan kopi Anda secara
             real-time.
@@ -186,19 +186,23 @@ export default function OrderTracking({
         {/* Form */}
         <form
           onSubmit={handleTrack}
-          className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto bg-[#F9F5EE] p-3 rounded-2xl border border-[#EBE3D5]"
+          className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto bg-[#faf8f3] p-3 rounded-2xl border border-[#ede8e1]"
         >
           <input
             type="text"
             placeholder="Masukkan ID Pesanan (contoh: ORD-123)..."
             value={trackIdInput}
             onChange={(e) => setTrackIdInput(e.target.value.toUpperCase())}
-            className="flex-1 px-4 py-3 rounded-xl bg-white border border-[#EBE3D5] text-[#2C1A0E] text-sm focus:outline-none focus:ring-2 focus:ring-[#855C3B]/20"
+            className="flex-1 px-4 py-3 rounded-xl bg-white border border-[#ede8e1] text-[#1a0f07] text-sm focus:outline-none focus:border-[#8b6f47]/50"
           />
           <button
             type="submit"
             disabled={searching}
-            className="py-3 px-6 rounded-xl bg-[#855C3B] text-white hover:bg-[#5F3A27] font-bold text-sm shadow-md transition-colors active:scale-[0.98] cursor-pointer disabled:opacity-60 flex items-center gap-2"
+            className="py-3 px-6 rounded-xl text-white font-bold text-sm shadow-md transition-colors active:scale-[0.98] cursor-pointer disabled:opacity-60 flex items-center gap-2 border-0"
+            style={{
+              background: "#1a0f07",
+              boxShadow: "0 2px 8px rgba(26, 15, 7, 0.2)",
+            }}
           >
             {searching ? (
               <LuLoader className="w-4 h-4 animate-spin" />
@@ -209,14 +213,14 @@ export default function OrderTracking({
 
         {/* Track Results */}
         {trackedOrder && (
-          <div className="bg-[#F9F5EE] border border-[#EBE3D5] rounded-3xl p-6 md:p-8 space-y-8 animate-[fadeIn_0.5s_ease-out] text-left max-w-2xl mx-auto">
+          <div className="bg-[#faf8f3] border border-[#ede8e1] rounded-3xl p-6 md:p-8 space-y-8 animate-[fadeIn_0.5s_ease-out] text-left max-w-2xl mx-auto">
             {/* Order Info */}
-            <div className="flex flex-wrap justify-between items-center gap-4 pb-4 border-b border-[#EBE3D5]">
+            <div className="flex flex-wrap justify-between items-center gap-4 pb-4 border-b border-[#ede8e1]">
               <div>
                 <span className="text-xs text-gray-500 font-bold">
                   ID PESANAN
                 </span>
-                <h3 className="font-extrabold text-xl text-[#4B2C20]">
+                <h3 className="font-bold text-xl text-[#1a0f07]" style={{ fontFamily: "'Georgia', serif" }}>
                   {trackedOrder.id}
                 </h3>
               </div>
@@ -234,7 +238,7 @@ export default function OrderTracking({
 
             {/* Progress Steps */}
             <div className="space-y-6">
-              <h4 className="font-bold text-[#4B2C20] text-sm">
+              <h4 className="font-bold text-[#1a0f07] text-sm">
                 Progres Pesanan:
               </h4>
               <div className="relative pl-8 space-y-8 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200">
@@ -248,9 +252,9 @@ export default function OrderTracking({
                       <div
                         className={`absolute -left-8.5 top-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 z-10 ${
                           isCompleted
-                            ? "bg-[#855C3B] border-[#855C3B] text-white"
+                            ? "bg-[#8b6f47] border-[#8b6f47] text-white"
                             : isActive
-                              ? "bg-amber-400 border-amber-400 text-[#4B2C20] animate-pulse"
+                              ? "bg-amber-400 border-amber-400 text-[#1a0f07] animate-pulse"
                               : isFailed
                                 ? "bg-red-500 border-red-500 text-white"
                                 : "bg-white border-gray-300 text-gray-300"
@@ -266,7 +270,7 @@ export default function OrderTracking({
                       </div>
                       {/* Text */}
                       <span
-                        className={`font-bold text-sm ${isActive ? "text-[#855C3B]" : isFailed ? "text-red-600" : "text-[#4B2C20]"}`}
+                        className={`font-bold text-sm ${isActive ? "text-[#8b6f47]" : isFailed ? "text-red-600" : "text-[#1a0f07]"}`}
                       >
                         {step.title}
                       </span>
@@ -280,25 +284,25 @@ export default function OrderTracking({
             </div>
 
             {/* Summary Items */}
-            <div className="pt-6 border-t border-[#EBE3D5] space-y-3">
-              <h4 className="font-bold text-[#4B2C20] text-sm">
+            <div className="pt-6 border-t border-[#ede8e1] space-y-3">
+              <h4 className="font-bold text-[#1a0f07] text-sm">
                 Detail Pesanan:
               </h4>
-              <div className="bg-white rounded-2xl border border-[#EBE3D5] p-4 space-y-3">
+              <div className="bg-white rounded-2xl border border-[#ede8e1] p-4 space-y-3">
                 {trackedOrder.items.map((item, idx) => (
                   <div
                     key={idx}
                     className="grid grid-cols-[1fr_auto] gap-3 rounded-2xl bg-gray-50 p-3"
                   >
                     <div className="space-y-1">
-                      <div className="text-sm font-semibold text-[#2C1A0E]">
+                      <div className="text-sm font-semibold text-[#1a0f07]">
                         {item.name}
                       </div>
                       <div className="text-xs text-slate-500">
                       {item.qty} x IDR {Number(item.price).toLocaleString("id-ID")}
                       </div>
                     </div>
-                    <div className="text-sm font-bold text-[#855C3B] text-right">
+                    <div className="text-sm font-bold text-[#8b6f47] text-right">
                     IDR {Number(item.price * item.qty).toLocaleString("id-ID")}
                     </div>
                   </div>
@@ -323,22 +327,22 @@ export default function OrderTracking({
                     </div>
                   )}
                 </div>
-                <div className="flex justify-between items-center pt-3 mt-3 font-extrabold text-base text-[#2C1A0E]">
+                <div className="flex justify-between items-center pt-3 mt-3 font-extrabold text-base text-[#1a0f07]">
                   <span>Total Pembayaran</span>
                   <span>IDR {Number(trackedOrder.total).toLocaleString("id-ID")}</span>
                 </div>
               </div>
               {trackedOrder.tableNumber && (
                 <p className="text-xs text-gray-500 font-semibold flex items-center gap-1.5">
-                  <LuUtensils className="w-4 h-4 text-[#855C3B]" />
+                  <LuUtensils className="w-4 h-4 text-[#8b6f47]" />
                   Disajikan langsung di Meja:{" "}
-                  <span className="text-[#4B2C20] font-bold">
+                  <span className="text-[#1a0f07] font-bold">
                     No. {trackedOrder.tableNumber}
                   </span>
                 </p>
               )}
               {trackedOrder.notes && (
-                <div className="bg-amber-50 rounded-xl p-3 border border-amber-100">
+                <div className="bg-amber-50/50 rounded-xl p-3 border border-amber-100">
                   <span className="text-[10px] text-amber-800 font-bold block mb-1">
                     CATATAN:
                   </span>
@@ -358,6 +362,7 @@ export default function OrderTracking({
           </div>
         )}
       </div>
+
     </section>
   );
 }
