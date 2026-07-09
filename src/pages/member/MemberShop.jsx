@@ -854,22 +854,22 @@ export default function MemberShop() {
       </main>
 
       {/* Footer */}
-      <footer style={{ borderTop: "1px solid #ede8e1", background: "#faf8f3", padding: "28px 32px" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
-          <span style={{ fontFamily: "'Georgia', serif", fontSize: "16px", fontWeight: "700", color: "#7c3c1a" }}>
+      <footer style={{ background: "#1c1109", padding: "36px 32px", borderTop: "1px solid #2e1e12" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "20px" }}>
+          <span style={{ fontFamily: "'Georgia', serif", fontSize: "18px", fontWeight: "700", color: "#f5c842", letterSpacing: "0.2px" }}>
             Artisanal Bean
           </span>
           <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
             {["Privacy Policy", "Terms of Service", "Shipping & Returns", "Wholesale"].map((link) => (
-              <a key={link} href="#" style={{ fontSize: "13px", color: "#8a7868", textDecoration: "none" }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "#1a0f07"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "#8a7868"; }}
+              <a key={link} href="#" style={{ fontSize: "13px", color: "rgba(255, 255, 255, 0.65)", textDecoration: "none", transition: "color 0.15s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#f5c842"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255, 255, 255, 0.65)"; }}
               >
                 {link}
               </a>
             ))}
           </div>
-          <span style={{ fontSize: "12px", color: "#b0a090" }}>© 2024 Artisanal Bean Roasters. Crafted with care.</span>
+          <span style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.4)" }}>© 2024 Artisanal Bean Roasters. Crafted with care.</span>
         </div>
       </footer>
 

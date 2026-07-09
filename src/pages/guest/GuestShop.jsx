@@ -10,7 +10,7 @@ import {
 } from "../../lib/db";
 import { useAuth } from "../../contexts/AuthContext";
 import { CoffeeBeanIcon } from "../../components/media";
-import { SlideUp } from "../../components/animation";
+import { SlideUp, FadeIn } from "../../components/animation";
 
 // Import modular sub-components
 import GuestHero from "./components/GuestHero";
@@ -505,20 +505,20 @@ export default function GuestShop() {
         </div>
 
         {/* Desktop Menu links */}
-        <div className="hidden md:flex items-center gap-8 font-semibold text-sm text-[#7a6a58]">
-          <a href="#hero" className="hover:text-[#1a0f07] transition-colors duration-200">
+        <div className="hidden md:flex items-center gap-8 font-semibold text-sm">
+          <a href="#hero" className="nav-link">
             Beranda
           </a>
-          <a href="#about" className="hover:text-[#1a0f07] transition-colors duration-200">
+          <a href="#about" className="nav-link">
             Tentang Kami
           </a>
-          <a href="#menu" className="hover:text-[#1a0f07] transition-colors duration-200">
+          <a href="#menu" className="nav-link">
             Menu Kopi
           </a>
-          <a href="#track" className="hover:text-[#1a0f07] transition-colors duration-200">
+          <a href="#track" className="nav-link">
             Lacak Pesanan
           </a>
-          <a href="#feedback" className="hover:text-[#1a0f07] transition-colors duration-200">
+          <a href="#feedback" className="nav-link">
             Ulasan
           </a>
         </div>
@@ -565,8 +565,9 @@ export default function GuestShop() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <GuestHero />
+      <FadeIn duration={0.8}>
+        {/* Hero Section */}
+        <GuestHero />
 
       {/* About Us Section */}
       <section id="about" className="py-24 px-6 md:px-12 bg-white">
@@ -735,13 +736,13 @@ export default function GuestShop() {
       <ReviewSection reviews={reviews} onAddReview={handleAddReview} />
 
       {/* Footer */}
-      <footer style={{ borderTop: "1px solid #ede8e1", background: "#faf8f3", padding: "48px 32px" }}>
+      <footer style={{ background: "#1c1109", padding: "48px 32px", borderTop: "1px solid #2e1e12" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "32px", textAlign: "left" }}>
           <div className="space-y-4">
-            <span style={{ fontFamily: "'Georgia', serif", fontSize: "20px", fontWeight: "700", color: "#1a0f07" }}>
+            <span style={{ fontFamily: "'Georgia', serif", fontSize: "20px", fontWeight: "700", color: "#f5c842" }}>
               Artisanal Bean
             </span>
-            <p className="text-xs text-[#8a7868] max-w-xs leading-relaxed">
+            <p className="text-xs text-white/60 max-w-xs leading-relaxed">
               Kedai kopi modern yang mengutamakan kualitas ekstraksi kopi
               premium, suasana santai yang nyaman, dan layanan pelanggan tanpa
               hambatan.
@@ -749,42 +750,43 @@ export default function GuestShop() {
           </div>
 
           <div className="space-y-3">
-            <h4 className="font-bold text-[#1a0f07] tracking-wider text-xs uppercase">
+            <h4 className="font-bold tracking-wider text-xs uppercase" style={{ color: "#f5c842" }}>
               Jam Operasional
             </h4>
-            <ul className="text-xs text-[#8a7868] space-y-1.5" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <ul className="text-xs text-white/60 space-y-1.5" style={{ listStyle: "none", padding: 0, margin: 0 }}>
               <li className="flex justify-between">
                 <span>Senin - Jumat</span>
-                <span className="font-bold text-[#1a0f07]">07:00 - 22:00</span>
+                <span className="font-bold text-white">07:00 - 22:00</span>
               </li>
               <li className="flex justify-between">
                 <span>Sabtu - Minggu</span>
-                <span className="font-bold text-[#1a0f07]">08:00 - 23:00</span>
+                <span className="font-bold text-white">08:00 - 23:00</span>
               </li>
             </ul>
           </div>
 
           <div className="space-y-3">
-            <h4 className="font-bold text-[#1a0f07] tracking-wider text-xs uppercase">
+            <h4 className="font-bold tracking-wider text-xs uppercase" style={{ color: "#f5c842" }}>
               Hubungi Kami
             </h4>
-            <p className="text-xs text-[#8a7868] leading-relaxed">
+            <p className="text-xs text-white/60 leading-relaxed">
               Jl. Kopi Senja No. 42, Kota Jakarta
               <br />
-              <span className="font-bold text-[#1a0f07] block mt-1">
+              <span className="font-bold text-white block mt-1">
                 support@artisanalbean.com
               </span>
-              <span className="font-bold text-[#1a0f07]">(+62) 21-8888-999</span>
+              <span className="font-bold text-white">(+62) 21-8888-999</span>
             </p>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto pt-8 mt-12 border-t border-[#ede8e1] text-center text-xs text-[#b0a090]">
+        <div className="max-w-7xl mx-auto pt-8 mt-12 border-t border-[#2e1e12] text-center text-xs text-white/30">
           <p>
             © {new Date().getFullYear()} Artisanal Bean Coffee Shop. All rights reserved.
           </p>
         </div>
       </footer>
+      </FadeIn>
 
       {/* Success Checkout Modal Overlay */}
       <CheckoutSuccessModal
@@ -826,6 +828,57 @@ export default function GuestShop() {
 
       {/* Floating Social Contact CTA Widget */}
       <ContactWidget />
+
+      <style>{`
+        .nav-link {
+          position: relative;
+          color: #7a6a58;
+          text-decoration: none;
+          transition: color 0.25s ease, transform 0.15s ease;
+          display: inline-block;
+        }
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          transform: scaleX(0);
+          height: 2px;
+          bottom: -4px;
+          left: 0;
+          background-color: #1a0f07;
+          transform-origin: bottom right;
+          transition: transform 0.25s ease-out;
+        }
+        .nav-link:hover::after {
+          transform: scaleX(1);
+          transform-origin: bottom left;
+        }
+        .nav-link:hover {
+          color: #1a0f07;
+        }
+        .nav-link:active {
+          transform: scale(0.95);
+        }
+
+        /* Target section scroll highlight pulse */
+        section:target {
+          animation: targetPulse 1.4s ease-out;
+        }
+        @keyframes targetPulse {
+          0% {
+            background-color: rgba(139, 111, 71, 0.12);
+            box-shadow: inset 0 0 30px rgba(139, 111, 71, 0.08);
+          }
+          50% {
+            background-color: rgba(139, 111, 71, 0.05);
+            box-shadow: inset 0 0 15px rgba(139, 111, 71, 0.03);
+          }
+          100% {
+            background-color: transparent;
+            box-shadow: inset 0 0 0 rgba(139, 111, 71, 0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
