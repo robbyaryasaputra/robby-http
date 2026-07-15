@@ -13,6 +13,7 @@ import {
   LuCreditCard,
   LuCoffee,
   LuMessageSquare,
+  LuSettings,
 } from "react-icons/lu";
 import NavItem from "../navigation/NavItem";
 
@@ -27,6 +28,7 @@ const allNavItems = [
   { path: "/dashboard/payments", label: "Payments", icon: LuCreditCard, roles: ["admin", "cashier"] },
   { path: "/dashboard/reviews", label: "Reviews", icon: LuMessageSquare, roles: ["admin", "cashier"] },
   { path: "/dashboard/activity-logs", label: "Activity Logs", icon: LuRefreshCw, roles: ["admin"] },
+  { path: "/dashboard/settings", label: "Settings", icon: LuSettings, roles: ["admin"] },
 ];
 
 export default function Sidebar() {
