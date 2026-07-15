@@ -148,13 +148,17 @@ export default function MenuFormModal({
                   name="price"
                   type="number"
                   step="0.01"
+                  min="0"
                   required
                   value={formData.price}
                   onChange={handleChange}
-                  placeholder="4.50"
+                  placeholder="5.00"
                   className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:border-[#BF834F] focus:ring-2 focus:ring-[#E7D4B0] transition-all"
                 />
               </div>
+              <p className="text-[10px] text-slate-400 mt-1 pl-1">
+                Contoh: <strong>5.00</strong> atau <strong>3.75</strong>
+              </p>
             </div>
           </div>
 

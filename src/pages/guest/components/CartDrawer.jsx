@@ -31,6 +31,10 @@ export default function CartDrawer({
 }) {
   if (!isOpen) return null;
 
+  const formatIDR = (p) => {
+    return `$${Number(p).toFixed(2)}`;
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
       {/* Backdrop */}
@@ -82,7 +86,7 @@ export default function CartDrawer({
                           {item.name}
                         </h5>
                         <span className="text-xs text-gray-500 font-bold">
-                          ${item.price.toFixed(2)}
+                          {formatIDR(item.price)}
                         </span>
                       </div>
 
@@ -148,7 +152,7 @@ export default function CartDrawer({
                     Promo {appliedPromo.code} Aktif: Potongan{" "}
                     {appliedPromo.discount_type === "percentage"
                       ? `${appliedPromo.discount_value}%`
-                      : `$${appliedPromo.discount_value}`}
+                      : formatIDR(appliedPromo.discount_value)}
                     !
                   </p>
                 )}
@@ -158,11 +162,11 @@ export default function CartDrawer({
               <div className="bg-white rounded-2xl border border-[#EBE3D5] p-5 space-y-3 text-sm">
                 <div className="flex justify-between items-center text-gray-500 font-medium">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{formatIDR(subtotal)}</span>
                 </div>
                 <div className="flex justify-between items-center text-gray-500 font-medium">
                   <span>Pajak & Layanan (10%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>{formatIDR(tax)}</span>
                 </div>
                 {appliedPromo && (
                   <div className="flex justify-between items-center text-red-500 font-medium">
@@ -170,12 +174,12 @@ export default function CartDrawer({
                       <LuTag className="w-3.5 h-3.5" />
                       Diskon Voucher ({appliedPromo.code})
                     </span>
-                    <span>-${promoDiscount.toFixed(2)}</span>
+                    <span>-{formatIDR(promoDiscount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between items-center pt-3 border-t border-gray-100 font-black text-[#2C1A0E] text-base">
                   <span>Total Biaya</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>{formatIDR(total)}</span>
                 </div>
               </div>
 
@@ -222,11 +226,10 @@ export default function CartDrawer({
                           deliveryType: "table",
                         })
                       }
-                      className={`py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
-                        checkoutForm.deliveryType === "table"
-                          ? "bg-[#855C3B]/10 border-[#855C3B] text-[#855C3B]"
-                          : "border-gray-200 text-gray-500 hover:bg-gray-50"
-                      }`}
+                      className={`py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${checkoutForm.deliveryType === "table"
+                        ? "bg-[#855C3B]/10 border-[#855C3B] text-[#855C3B]"
+                        : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                        }`}
                     >
                       <LuUtensils className="w-4 h-4" />
                       Makan di Meja
@@ -239,11 +242,10 @@ export default function CartDrawer({
                           deliveryType: "takeaway",
                         })
                       }
-                      className={`py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
-                        checkoutForm.deliveryType === "takeaway"
-                          ? "bg-[#855C3B]/10 border-[#855C3B] text-[#855C3B]"
-                          : "border-gray-200 text-gray-500 hover:bg-gray-50"
-                      }`}
+                      className={`py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${checkoutForm.deliveryType === "takeaway"
+                        ? "bg-[#855C3B]/10 border-[#855C3B] text-[#855C3B]"
+                        : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                        }`}
                     >
                       <LuMapPin className="w-4 h-4" />
                       Bawa Pulang
@@ -289,11 +291,10 @@ export default function CartDrawer({
                             paymentMethod: method,
                           })
                         }
-                        className={`py-2 rounded-xl text-xs font-bold border flex items-center justify-center gap-1 transition-all duration-300 cursor-pointer ${
-                          checkoutForm.paymentMethod === method
-                            ? "bg-[#855C3B] text-white border-[#855C3B] shadow-sm"
-                            : "border-gray-200 text-gray-500 hover:bg-gray-50"
-                        }`}
+                        className={`py-2 rounded-xl text-xs font-bold border flex items-center justify-center gap-1 transition-all duration-300 cursor-pointer ${checkoutForm.paymentMethod === method
+                          ? "bg-[#855C3B] text-white border-[#855C3B] shadow-sm"
+                          : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                          }`}
                       >
                         {method === "Card" && (
                           <LuCreditCard className="w-3.5 h-3.5" />

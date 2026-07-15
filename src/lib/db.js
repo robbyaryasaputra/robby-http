@@ -45,13 +45,17 @@ const mapPaymentMethod = (method) => {
 };
 
 // 1. Get menu items joining with categories
-export async function getMenuItems({ limit } = {}) {
+export async function getMenuItems({ limit, showAll = false } = {}) {
   try {
     let query = supabase
       .from("menu_items")
       .select("*, categories(name)")
-      .eq("is_available", true)
       .order("display_order", { ascending: true });
+
+    // Guest shop hanya tampilkan item tersedia; Admin dapat semua item
+    if (!showAll) {
+      query = query.eq("is_available", true);
+    }
 
     if (limit) {
       query = query.limit(limit);
@@ -63,7 +67,8 @@ export async function getMenuItems({ limit } = {}) {
     const mapped = (data || []).map((item) => ({
       ...item,
       category: item.categories?.name || "Uncategorized",
-      image: item.image_url || item.image,
+      // image_url dari DB (kolom asli) → dipetakan ke `image` agar komponen bisa pakai keduanya
+      image: item.image_url || item.image || null,
       reviews: item.review_count || 0,
       price: Number(item.price || 0),
       rating: Number(item.rating || 0),

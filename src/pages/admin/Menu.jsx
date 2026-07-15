@@ -76,9 +76,10 @@ export default function Menu() {
 
   const fetchMenuAndCategories = async () => {
     try {
-      // fetch menu items
+      // fetch semua menu items (termasuk yang tidak tersedia) untuk tampilan Admin
       const { data: itemsData, error: itemsErr } = await getMenuItems({
         limit: 100,
+        showAll: true, // Admin melihat semua item, bukan hanya yang is_available=true
       });
       if (!itemsErr) setMenuItems(itemsData || []);
 
@@ -276,7 +277,7 @@ export default function Menu() {
             <div className={`group relative overflow-hidden rounded-[2rem] border border-[#EEE3D8] bg-white shadow-[0_20px_40px_rgba(34,20,14,0.06)] transition-all duration-500 hover:-translate-y-1 ${!coffee.is_available ? "opacity-90" : ""}`}>
               <div className="relative h-64 overflow-hidden rounded-t-[2rem] bg-slate-100">
                 <img
-                  src={coffee.image}
+                  src={coffee.image_url || coffee.image}
                   alt={coffee.name}
                   className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 ${!coffee.is_available ? "grayscale-[40%]" : ""}`}
                   onError={(e) => {

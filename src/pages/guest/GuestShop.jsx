@@ -109,7 +109,7 @@ export default function GuestShop() {
 
       if (subtotal < Number(data.min_order_amount || 0)) {
         setPromoError(
-          `Minimal belanja untuk voucher ini adalah IDR ${Number(data.min_order_amount).toLocaleString("id-ID")}.`,
+          `Minimal belanja untuk voucher ini adalah $${Number(data.min_order_amount).toFixed(2)}.`,
         );
         setAppliedPromo(null);
         return;
@@ -482,7 +482,7 @@ export default function GuestShop() {
     const matchesCategory =
       activeCategory === "All" ||
       (item.category || "").toLowerCase() ===
-        (activeCategory || "").toLowerCase();
+      (activeCategory || "").toLowerCase();
     return matchesSearch && matchesCategory;
   });
 
@@ -569,223 +569,223 @@ export default function GuestShop() {
         {/* Hero Section */}
         <GuestHero />
 
-      {/* About Us Section */}
-      <section id="about" className="py-24 px-6 md:px-12 bg-white">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <SlideUp delay={0.2} className="grid grid-cols-2 gap-4">
-            <img
-              src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=350&h=450&fit=crop"
-              alt="Biji Kopi"
-              className="w-full h-80 object-cover rounded-2xl shadow-lg transform translate-y-8"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=350&h=450&fit=crop"
-              alt="Barista brewing"
-              className="w-full h-80 object-cover rounded-2xl shadow-lg"
-            />
-          </SlideUp>
+        {/* About Us Section */}
+        <section id="about" className="py-24 px-6 md:px-12 bg-white">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <SlideUp delay={0.2} className="grid grid-cols-2 gap-4">
+              <img
+                src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=350&h=450&fit=crop"
+                alt="Biji Kopi"
+                className="w-full h-80 object-cover rounded-2xl shadow-lg transform translate-y-8"
+              />
+              <img
+                src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=350&h=450&fit=crop"
+                alt="Barista brewing"
+                className="w-full h-80 object-cover rounded-2xl shadow-lg"
+              />
+            </SlideUp>
 
-          <SlideUp delay={0.3} className="space-y-6 text-left">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#8b6f47]">
-              Filosofi Cangkir Kami
-            </span>
-            <h2 className="text-3xl md:text-4xl font-normal text-[#1a0f07] tracking-tight" style={{ fontFamily: "'Georgia', serif" }}>
-              Di Sini, Kopi Bukan Sekadar Minuman, Kopi Adalah Karya Seni.
-            </h2>
-            <p className="text-[#8a7868] leading-relaxed text-sm">
-              Artisanal Bean hadir dari mimpi menghadirkan cangkir kopi berkualitas
-              dunia langsung ke genggaman Anda. Kami mendatangkan biji kopi
-              organik langsung dari petani lokal terbaik, melalui penyortiran
-              ketat, serta proses pemanggangan (roasting) modern untuk mengunci
-              cita rasa khasnya.
-            </p>
-            <p className="text-[#8a7868] leading-relaxed text-sm">
-              Barista kami dilatih khusus dengan dedikasi tinggi agar setiap
-              ekstraksi espresso menghasilkan keseimbangan rasa (body, acidity,
-              sweetness) yang sempurna. Nikmati di kedai kami yang nyaman atau
-              pesan ke meja Anda secara instan.
-            </p>
+            <SlideUp delay={0.3} className="space-y-6 text-left">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#8b6f47]">
+                Filosofi Cangkir Kami
+              </span>
+              <h2 className="text-3xl md:text-4xl font-normal text-[#1a0f07] tracking-tight" style={{ fontFamily: "'Georgia', serif" }}>
+                Di Sini, Kopi Bukan Sekadar Minuman, Kopi Adalah Karya Seni.
+              </h2>
+              <p className="text-[#8a7868] leading-relaxed text-sm">
+                Artisanal Bean hadir dari mimpi menghadirkan cangkir kopi berkualitas
+                dunia langsung ke genggaman Anda. Kami mendatangkan biji kopi
+                organik langsung dari petani lokal terbaik, melalui penyortiran
+                ketat, serta proses pemanggangan (roasting) modern untuk mengunci
+                cita rasa khasnya.
+              </p>
+              <p className="text-[#8a7868] leading-relaxed text-sm">
+                Barista kami dilatih khusus dengan dedikasi tinggi agar setiap
+                ekstraksi espresso menghasilkan keseimbangan rasa (body, acidity,
+                sweetness) yang sempurna. Nikmati di kedai kami yang nyaman atau
+                pesan ke meja Anda secara instan.
+              </p>
 
-            <div className="grid grid-cols-3 gap-6 pt-4 border-t border-[#ede8e1]">
-              <div>
-                <h4 className="text-2xl font-bold text-[#8b6f47]">100%</h4>
-                <p className="text-xs text-[#8a7868] mt-1 font-semibold">
-                  Organik & Asli
-                </p>
+              <div className="grid grid-cols-3 gap-6 pt-4 border-t border-[#ede8e1]">
+                <div>
+                  <h4 className="text-2xl font-bold text-[#8b6f47]">100%</h4>
+                  <p className="text-xs text-[#8a7868] mt-1 font-semibold">
+                    Organik & Asli
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-2xl font-bold text-[#8b6f47]">Freshly</h4>
+                  <p className="text-xs text-[#8a7868] mt-1 font-semibold">
+                    Dipanggang Harian
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-2xl font-bold text-[#8b6f47]">
+                    Professional
+                  </h4>
+                  <p className="text-xs text-[#8a7868] mt-1 font-semibold">
+                    Barista Bersertifikat
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-2xl font-bold text-[#8b6f47]">Freshly</h4>
-                <p className="text-xs text-[#8a7868] mt-1 font-semibold">
-                  Dipanggang Harian
-                </p>
-              </div>
-              <div>
-                <h4 className="text-2xl font-bold text-[#8b6f47]">
-                  Professional
-                </h4>
-                <p className="text-xs text-[#8a7868] mt-1 font-semibold">
-                  Barista Bersertifikat
-                </p>
-              </div>
-            </div>
-          </SlideUp>
-        </div>
-      </section>
-
-      {/* Menu Section */}
-      <section id="menu" className="py-24 px-6 md:px-12 bg-[#faf8f3]">
-        <div className="max-w-7xl mx-auto space-y-12">
-          {/* Header */}
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#8b6f47]">
-              Seleksi Menu Terbaik
-            </span>
-            <h2 className="text-3xl md:text-4xl font-normal text-[#1a0f07]" style={{ fontFamily: "'Georgia', serif" }}>
-              Jelajahi Cita Rasa Favorit Anda
-            </h2>
-            <p className="text-[#8a7868] text-sm leading-relaxed">
-              Dari rasa manis latte caramel yang lembut hingga rasa espresso
-              murni yang kuat dan tegas, temukan pilihan kopi yang paling cocok
-              dengan selera hari ini.
-            </p>
+            </SlideUp>
           </div>
+        </section>
 
-          {/* Search & Category Filter Controls */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-4 rounded-2xl shadow-sm border border-[#ede8e1]">
-            {/* Search */}
-            <div className="relative w-full md:w-80">
-              <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#b0a090] w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Cari kopi..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-[#faf8f3] border border-[#ede8e1] rounded-xl text-[#1a0f07] text-sm focus:outline-none focus:border-[#8b6f47]/50 transition-all"
+        {/* Menu Section */}
+        <section id="menu" className="py-24 px-6 md:px-12 bg-[#faf8f3]">
+          <div className="max-w-7xl mx-auto space-y-12">
+            {/* Header */}
+            <div className="text-center space-y-4 max-w-2xl mx-auto">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#8b6f47]">
+                Seleksi Menu Terbaik
+              </span>
+              <h2 className="text-3xl md:text-4xl font-normal text-[#1a0f07]" style={{ fontFamily: "'Georgia', serif" }}>
+                Jelajahi Cita Rasa Favorit Anda
+              </h2>
+              <p className="text-[#8a7868] text-sm leading-relaxed">
+                Dari rasa manis latte caramel yang lembut hingga rasa espresso
+                murni yang kuat dan tegas, temukan pilihan kopi yang paling cocok
+                dengan selera hari ini.
+              </p>
+            </div>
+
+            {/* Search & Category Filter Controls */}
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-4 rounded-2xl shadow-sm border border-[#ede8e1]">
+              {/* Search */}
+              <div className="relative w-full md:w-80">
+                <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#b0a090] w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Cari kopi..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-[#faf8f3] border border-[#ede8e1] rounded-xl text-[#1a0f07] text-sm focus:outline-none focus:border-[#8b6f47]/50 transition-all"
+                />
+              </div>
+
+              {/* Filter categories */}
+              <CategorySlider
+                categoriesList={categoriesList}
+                activeCategory={activeCategory}
+                onSelectCategory={setActiveCategory}
               />
             </div>
 
-            {/* Filter categories */}
-            <CategorySlider
-              categoriesList={categoriesList}
-              activeCategory={activeCategory}
-              onSelectCategory={setActiveCategory}
+            {/* Menu Grid */}
+            <MenuGrid
+              filteredMenu={filteredMenu}
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={addToCart}
             />
+
+            {/* Online Delivery Platform Integration */}
+            <div className="bg-gradient-to-r from-[#8b6f47]/10 to-[#2c1a0e]/5 rounded-2xl p-8 border border-[#ede8e1] flex flex-col lg:flex-row justify-between items-center gap-6 mt-16 text-left animate-[fadeIn_0.5s_ease-out]">
+              <div className="space-y-1 max-w-xl">
+                <h3 className="font-bold text-lg text-[#1a0f07]">
+                  Ingin Menikmati Kopi di Rumah?
+                </h3>
+                <p className="text-[#8a7868] text-xs leading-relaxed">
+                  Selain melalui pemesanan langsung (*Order & Pay Ahead*) untuk
+                  makan di tempat atau bawa pulang, Anda juga bisa memesan menu
+                  kopi favorit kami melalui platform pengiriman online favorit
+                  Anda.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href="https://gofood.link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="py-3 px-6 bg-[#E62E2D] hover:bg-[#c92524] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#E62E2D]/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  GoFood
+                </a>
+                <a
+                  href="https://grab.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="py-3 px-6 bg-[#00B14F] hover:bg-[#009642] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#00B14F]/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  GrabFood
+                </a>
+                <a
+                  href="https://shopee.co.id"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="py-3 px-6 bg-[#EE4D2D] hover:bg-[#d63f21] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#EE4D2D]/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  ShopeeFood
+                </a>
+              </div>
+            </div>
           </div>
+        </section>
 
-          {/* Menu Grid */}
-          <MenuGrid
-            filteredMenu={filteredMenu}
-            favorites={favorites}
-            onToggleFavorite={toggleFavorite}
-            onAddToCart={addToCart}
-          />
+        {/* Order Tracking Section */}
+        <OrderTracking
+          trackIdInput={trackIdInput}
+          setTrackIdInput={setTrackIdInput}
+          onTrackOrder={handleTrackOrder}
+          trackedOrder={trackedOrder}
+          trackError={trackError}
+        />
 
-          {/* Online Delivery Platform Integration */}
-          <div className="bg-gradient-to-r from-[#8b6f47]/10 to-[#2c1a0e]/5 rounded-2xl p-8 border border-[#ede8e1] flex flex-col lg:flex-row justify-between items-center gap-6 mt-16 text-left animate-[fadeIn_0.5s_ease-out]">
-            <div className="space-y-1 max-w-xl">
-              <h3 className="font-bold text-lg text-[#1a0f07]">
-                Ingin Menikmati Kopi di Rumah?
-              </h3>
-              <p className="text-[#8a7868] text-xs leading-relaxed">
-                Selain melalui pemesanan langsung (*Order & Pay Ahead*) untuk
-                makan di tempat atau bawa pulang, Anda juga bisa memesan menu
-                kopi favorit kami melalui platform pengiriman online favorit
-                Anda.
+        {/* Reviews & Feedback Section */}
+        <ReviewSection reviews={reviews} onAddReview={handleAddReview} />
+
+        {/* Footer */}
+        <footer style={{ background: "#1c1109", padding: "48px 32px", borderTop: "1px solid #2e1e12" }}>
+          <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "32px", textAlign: "left" }}>
+            <div className="space-y-4">
+              <span style={{ fontFamily: "'Georgia', serif", fontSize: "20px", fontWeight: "700", color: "#f5c842" }}>
+                Artisanal Bean
+              </span>
+              <p className="text-xs text-white/60 max-w-xs leading-relaxed">
+                Kedai kopi modern yang mengutamakan kualitas ekstraksi kopi
+                premium, suasana santai yang nyaman, dan layanan pelanggan tanpa
+                hambatan.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <a
-                href="https://gofood.link"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-3 px-6 bg-[#E62E2D] hover:bg-[#c92524] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#E62E2D]/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
-              >
-                GoFood
-              </a>
-              <a
-                href="https://grab.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-3 px-6 bg-[#00B14F] hover:bg-[#009642] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#00B14F]/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
-              >
-                GrabFood
-              </a>
-              <a
-                href="https://shopee.co.id"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-3 px-6 bg-[#EE4D2D] hover:bg-[#d63f21] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#EE4D2D]/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
-              >
-                ShopeeFood
-              </a>
+
+            <div className="space-y-3">
+              <h4 className="font-bold tracking-wider text-xs uppercase" style={{ color: "#f5c842" }}>
+                Jam Operasional
+              </h4>
+              <ul className="text-xs text-white/60 space-y-1.5" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                <li className="flex justify-between">
+                  <span>Senin - Jumat</span>
+                  <span className="font-bold text-white">07:00 - 22:00</span>
+                </li>
+                <li className="flex justify-between">
+                  <span>Sabtu - Minggu</span>
+                  <span className="font-bold text-white">08:00 - 23:00</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-bold tracking-wider text-xs uppercase" style={{ color: "#f5c842" }}>
+                Hubungi Kami
+              </h4>
+              <p className="text-xs text-white/60 leading-relaxed">
+                Jl. Kopi Senja No. 42, Kota Jakarta
+                <br />
+                <span className="font-bold text-white block mt-1">
+                  support@artisanalbean.com
+                </span>
+                <span className="font-bold text-white">(+62) 21-8888-999</span>
+              </p>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Order Tracking Section */}
-      <OrderTracking
-        trackIdInput={trackIdInput}
-        setTrackIdInput={setTrackIdInput}
-        onTrackOrder={handleTrackOrder}
-        trackedOrder={trackedOrder}
-        trackError={trackError}
-      />
-
-      {/* Reviews & Feedback Section */}
-      <ReviewSection reviews={reviews} onAddReview={handleAddReview} />
-
-      {/* Footer */}
-      <footer style={{ background: "#1c1109", padding: "48px 32px", borderTop: "1px solid #2e1e12" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "32px", textAlign: "left" }}>
-          <div className="space-y-4">
-            <span style={{ fontFamily: "'Georgia', serif", fontSize: "20px", fontWeight: "700", color: "#f5c842" }}>
-              Artisanal Bean
-            </span>
-            <p className="text-xs text-white/60 max-w-xs leading-relaxed">
-              Kedai kopi modern yang mengutamakan kualitas ekstraksi kopi
-              premium, suasana santai yang nyaman, dan layanan pelanggan tanpa
-              hambatan.
+          <div className="max-w-7xl mx-auto pt-8 mt-12 border-t border-[#2e1e12] text-center text-xs text-white/30">
+            <p>
+              © {new Date().getFullYear()} Artisanal Bean Coffee Shop. All rights reserved.
             </p>
           </div>
-
-          <div className="space-y-3">
-            <h4 className="font-bold tracking-wider text-xs uppercase" style={{ color: "#f5c842" }}>
-              Jam Operasional
-            </h4>
-            <ul className="text-xs text-white/60 space-y-1.5" style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              <li className="flex justify-between">
-                <span>Senin - Jumat</span>
-                <span className="font-bold text-white">07:00 - 22:00</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Sabtu - Minggu</span>
-                <span className="font-bold text-white">08:00 - 23:00</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-3">
-            <h4 className="font-bold tracking-wider text-xs uppercase" style={{ color: "#f5c842" }}>
-              Hubungi Kami
-            </h4>
-            <p className="text-xs text-white/60 leading-relaxed">
-              Jl. Kopi Senja No. 42, Kota Jakarta
-              <br />
-              <span className="font-bold text-white block mt-1">
-                support@artisanalbean.com
-              </span>
-              <span className="font-bold text-white">(+62) 21-8888-999</span>
-            </p>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto pt-8 mt-12 border-t border-[#2e1e12] text-center text-xs text-white/30">
-          <p>
-            © {new Date().getFullYear()} Artisanal Bean Coffee Shop. All rights reserved.
-          </p>
-        </div>
-      </footer>
+        </footer>
       </FadeIn>
 
       {/* Success Checkout Modal Overlay */}

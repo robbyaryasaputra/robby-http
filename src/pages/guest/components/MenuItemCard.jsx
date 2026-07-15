@@ -10,8 +10,7 @@ export default function MenuItemCard({
   onAddToCart,
 }) {
   const formatPrice = (p) => {
-    const val = p / 1000;
-    return `IDR ${val.toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 1 })}`;
+    return `$${Number(p).toFixed(2)}`;
   };
 
   const badge = item.badge || item.tag || null;
@@ -47,11 +46,16 @@ export default function MenuItemCard({
       >
         {/* Image & Favorite button */}
         <div style={{ height: "180px", position: "relative", background: "#f5ede3", overflow: "hidden" }}>
-          {item.image ? (
+          {item.image || item.image_url ? (
             <img
-              src={item.image}
+              src={item.image || item.image_url}
               alt={item.name}
+              loading="lazy"
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              onError={(e) => {
+                e.target.onerror = null; // cegah infinite loop
+                e.target.src = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop";
+              }}
             />
           ) : (
             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px" }}>☕</div>
@@ -69,7 +73,7 @@ export default function MenuItemCard({
               {badgeUpper}
             </span>
           )}
-          
+
           {/* Favorite Button */}
           <button
             onClick={(e) => { e.stopPropagation(); onToggleFavorite(item.id); }}
@@ -86,9 +90,8 @@ export default function MenuItemCard({
             onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
           >
             <LuHeart
-              className={`w-4.5 h-4.5 transition-all duration-300 ${
-                isFavorite ? "text-red-500 fill-red-500 scale-110" : "text-gray-500"
-              }`}
+              className={`w-4.5 h-4.5 transition-all duration-300 ${isFavorite ? "text-red-500 fill-red-500 scale-110" : "text-gray-500"
+                }`}
             />
           </button>
         </div>
@@ -108,7 +111,7 @@ export default function MenuItemCard({
                 {item.category}
               </span>
             </div>
-            
+
             <div style={{ marginBottom: "8px", display: "flex", alignItems: "center" }}>
               <RatingStars rating={item.rating} size={11} />
             </div>
